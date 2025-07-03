@@ -108,43 +108,42 @@ function App() {
             <ReadingPage />
           )}
 
-        {/* Footer */}
-        <div className="text-center mt-16 pt-8 border-t border-purple-800/50">
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            <Star className="w-5 h-5 text-yellow-400" />
-            <p className="text-purple-300 text-lg">
-              "Do que se fala não se pode dizer. Do que se pode dizer não se fala."
+          {/* Footer */}
+          <div className="text-center mt-16 pt-8 border-t border-purple-800/50">
+            <div className="flex items-center justify-center space-x-2 mb-4">
+              <Star className="w-5 h-5 text-yellow-400" />
+              <p className="text-purple-300 text-lg">
+                "Do que se fala não se pode dizer. Do que se pode dizer não se fala."
+              </p>
+              <Star className="w-5 h-5 text-yellow-400" />
+            </div>
+            <p className="text-purple-400 text-sm mb-6">
+              Baseado no sistema de Aleister Crowley • Tarot de Thoth • 93
             </p>
-            <Star className="w-5 h-5 text-yellow-400" />
-          </div>
-          <p className="text-purple-400 text-sm mb-6">
-            Baseado no sistema de Aleister Crowley • Tarot de Thoth • 93
-          </p>
-          
-          {/* Company Information */}
-          <div className="flex flex-col items-center space-y-2 mb-4">
-            <p className="text-yellow-400 font-semibold">Like Look Solutions</p>
-            <div className="flex items-center space-x-2">
-              <a 
-                href="https://likelook.wixsite.com/solutions" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center text-purple-300 hover:text-yellow-400 transition-colors"
-              >
-                <ExternalLink className="w-4 h-4 mr-1" />
-                <span>likelook.wixsite.com/solutions</span>
-              </a>
+            
+            {/* Company Information */}
+            <div className="flex flex-col items-center space-y-2 mb-4">
+              <p className="text-yellow-400 font-semibold">Like Look Solutions</p>
+              <div className="flex items-center space-x-2">
+                <a 
+                  href="https://likelook.wixsite.com/solutions" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center text-purple-300 hover:text-yellow-400 transition-colors"
+                >
+                  <ExternalLink className="w-4 h-4 mr-1" />
+                  <span>likelook.wixsite.com/solutions</span>
+                </a>
+              </div>
+              <div className="flex items-center text-purple-300">
+                <Phone className="w-4 h-4 mr-1" />
+                <span>WhatsApp: +55 11 97060-3441</span>
+              </div>
             </div>
-            <div className="flex items-center text-purple-300">
-              <Phone className="w-4 h-4 mr-1" />
-              <span>WhatsApp: +55 11 97060-3441</span>
-            </div>
+            <p className="text-purple-400 text-xs">
+              Desenvolvido por Julio Campos Machado &copy; {new Date().getFullYear()}
+            </p>
           </div>
-          <p className="text-purple-400 text-xs">
-            Desenvolvido por Julio Campos Machado &copy; {new Date().getFullYear()}
-          </p>
-        </div>
-      </div>
 
           {/* Modal */}
           <CardModal card={selectedCard} onClose={handleCloseModal} />
