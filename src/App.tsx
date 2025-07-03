@@ -6,13 +6,19 @@ import { minorArcana } from './data/minorArcana';
 import { TarotCardComponent } from './components/TarotCard';
 import { CardModal } from './components/CardModal';
 import { Navigation } from './components/Navigation';
+import { MainNavigation } from './components/MainNavigation';
 import { SplashScreen } from './components/SplashScreen';
-import { Eye, Star, Sparkles, ExternalLink, Phone } from 'lucide-react';
+import { ReadingPage } from './components/Reading/ReadingPage';
+import { Eye, Star, Sparkles, ExternalLink, Phone, BookOpen } from 'lucide-react';
+
+// Define page types for navigation
+type PageType = 'catalog' | 'reading';
 
 function App() {
   const [activeTab, setActiveTab] = useState<'major' | 'court' | 'minor'>('major');
   const [selectedCard, setSelectedCard] = useState<TarotCard | null>(null);
   const [showSplash, setShowSplash] = useState(true);
+  const [activePage, setActivePage] = useState<PageType>('catalog');
 
   const getCards = () => {
     switch (activeTab) {
@@ -39,10 +45,18 @@ function App() {
     <>
       {showSplash && <SplashScreen onFinished={() => setShowSplash(false)} />}
       <div className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-950 to-slate-900">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <div className="flex items-center justify-center space-x-4 mb-6">
+        <div className="container mx-auto px-4 py-8">
+          
+          {/* Main Navigation */}
+          <MainNavigation 
+            activePage={activePage}
+            onPageChange={setActivePage}
+          />
+          
+          {/* Header - only show in catalog view */}
+          {activePage === 'catalog' && (
+            <div className="mb-8">
+              <div className="flex items-center justify-center space-x-4 mb-6">
             <div className="text-yellow-400">
               <Eye className="w-12 h-12" />
             </div>
@@ -69,22 +83,30 @@ function App() {
               <div className="text-yellow-400 text-2xl font-bold">22</div>
               <div className="text-purple-300 text-sm">Atus</div>
             </div>
-          </div>
-        </div>
+              </div>
+            </div>
+          )}
 
-        {/* Navigation */}
-        <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
-
-        {/* Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {getCards().map((card) => (
-            <TarotCardComponent 
-              key={card.id} 
-              card={card} 
-              onClick={handleCardClick}
-            />
-          ))}
-        </div>
+          {/* Page Content based on active page */}
+          {activePage === 'catalog' ? (
+            <>
+              {/* Card Category Navigation */}
+              <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
+              
+              {/* Cards Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {getCards().map((card) => (
+                  <TarotCardComponent 
+                    key={card.id} 
+                    card={card} 
+                    onClick={handleCardClick}
+                  />
+                ))}
+              </div>
+            </>
+          ) : (
+            <ReadingPage />
+          )}
 
         {/* Footer */}
         <div className="text-center mt-16 pt-8 border-t border-purple-800/50">
@@ -124,8 +146,9 @@ function App() {
         </div>
       </div>
 
-      {/* Modal */}
-      <CardModal card={selectedCard} onClose={handleCloseModal} />
+          {/* Modal */}
+          <CardModal card={selectedCard} onClose={handleCloseModal} />
+        </div>
       </div>
     </>
   );

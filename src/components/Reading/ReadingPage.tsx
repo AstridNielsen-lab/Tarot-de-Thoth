@@ -1,0 +1,384 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { SpreadLayout } from './SpreadLayout';
+import { CardInterpretation } from './CardInterpretation';
+import { spreads as allSpreads, getSpreadById } from '../../data/spreads';
+import { Reading, SpreadType, ReadingCard, TarotCard } from '../../types/tarot';
+import { majorArcana, courtCards, minorArcana } from '../../data/majorArcana';
+import { generateInterpretation } from '../../data/spreads';
+import { shuffle } from 'lodash';
+import { BookOpen, Save, Eye, HelpCircle, Shuffle } from 'lucide-react';
+
+// Guidance text for each spread type
+const spreadGuidance = {
+  'three-card': "O método de três cartas é uma forma simples mas poderosa de obter clareza. Na visão de Crowley, representa o fluxo da energia através do tempo: passado (causa), presente (manifestação) e futuro (tendência). Concentre-se na questão enquanto as cartas são embaralhadas.",
+  'celtic-cross': "A Cruz Celta, na interpretação thelêmica, representa a interação das forças em múltiplos planos. O centro é o cruzamento dos pilares da Árvore da Vida, enquanto as seis cartas ao redor mostram as influências planetárias. Visualize a questão no centro de sua consciência.",
+  'tree-of-life': "A Árvore da Vida é o mapa completo do universo segundo a Qabalah. Crowley ensinou que cada Sephirah representa um aspecto da questão, desde sua origem divina (Kether) até sua manifestação material (Malkuth). Esta leitura requer profunda contemplação das correspondências."
+};
+
+// Reading states
+type ReadingState = 'initial' | 'shuffling' | 'drawing' | 'revealing' | 'complete';
+
+export const ReadingPage: React.FC = () => {
+  const [spreadType, setSpreadType] = useState<SpreadType>(getSpreadById('three-card'));
+  const [reading, setReading] = useState<Reading | null>(null);
+  const [selectedCard, setSelectedCard] = useState<ReadingCard | null>(null);
+  const [isRevealed, setIsRevealed] = useState<boolean[]>([]);
+  const [readingState, setReadingState] = useState<ReadingState>('initial');
+  const [question, setQuestion] = useState<string>('');
+  const [savedReadings, setSavedReadings] = useState<Reading[]>([]);
+  const [currentCardIndex, setCurrentCardIndex] = useState<number>(0);
+  const [showInstructions, setShowInstructions] = useState<boolean>(false);
+  
+  // Refs for animations
+  const deckRef = useRef<HTMLDivElement>(null);
+  
+  const allCards: TarotCard[] = [...majorArcana, ...courtCards, ...minorArcana];
+
+  // Function to start the reading process
+  const startReading = () => {
+    if (!question.trim()) {
+      alert("Por favor, insira uma questão antes de começar a leitura.");
+      return;
+    }
+    
+    // Begin shuffling animation
+    setReadingState('shuffling');
+    
+    // Simulate shuffling with a timeout
+    setTimeout(() => {
+      const shuffledDeck = shuffle(allCards);
+      const newReadingCards = spreadType.positions.map((position, index) => {
+        const card = shuffledDeck[index];
+        const isReversed = Math.random() < 0.25;
+        return {
+          card,
+          position,
+          isReversed,
+          interpretation: generateInterpretation(card.id, position.id)
+        };
+      }) as ReadingCard[];
+
+      const newReading = {
+        id: `reading-${Date.now()}`,
+        date: new Date(),
+        spreadType: spreadType.id,
+        question: question,
+        cards: newReadingCards
+      };
+
+      setReading(newReading);
+      setIsRevealed(new Array(newReadingCards.length).fill(false));
+      setCurrentCardIndex(0);
+      setReadingState('drawing');
+      
+      // Start revealing cards after a delay
+      setTimeout(() => {
+        setReadingState('revealing');
+      }, 1500);
+    }, 2000);
+  };
+
+  // Reveal cards progressively
+  useEffect(() => {
+    if (readingState === 'revealing' && reading && currentCardIndex < reading.cards.length) {
+      const timer = setTimeout(() => {
+        revealCard(currentCardIndex);
+        setCurrentCardIndex(prev => prev + 1);
+        
+        // If all cards are revealed, set state to complete
+        if (currentCardIndex === reading.cards.length - 1) {
+          setReadingState('complete');
+        }
+      }, 800);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [readingState, currentCardIndex, reading]);
+
+  // Reveal a specific card
+  const revealCard = (index: number) => {
+    if (!reading) return;
+    
+    const newIsRevealed = [...isRevealed];
+    newIsRevealed[index] = true;
+    setIsRevealed(newIsRevealed);
+  };
+  
+  // Save the current reading
+  const saveReading = () => {
+    if (!reading) return;
+    
+    const updatedSavedReadings = [...savedReadings, reading];
+    setSavedReadings(updatedSavedReadings);
+    
+    // Save to localStorage
+    try {
+      localStorage.setItem('savedTarotReadings', JSON.stringify(updatedSavedReadings));
+      alert('Leitura salva com sucesso!');
+    } catch (error) {
+      console.error('Error saving reading:', error);
+      alert('Erro ao salvar a leitura.');
+    }
+  };
+  
+  // Load saved readings on component mount
+  useEffect(() => {
+    try {
+      const savedData = localStorage.getItem('savedTarotReadings');
+      if (savedData) {
+        setSavedReadings(JSON.parse(savedData));
+      }
+    } catch (error) {
+      console.error('Error loading saved readings:', error);
+    }
+  }, []);
+  
+  // Reset reading
+  const resetReading = () => {
+    setReading(null);
+    setSelectedCard(null);
+    setIsRevealed([]);
+    setReadingState('initial');
+    setCurrentCardIndex(0);
+  };
+
+  // Render shuffle animation
+  const renderShuffleAnimation = () => {
+    if (readingState !== 'shuffling') return null;
+    
+    return (
+      <div className="fixed inset-0 flex items-center justify-center z-50 bg-indigo-950/80">
+        <div className="text-center">
+          <div className="relative w-32 h-48 mx-auto mb-4">
+            {[...Array(10)].map((_, i) => (
+              <div 
+                key={i} 
+                className="absolute w-24 h-36 bg-indigo-800 border-2 border-yellow-500 rounded-lg shadow-lg animate-shuffle"
+                style={{ 
+                  animationDelay: `${i * 0.1}s`,
+                  transform: `rotate(${Math.random() * 10 - 5}deg) translate(${Math.random() * 10 - 5}px, ${Math.random() * 10 - 5}px)`
+                }}
+              />
+            ))}
+            <Shuffle className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-yellow-400 w-12 h-12 animate-pulse" />
+          </div>
+          <p className="text-yellow-400 text-xl font-medium">Embaralhando...</p>
+          <p className="text-purple-300 mt-2">Concentre-se em sua questão</p>
+        </div>
+      </div>
+    );
+  };
+
+  // Render instructions modal
+  const renderInstructions = () => {
+    if (!showInstructions) return null;
+    
+    return (
+      <div className="fixed inset-0 flex items-center justify-center z-50 bg-indigo-950/90 p-4">
+        <div className="bg-indigo-900 p-6 rounded-lg max-w-2xl max-h-[80vh] overflow-y-auto">
+          <h2 className="text-2xl font-bold text-yellow-400 mb-4 flex items-center">
+            <BookOpen className="w-6 h-6 mr-2" />
+            Instruções de Leitura Segundo Crowley
+          </h2>
+          
+          <div className="space-y-4 text-purple-200">
+            <p>
+              Aleister Crowley desenvolveu o Tarot de Thoth como um sistema completo de iniciação mágica. 
+              Ao realizar uma leitura, siga estas orientações para obter resultados mais profundos:
+            </p>
+            
+            <ol className="list-decimal pl-5 space-y-2">
+              <li>Concentre-se em sua Vontade Verdadeira (Thelema) ao formular a pergunta.</li>
+              <li>Visualize a questão como uma força que se manifesta através do Aeon de Horus.</li>
+              <li>Pense nas cartas como reflexos da sua consciência, não como forças externas.</li>
+              <li>Estude as correspondências astrológicas, cabalísticas e elementais de cada carta.</li>
+              <li>Observe os padrões e relacionamentos entre as cartas, não apenas seus significados isolados.</li>
+            </ol>
+            
+            <div className="pt-4 border-t border-purple-800">
+              <h3 className="text-xl text-yellow-400 mb-2">Preparação Ritual</h3>
+              <p>
+                "O ato de embaralhar as cartas deve ser executado com plena consciência mágica. 
+                Os resultados não são 'sorte', mas a manifestação das forças sutis que atravessam o véu da matéria."
+                <span className="block mt-1 text-right">— Aleister Crowley, O Livro de Thoth</span>
+              </p>
+            </div>
+          </div>
+          
+          <button 
+            className="mt-6 px-4 py-2 bg-purple-800 text-white rounded-md hover:bg-purple-700 transition w-full"
+            onClick={() => setShowInstructions(false)}
+          >
+            Fechar
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      {renderShuffleAnimation()}
+      {renderInstructions()}
+      
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-bold text-white">Realizar Leitura de Tarot</h1>
+        <p className="text-purple-300 text-sm mt-2">
+          Selecione um método de leitura e faça sua pergunta. Clique em "Começar Leitura"
+          para visualizar as cartas e suas interpretações.
+        </p>
+        <button 
+          className="mt-2 text-yellow-400 text-sm flex items-center mx-auto hover:underline"
+          onClick={() => setShowInstructions(true)}
+        >
+          <HelpCircle className="w-4 h-4 mr-1" />
+          Instruções de Leitura Segundo Crowley
+        </button>
+      </div>
+      
+      {readingState === 'initial' && (
+        <div className="max-w-2xl mx-auto bg-indigo-950/50 p-6 rounded-lg mb-8">
+          <div className="mb-6">
+            <label className="block text-purple-300 mb-2">Método de Leitura:</label>
+            <select 
+              value={spreadType.id} 
+              onChange={(e) => setSpreadType(getSpreadById(e.target.value as 'three-card' | 'celtic-cross' | 'tree-of-life'))}
+              className="w-full p-3 rounded-md bg-indigo-900 border border-purple-800 text-purple-400"
+            >
+              {allSpreads.map(spread => (
+                <option key={spread.id} value={spread.id}>{spread.name}</option>
+              ))}
+            </select>
+            
+            {/* Guidance text for selected spread */}
+            <div className="mt-3 p-4 bg-indigo-900/50 rounded-lg">
+              <p className="text-purple-300 text-sm italic">
+                {spreadGuidance[spreadType.id]}
+              </p>
+            </div>
+          </div>
+          
+          <div className="mb-6">
+            <label className="block text-purple-300 mb-2">Sua Questão:</label>
+            <textarea
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              placeholder="Formule sua questão com clareza e intenção..."
+              className="w-full p-3 rounded-md bg-indigo-900 border border-purple-800 text-purple-300 min-h-[100px]"
+            />
+            <p className="text-purple-400 text-xs mt-2">
+              "A pergunta clara é a metade da resposta." — Adaptado de Crowley
+            </p>
+          </div>
+          
+          <button 
+            className="w-full px-4 py-3 bg-purple-800 text-white rounded-md hover:bg-purple-700 transition flex items-center justify-center"
+            onClick={startReading}
+          >
+            <Eye className="w-5 h-5 mr-2" />
+            Começar Leitura
+          </button>
+        </div>
+      )}
+      
+      {reading && readingState !== 'initial' && (
+        <div className="mb-4 flex justify-between items-center">
+          <div>
+            <h2 className="text-xl text-white font-medium">{spreadType.name}</h2>
+            <p className="text-purple-300 text-sm italic">"{question}"</p>
+          </div>
+          
+          <div className="flex space-x-2">
+            {readingState === 'complete' && (
+              <button
+                className="px-3 py-1 bg-indigo-800 text-yellow-400 rounded-md hover:bg-indigo-700 transition flex items-center text-sm"
+                onClick={saveReading}
+              >
+                <Save className="w-4 h-4 mr-1" />
+                Salvar Leitura
+              </button>
+            )}
+            
+            <button
+              className="px-3 py-1 bg-purple-800 text-white rounded-md hover:bg-purple-700 transition text-sm"
+              onClick={resetReading}
+            >
+              Nova Leitura
+            </button>
+          </div>
+        </div>
+      )}
+
+      {reading && readingState !== 'initial' && (
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Spread Layout */}
+          <div className="flex-1 relative">
+            <SpreadLayout 
+              spread={spreadType}
+              readingCards={reading.cards}
+              isRevealed={isRevealed}
+              onCardClick={(card) => setSelectedCard(card)}
+            />
+            
+            {readingState === 'revealing' && currentCardIndex < reading.cards.length && (
+              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-indigo-900/80 px-4 py-2 rounded-full text-yellow-400 text-sm animate-pulse">
+                Revelando carta {currentCardIndex + 1} de {reading.cards.length}...
+              </div>
+            )}
+          </div>
+
+          {/* Card Interpretation */}
+          <div className="flex-1">
+            <CardInterpretation readingCard={selectedCard} />
+            
+            {readingState === 'complete' && !selectedCard && (
+              <div className="mt-4 p-4 bg-indigo-900/50 rounded-lg text-center">
+                <p className="text-purple-300">
+                  Clique em uma carta para ver sua interpretação detalhada.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      
+      {/* Saved Readings Section */}
+      {savedReadings.length > 0 && readingState === 'initial' && (
+        <div className="mt-8 border-t border-purple-800/50 pt-6">
+          <h2 className="text-xl text-white font-medium mb-4">Leituras Salvas</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {savedReadings.map((savedReading) => (
+              <div 
+                key={savedReading.id}
+                className="p-4 bg-indigo-900/40 rounded-lg hover:bg-indigo-900/60 transition cursor-pointer"
+                onClick={() => {
+                  setReading(savedReading);
+                  setSpreadType(getSpreadById(savedReading.spreadType));
+                  setQuestion(savedReading.question || '');
+                  setIsRevealed(new Array(savedReading.cards.length).fill(true));
+                  setReadingState('complete');
+                  setSelectedCard(null);
+                }}
+              >
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <h3 className="text-yellow-400 font-medium">
+                      {allSpreads.find(s => s.id === savedReading.spreadType)?.name}
+                    </h3>
+                    <p className="text-purple-300 text-xs">
+                      {new Date(savedReading.date).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <BookOpen className="w-4 h-4 text-purple-400" />
+                </div>
+                <p className="text-purple-300 text-sm line-clamp-2 italic">
+                  "{savedReading.question}"
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
