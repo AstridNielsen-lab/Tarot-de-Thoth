@@ -43,6 +43,8 @@ export interface Reading {
   question?: string;
   spreadType: 'three-card' | 'celtic-cross' | 'tree-of-life';
   cards: ReadingCard[];
+  userName?: string;
+  birthDate?: string;
 }
 
 export interface SpreadType {

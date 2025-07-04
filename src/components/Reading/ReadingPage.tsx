@@ -33,6 +33,9 @@ export const ReadingPage: React.FC = () => {
   const [savedReadings, setSavedReadings] = useState<Reading[]>([]);
   const [currentCardIndex, setCurrentCardIndex] = useState<number>(0);
   const [showInstructions, setShowInstructions] = useState<boolean>(false);
+  const [showUserInfoModal, setShowUserInfoModal] = useState<boolean>(false);
+  const [userName, setUserName] = useState<string>('');
+  const [birthDate, setBirthDate] = useState<string>('');
   
   // Refs for animations
   const deckRef = useRef<HTMLDivElement>(null);
@@ -40,12 +43,21 @@ export const ReadingPage: React.FC = () => {
   
   const allCards: TarotCard[] = [...majorArcana, ...courtCards, ...minorArcana];
 
-  // Function to start the reading process
-  const startReading = () => {
+  // Function to collect user info before starting reading
+  const initiateReading = () => {
     if (!question.trim()) {
       alert("Por favor, insira uma questão antes de começar a leitura.");
       return;
     }
+    
+    // Show user info modal
+    setShowUserInfoModal(true);
+  };
+
+  // Function to start the reading process after collecting user info
+  const startReading = () => {
+    // Close modal
+    setShowUserInfoModal(false);
     
     // Begin shuffling animation
     setReadingState('shuffling');
@@ -70,7 +82,9 @@ export const ReadingPage: React.FC = () => {
         date: new Date(),
         spreadType: spreadType.id,
         question: question,
-        cards: newReadingCards
+        cards: newReadingCards,
+        userName: userName,
+        birthDate: birthDate
       };
 
       setReading(newReading);
@@ -148,6 +162,64 @@ export const ReadingPage: React.FC = () => {
     setIsRevealed([]);
     setReadingState('initial');
     setCurrentCardIndex(0);
+    // Keep user info for next reading
+  };
+
+  // Render user info modal
+  const renderUserInfoModal = () => {
+    if (!showUserInfoModal) return null;
+    
+    return (
+      <div className="fixed inset-0 flex items-center justify-center z-50 bg-indigo-950/90 p-4">
+        <div className="bg-indigo-900 p-6 rounded-lg max-w-md w-full">
+          <h2 className="text-2xl font-bold text-yellow-400 mb-4 flex items-center">
+            Informações para Leitura
+          </h2>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="block text-purple-300 mb-2">Seu Nome:</label>
+              <input
+                type="text"
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
+                placeholder="Digite seu nome completo"
+                className="w-full p-3 rounded-md bg-indigo-900 border border-purple-800 text-purple-300"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-purple-300 mb-2">Data de Nascimento:</label>
+              <input
+                type="date"
+                value={birthDate}
+                onChange={(e) => setBirthDate(e.target.value)}
+                className="w-full p-3 rounded-md bg-indigo-900 border border-purple-800 text-purple-300"
+              />
+            </div>
+            
+            <p className="text-purple-400 text-xs mt-2">
+              "Estas informações serão usadas para personalizar sua leitura de Tarot."
+            </p>
+          </div>
+          
+          <div className="flex gap-2 mt-6">
+            <button 
+              className="flex-1 px-4 py-2 bg-indigo-800 text-white rounded-md hover:bg-indigo-700 transition"
+              onClick={() => setShowUserInfoModal(false)}
+            >
+              Cancelar
+            </button>
+            <button 
+              className="flex-1 px-4 py-2 bg-purple-800 text-white rounded-md hover:bg-purple-700 transition"
+              onClick={startReading}
+            >
+              Continuar
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   // Render shuffle animation
@@ -228,6 +300,7 @@ export const ReadingPage: React.FC = () => {
     <div className="container mx-auto px-4 py-8">
       {renderShuffleAnimation()}
       {renderInstructions()}
+      {renderUserInfoModal()}
       
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-white">Realizar Leitura de Tarot</h1>
@@ -292,7 +365,7 @@ export const ReadingPage: React.FC = () => {
           
           <button 
             className="w-full px-4 py-3 bg-purple-800 text-white rounded-md hover:bg-purple-700 transition flex items-center justify-center"
-            onClick={startReading}
+            onClick={initiateReading}
           >
             <Eye className="w-5 h-5 mr-2" />
             Começar Leitura
@@ -304,6 +377,7 @@ export const ReadingPage: React.FC = () => {
         <div className="mb-4 flex justify-between items-center">
           <div>
             <h2 className="text-xl text-white font-medium">{spreadType.name}</h2>
+            {userName && <p className="text-yellow-400 text-sm">Consulente: {userName}</p>}
             <p className="text-purple-300 text-sm italic">"{question}"</p>
           </div>
           
@@ -428,6 +502,8 @@ export const ReadingPage: React.FC = () => {
                   setReading(savedReading);
                   setSpreadType(getSpreadById(savedReading.spreadType));
                   setQuestion(savedReading.question || '');
+                  setUserName(savedReading.userName || '');
+                  setBirthDate(savedReading.birthDate || '');
                   setIsRevealed(new Array(savedReading.cards.length).fill(true));
                   setReadingState('complete');
                   setSelectedCard(null);

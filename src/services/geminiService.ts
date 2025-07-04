@@ -9,6 +9,8 @@ export interface InterpretationRequest {
   }>;
   spreadType: string;
   question: string;
+  userName?: string;
+  birthDate?: string;
 }
 
 export const getInterpretation = async (request: InterpretationRequest) => {
@@ -19,6 +21,8 @@ export const getInterpretation = async (request: InterpretationRequest) => {
     Use linguagem clara e natural em português brasileiro, adequada para leitura em voz alta.
     
     CONTEXTO DA LEITURA:
+    Nome do Consulente: ${request.userName || 'Consulente'}
+    Data de Nascimento: ${request.birthDate || 'Não informada'}
     Tipo de Tiragem: ${request.spreadType}
     Pergunta: "${request.question}"
     Cartas reveladas: ${request.cards.map(c => 
@@ -36,7 +40,8 @@ export const getInterpretation = async (request: InterpretationRequest) => {
     - Mantenha o tom místico mas use linguagem natural
     - Evite abreviações e símbolos
     - Use pontuação simples para facilitar a leitura
-    - Fale diretamente com o consulente
+    - Refira-se ao consulente pelo nome (${request.userName || 'Consulente'})
+    - Use a data de nascimento do consulente (${request.birthDate || 'Não informada'}) para personalizar a leitura quando relevante
     - Mantenha as respostas em português brasileiro claro`;
 
     const response = await fetch(`${API_URL}?key=${API_KEY}`, {

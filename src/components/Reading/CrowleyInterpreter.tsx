@@ -8,6 +8,8 @@ interface Props {
     cards: ReadingCard[];
     spreadType: string;
     question: string;
+    userName?: string;
+    birthDate?: string;
   } | null;
   readingState: string;
 }
@@ -77,7 +79,9 @@ export const CrowleyInterpreter: React.FC<Props> = ({ reading, readingState }) =
         isReversed: c.isReversed
       })),
       spreadType: reading!.spreadType,
-      question: reading!.question || "Qual é a revelação do universo?"
+      question: reading!.question || "Qual é a revelação do universo?",
+      userName: reading!.userName,
+      birthDate: reading!.birthDate
     });
     
     setMessages([{ type: 'crowley', text: interpretation }]);
@@ -102,7 +106,9 @@ export const CrowleyInterpreter: React.FC<Props> = ({ reading, readingState }) =
           isReversed: c.isReversed
         })),
         spreadType: reading.spreadType,
-        question: userMessage
+        question: userMessage,
+        userName: reading.userName,
+        birthDate: reading.birthDate
       });
 
       setMessages(prev => [...prev, { type: 'crowley', text: response }]);
