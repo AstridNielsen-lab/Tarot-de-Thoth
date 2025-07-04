@@ -33,7 +33,11 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   const [isPaymentCompleted, setIsPaymentCompleted] = useState(false);
   const [readingCount, setReadingCount] = useState(getReadingCount());
   const [paymentStatus, setPaymentStatus] = useState(getPaymentStatus());
-  const [selectedPackage, setSelectedPackage] = useState(PACKAGES[0]); // Default to 10 readings package
+  // Find the package with the smaller size (3 readings)
+  const smallPackage = PACKAGES.find(pkg => pkg.size === SMALL_PACKAGE_SIZE);
+  const [selectedPackage, setSelectedPackage] = useState(smallPackage || PACKAGES[0]); // Default to small package
+  const [email, setEmail] = useState('');
+  const [isEmailValid, setIsEmailValid] = useState(true);
 
   // Initialize payment when modal opens
   useEffect(() => {
@@ -64,20 +68,49 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
     setPreferenceId(null);
     setIsPaymentCompleted(false);
     setReadingCount(getReadingCount());
+    setEmail('');
+    setIsEmailValid(true);
     setPaymentStatus(getPaymentStatus());
     
     try {
       // First initialize Mercado Pago SDK
       await initMercadoPago();
+    } catch (err) {
+      console.error('Mercado Pago SDK initialization error:', err);
+      setError('Não foi possível inicializar o sistema de pagamento. Por favor, tente novamente mais tarde.');
+      setIsLoading(false);
+    }
+  };
+
+  // Process payment after email is provided
+  const processPayment = async () => {
+    if (!email.trim()) {
+      setIsEmailValid(false);
+      setError('Por favor, insira seu email para continuar.');
+      return;
+    }
+
+    // Validate email format
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      setIsEmailValid(false);
+      setError('Por favor, insira um email válido.');
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      // Store the email for further verification
+      localStorage.setItem('user_email', email);
       
-      // Then create a payment preference with the selected package
+      // Create a payment preference with the selected package
       console.log("Creating payment preference for package:", selectedPackage);
       const preference = await createPaymentPreference(selectedPackage);
       setPaymentUrl(preference.initPoint);
       setPreferenceId(preference.id);
-      
+
       // Render the checkout button after the component has updated with the preference ID
-      // This is better than using setTimeout as it relies on the React lifecycle
       requestAnimationFrame(() => {
         renderMercadoPagoButton(preference.id);
       });
@@ -171,7 +204,28 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
         
         {/* Content */}
         <div className="p-6">
-              {isPaymentCompleted ? (
+          {/* Email Input */}
+          <div className="mb-6">
+            <label className="block text-white font-semibold mb-2" htmlFor="email">
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              className={`px-4 py-2 bg-indigo-900 border ${isEmailValid ? 'border-purple-700' : 'border-red-700'} rounded-lg w-full text-white placeholder-purple-400 focus:outline-none`}
+              placeholder="Digite seu email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            {!isEmailValid && (
+              <p className="text-red-500 text-sm mt-1">
+                Por favor, insira um email válido.
+              </p>
+            )}
+          </div>
+
+          {/* Content */}
+          {isPaymentCompleted ? (
                 <div className="text-center py-6">
                   <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
                   <h3 className="text-xl font-bold text-white mb-2">Pagamento Confirmado!</h3>
@@ -203,7 +257,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                     <h3 className="text-lg font-semibold text-white mb-2">Escolha seu Pacote</h3>
                     
                     <div className="flex gap-4 mb-4">
-                      {PACKAGES.map((pkg, index) => (
+                      {[...PACKAGES].sort((a, b) => a.size - b.size).map((pkg, index) => (
                         <div 
                           key={index}
                           onClick={() => setSelectedPackage(pkg)}
@@ -261,26 +315,38 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                       </div>
                     ) : (
                       <>
-                        <div className="checkout-button mb-4 flex justify-center"></div>
-                        
-                        {paymentUrl && (
+                        {!preferenceId ? (
+                          <button
+                            onClick={processPayment}
+                            disabled={isLoading}
+                            className="bg-yellow-500 hover:bg-yellow-400 text-indigo-900 font-bold py-3 px-6 rounded-lg w-full flex items-center justify-center"
+                          >
+                            Continuar para Pagamento
+                          </button>
+                        ) : (
                           <>
-                            {/* Fallback button in case the SDK button fails */}
-                            <button 
-                              onClick={() => window.open(paymentUrl, '_blank', 'noopener,noreferrer')}
-                              className="bg-yellow-500 hover:bg-yellow-400 text-indigo-900 font-bold py-3 px-6 rounded-lg w-full flex items-center justify-center mt-2"
-                            >
-                              Abrir Checkout no Navegador
-                              <ExternalLink className="w-4 h-4 ml-2" />
-                            </button>
+                            <div className="checkout-button mb-4 flex justify-center"></div>
                             
-                            <button
-                              onClick={handleCheckStatus}
-                              disabled={isLoading}
-                              className="bg-purple-700 hover:bg-purple-600 text-white py-3 px-6 rounded-lg w-full flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              {isLoading ? 'Verificando...' : 'Já realizei o pagamento'}
-                            </button>
+                            {paymentUrl && (
+                              <>
+                                {/* Fallback button in case the SDK button fails */}
+                                <button 
+                                  onClick={() => window.open(paymentUrl, '_blank', 'noopener,noreferrer')}
+                                  className="bg-yellow-500 hover:bg-yellow-400 text-indigo-900 font-bold py-3 px-6 rounded-lg w-full flex items-center justify-center mt-2"
+                                >
+                                  Abrir Checkout no Navegador
+                                  <ExternalLink className="w-4 h-4 ml-2" />
+                                </button>
+                                
+                                <button
+                                  onClick={handleCheckStatus}
+                                  disabled={isLoading}
+                                  className="bg-purple-700 hover:bg-purple-600 text-white py-3 px-6 rounded-lg w-full flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                  {isLoading ? 'Verificando...' : 'Já realizei o pagamento'}
+                                </button>
+                              </>
+                            )}
                           </>
                         )}
                         
@@ -288,7 +354,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                         {import.meta.env.DEV && (
                           <button
                             onClick={handleSimulatePayment}
-                            className="bg-green-700 hover:bg-green-600 text-white py-2 px-6 rounded-lg w-full text-sm"
+                            className="bg-green-700 hover:bg-green-600 text-white py-2 px-6 rounded-lg w-full text-sm mt-2"
                           >
                             Simular Pagamento (Apenas Demo)
                           </button>
