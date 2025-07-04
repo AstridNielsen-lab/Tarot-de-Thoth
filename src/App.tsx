@@ -1,45 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { TarotCard } from './types/tarot';
-import { majorArcana } from './data/majorArcana';
-import { courtCards } from './data/courtCards';
-import { minorArcana } from './data/minorArcana';
 import { TarotCardComponent } from './components/TarotCard';
 import { CardModal } from './components/CardModal';
 import { Navigation } from './components/Navigation';
 import { MainNavigation } from './components/MainNavigation';
 import { SplashScreen } from './components/SplashScreen';
 import { ReadingPage } from './components/Reading/ReadingPage';
+import { CatalogPage } from './components/Catalog/CatalogPage';
 import { Eye, Star, Sparkles, ExternalLink, Phone, BookOpen } from 'lucide-react';
 
 // Define page types for navigation
 type PageType = 'catalog' | 'reading';
 
 function App() {
-  const [activeTab, setActiveTab] = useState<'major' | 'court' | 'minor'>('major');
-  const [selectedCard, setSelectedCard] = useState<TarotCard | null>(null);
   const [showSplash, setShowSplash] = useState(true);
   const [activePage, setActivePage] = useState<PageType>('catalog');
-
-  const getCards = () => {
-    switch (activeTab) {
-      case 'major':
-        return majorArcana;
-      case 'court':
-        return courtCards;
-      case 'minor':
-        return minorArcana;
-      default:
-        return majorArcana;
-    }
-  };
-
-  const handleCardClick = (card: TarotCard) => {
-    setSelectedCard(card);
-  };
-
-  const handleCloseModal = () => {
-    setSelectedCard(null);
-  };
 
   return (
     <>
@@ -89,21 +64,7 @@ function App() {
 
           {/* Page Content based on active page */}
           {activePage === 'catalog' ? (
-            <>
-              {/* Card Category Navigation */}
-              <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
-              
-              {/* Cards Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {getCards().map((card) => (
-                  <TarotCardComponent 
-                    key={card.id} 
-                    card={card} 
-                    onClick={handleCardClick}
-                  />
-                ))}
-              </div>
-            </>
+            <CatalogPage />
           ) : (
             <ReadingPage />
           )}
@@ -145,8 +106,7 @@ function App() {
             </p>
           </div>
 
-          {/* Modal */}
-          <CardModal card={selectedCard} onClose={handleCloseModal} />
+          {/* No modal here - moved to individual page components */}
         </div>
       </div>
     </>
