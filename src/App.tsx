@@ -47,6 +47,26 @@ function App() {
             "O Livro de Thoth". Explore os 78 arcanos do novo Aeon de Horus através da perspectiva 
             de Thelema, Qabalah e magia cerimonial.
           </p>
+          
+          {/* Add the music button after the description */}
+          <div className="flex justify-center mt-6">
+            <a
+              href="https://youtu.be/_PNj7lqVtkQ?si=l0Vjt7lJ51lOl2B4"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center px-6 py-3 bg-indigo-900/70 text-yellow-400 rounded-lg border border-purple-700/50 hover:bg-indigo-800 transition-colors shadow-lg"
+            >
+              <svg 
+                className="w-5 h-5 mr-2" 
+                fill="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z" />
+              </svg>
+              Música Ambiente para Mentalização
+            </a>
+          </div>
+          
           <div className="flex items-center justify-center space-x-6 mt-6">
             <div className="text-center">
               <div className="text-yellow-400 text-2xl font-bold">78</div>
