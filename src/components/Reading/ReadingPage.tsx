@@ -8,7 +8,7 @@ import { minorArcana } from '../../data/minorArcana';
 import { courtCards } from '../../data/courtCards';
 import { generateInterpretation } from '../../data/spreads';
 import { shuffle } from 'lodash';
-import { BookOpen, Save, Eye, HelpCircle, Shuffle } from 'lucide-react';
+import { BookOpen, Save, Eye, HelpCircle, Shuffle, ImageIcon } from 'lucide-react';
 import { TarotCardComponent } from '../TarotCard';
 import { useSound } from '../../hooks/useSound';
 import { CrowleyInterpreter } from './CrowleyInterpreter';
@@ -235,13 +235,24 @@ export const ReadingPage: React.FC = () => {
           Selecione um método de leitura e faça sua pergunta. Clique em "Começar Leitura"
           para visualizar as cartas e suas interpretações.
         </p>
-        <button 
-          className="mt-2 text-yellow-400 text-sm flex items-center mx-auto hover:underline"
-          onClick={() => setShowInstructions(true)}
-        >
-          <HelpCircle className="w-4 h-4 mr-1" />
-          Instruções de Leitura Segundo Crowley
-        </button>
+        <div className="flex items-center justify-center space-x-4 mt-4">
+          <button 
+            className="px-3 py-2 bg-indigo-900/70 text-yellow-400 text-sm flex items-center rounded-md border border-purple-700/50 hover:bg-indigo-800 transition-colors shadow-md"
+            onClick={() => setShowInstructions(true)}
+          >
+            <HelpCircle className="w-4 h-4 mr-2" />
+            Instruções de Leitura Segundo Crowley
+          </button>
+          <a 
+            href="https://juliocamposmachado.my.canva.site/tarot-de-thoth" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="px-3 py-2 bg-indigo-900/70 text-yellow-400 text-sm flex items-center rounded-md border border-purple-700/50 hover:bg-indigo-800 transition-colors shadow-md"
+          >
+            <ImageIcon className="w-4 h-4 mr-2" />
+            Galeria Completa do Baralho
+          </a>
+        </div>
       </div>
       
       {readingState === 'initial' && (
