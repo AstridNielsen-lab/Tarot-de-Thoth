@@ -7,6 +7,7 @@ import { MainNavigation } from './components/MainNavigation';
 import { SplashScreen } from './components/SplashScreen';
 import { ReadingPage } from './components/Reading/ReadingPage';
 import { CatalogPage } from './components/Catalog/CatalogPage';
+import FAQSection from './components/FAQSection';
 import { Eye, Star, Sparkles, ExternalLink, Phone, BookOpen } from 'lucide-react';
 
 // Define page types for navigation
@@ -68,6 +69,10 @@ function App() {
           ) : (
             <ReadingPage />
           )}
+
+          {/* Footer */}
+          {/* FAQ Section - Bottom */}
+          <FAQSection />
 
           {/* Footer */}
           <div className="text-center mt-16 pt-8 border-t border-purple-800/50">
