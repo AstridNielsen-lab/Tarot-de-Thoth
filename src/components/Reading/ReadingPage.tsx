@@ -10,6 +10,8 @@ import { generateInterpretation } from '../../data/spreads';
 import { shuffle } from 'lodash';
 import { BookOpen, Save, Eye, HelpCircle, Shuffle } from 'lucide-react';
 import { TarotCardComponent } from '../TarotCard';
+import { useSound } from '../../hooks/useSound';
+import { CrowleyInterpreter } from './CrowleyInterpreter';
 
 // Guidance text for each spread type
 const spreadGuidance = {
@@ -34,6 +36,7 @@ export const ReadingPage: React.FC = () => {
   
   // Refs for animations
   const deckRef = useRef<HTMLDivElement>(null);
+  const { playSound } = useSound();
   
   const allCards: TarotCard[] = [...majorArcana, ...courtCards, ...minorArcana];
 
@@ -46,6 +49,7 @@ export const ReadingPage: React.FC = () => {
     
     // Begin shuffling animation
     setReadingState('shuffling');
+    playSound('shuffle');
     
     // Simulate shuffling with a timeout
     setTimeout(() => {
@@ -77,7 +81,7 @@ export const ReadingPage: React.FC = () => {
       // Start revealing cards after a delay
       setTimeout(() => {
         setReadingState('revealing');
-      }, 1500);
+      }, 2500); // Changed from 1500 to 2500 for a more dramatic pause before revealing
     }, 2000);
   };
 
@@ -92,7 +96,7 @@ export const ReadingPage: React.FC = () => {
         if (currentCardIndex === reading.cards.length - 1) {
           setReadingState('complete');
         }
-      }, 800);
+      }, 2000); // Changed from 800 to 2000 for slower, more dramatic reveal
       
       return () => clearTimeout(timer);
     }
@@ -102,6 +106,7 @@ export const ReadingPage: React.FC = () => {
   const revealCard = (index: number) => {
     if (!reading) return;
     
+    playSound('reveal');
     const newIsRevealed = [...isRevealed];
     newIsRevealed[index] = true;
     setIsRevealed(newIsRevealed);
@@ -327,63 +332,75 @@ export const ReadingPage: React.FC = () => {
             )}
           </div>
 
-          {/* Spread Layout - Now using table-like structure for Celtic Cross and Tree of Life */}
+          {/* Spread Layout */}
           <div className="w-full relative">
-            {spreadType.id === 'celtic-cross' || spreadType.id === 'tree-of-life' ? (
-              <div className="bg-indigo-950/30 p-4 rounded-lg border border-purple-800/30">
-                <h3 className="text-xl font-medium text-indigo-200 mb-4 text-center">
-                  {spreadType.id === 'celtic-cross' ? 'Celtic Cross Spread' : 'Tree of Life Spread'}
-                </h3>
-                
-                {/* Table-based layout for spreads */}
-                <div className={`grid ${spreadType.id === 'tree-of-life' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'} gap-4 mb-6`}>
-                  {reading.cards.map((card, index) => (
-                    <div 
-                      key={index} 
-                      className="flex flex-col items-center p-3 bg-indigo-900/30 rounded-lg hover:bg-indigo-900/50 transition-all cursor-pointer overflow-hidden"
-                      onClick={() => setSelectedCard(card)}
-                    >
-                      <div className="w-24 sm:w-28 md:w-32 mx-auto">
-                        <TarotCardComponent 
-                          card={card.card} 
-                          onClick={() => {}} 
-                          isReversed={card.isReversed}
-                        />
-                      </div>
-                      <div className="mt-2 text-center w-full">
-                        <div className="text-yellow-300 text-sm font-medium truncate px-1">{card.position.name}</div>
-                        <div className="text-purple-300 text-xs mt-1 truncate px-1">{card.card.name}</div>
-                      </div>
-                      {/* Added position number indicator */}
-                      <div className="absolute top-1 right-1 w-5 h-5 rounded-full bg-indigo-700 text-yellow-300 flex items-center justify-center text-xs font-bold">
-                        {index + 1}
-                      </div>
+            <div className="bg-indigo-950/30 p-4 rounded-lg border border-purple-800/30">
+              <h3 className="text-xl font-medium text-indigo-200 mb-4 text-center">
+                {spreadType.id === 'celtic-cross' ? 'Celtic Cross Spread' : 
+                 spreadType.id === 'tree-of-life' ? 'Tree of Life Spread' : 'Three-Card Spread'}
+              </h3>
+              
+              {/* Table-based layout for spreads */}
+              <div className={`grid ${
+                spreadType.id === 'tree-of-life' 
+                  ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5' 
+                  : spreadType.id === 'three-card'
+                  ? 'grid-cols-1 md:grid-cols-3'
+                  : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+              } gap-6 mb-6`}>
+                {reading.cards.map((card, index) => (
+                  <div 
+                    key={index} 
+                    className="flex flex-col items-center p-4 bg-indigo-900/30 rounded-lg hover:bg-indigo-900/50 transition-all cursor-pointer overflow-hidden"
+                    onClick={() => setSelectedCard(card)}
+                  >
+                    <div className="w-32 sm:w-36 md:w-40 lg:w-44 xl:w-48 mx-auto aspect-[2/3]">
+                      <TarotCardComponent 
+                        card={card.card} 
+                        onClick={() => {}} 
+                        isReversed={card.isReversed}
+                      />
                     </div>
-                  ))}
-                </div>
-                
-                {/* Add info about the Tree of Life positions if applicable */}
-                {spreadType.id === 'tree-of-life' && (
-                  <div className="text-center text-indigo-300 text-xs mt-2 px-4 py-2 bg-indigo-900/20 rounded-lg">
-                    <p>Visualização em tabela da Árvore da Vida, com as Sephiroth em ordem numérica.</p>
+                    <div className="mt-2 text-center w-full">
+                      <div className="text-yellow-300 text-sm font-medium truncate px-1">{card.position.name}</div>
+                      <div className="text-purple-300 text-xs mt-1 truncate px-1">{card.card.name}</div>
+                    </div>
+                    {/* Position number indicator */}
+                    <div className="absolute top-1 right-1 w-5 h-5 rounded-full bg-indigo-700 text-yellow-300 flex items-center justify-center text-xs font-bold">
+                      {index + 1}
+                    </div>
                   </div>
-                )}
+                ))}
               </div>
-            ) : (
-              <SpreadLayout 
-                spread={spreadType}
-                readingCards={reading.cards}
-                isRevealed={isRevealed}
-                onCardClick={(card) => setSelectedCard(card)}
-              />
-            )}
+              
+              {/* Info about the spread */}
+              <div className="text-center text-indigo-300 text-xs mt-2 px-4 py-2 bg-indigo-900/20 rounded-lg">
+                <p>
+                  {spreadType.id === 'tree-of-life' 
+                    ? 'Visualização em tabela da Árvore da Vida, com as Sephiroth em ordem numérica.'
+                    : spreadType.id === 'celtic-cross'
+                    ? 'Visualização em tabela da Cruz Celta, com as posições em ordem numérica.'
+                    : 'Visualização em tabela das cartas de passado, presente e futuro.'}
+                </p>
+              </div>
+            </div>
             
             {readingState === 'revealing' && currentCardIndex < reading.cards.length && (
-              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-indigo-900/80 px-4 py-2 rounded-full text-yellow-400 text-sm animate-pulse">
-                Revelando carta {currentCardIndex + 1} de {reading.cards.length}...
+              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-indigo-900/80 px-6 py-3 rounded-full text-yellow-400 text-sm shadow-lg shadow-purple-500/20 animate-pulse border border-purple-500/30 backdrop-blur-sm">
+                <div className="flex items-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-yellow-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Revelando carta {currentCardIndex + 1} de {reading.cards.length}...
+                </div>
               </div>
             )}
           </div>
+          
+          {/* Crowley's Esoteric Interpretation */}
+          <CrowleyInterpreter reading={reading} readingState={readingState} />
+
         </div>
       )}
       

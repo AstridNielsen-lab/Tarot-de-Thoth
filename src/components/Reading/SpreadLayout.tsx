@@ -143,15 +143,7 @@ export const SpreadLayout: React.FC<SpreadLayoutProps> = ({
   // Helper function to determine the appropriate card size based on screen width and spread type
   const getCardSize = () => {
     // Return sizing classes based on the spread type and number of cards
-    if (spread.id === 'three-card') {
-      return 'w-32 sm:w-36 md:w-40 lg:w-44 xl:w-48 2xl:w-52'; // Increase card size for better visibility
-    } else if (spread.id === 'celtic-cross') {
-      return 'w-24 sm:w-28 md:w-32 lg:w-36 xl:w-40 2xl:w-44'; // Increase card size for better spacing
-    } else if (spread.id === 'tree-of-life') {
-      return 'w-20 sm:w-24 md:w-28 lg:w-32 xl:w-36 2xl:w-40'; // Increase card size for better spacing
-    }
-    
-    // Default size
+    // Standardize card size for all spreads
     return 'w-24 sm:w-28 md:w-32 lg:w-36 xl:w-40';
   };
   

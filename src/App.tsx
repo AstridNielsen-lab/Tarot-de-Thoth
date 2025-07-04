@@ -57,32 +57,32 @@ function App() {
           {activePage === 'catalog' && (
             <div className="mb-8">
               <div className="flex items-center justify-center space-x-4 mb-6">
-                <div className="text-yellow-400">
-                  <Eye className="w-12 h-12" />
-                </div>
-                <h1 className="text-5xl font-bold text-white">Tarot de Thoth</h1>
-                <div className="text-yellow-400">
-                  <Sparkles className="w-12 h-12" />
-                </div>
-              </div>
-              <p className="text-purple-200 text-xl max-w-3xl mx-auto leading-relaxed">
-                O sistema completo do Tarot de Thoth conforme apresentado por Aleister Crowley em 
-                "O Livro de Thoth". Explore os 78 arcanos do novo Aeon de Horus através da perspectiva 
-                de Thelema, Qabalah e magia cerimonial.
-              </p>
-              <div className="flex items-center justify-center space-x-6 mt-6">
-                <div className="text-center">
-                  <div className="text-yellow-400 text-2xl font-bold">78</div>
-                  <div className="text-purple-300 text-sm">Cartas Totais</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-yellow-400 text-2xl font-bold">4</div>
-                  <div className="text-purple-300 text-sm">Naipes</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-yellow-400 text-2xl font-bold">22</div>
-                  <div className="text-purple-300 text-sm">Atus</div>
-                </div>
+            <div className="text-yellow-400">
+              <Eye className="w-12 h-12" />
+            </div>
+            <h1 className="text-5xl font-bold text-white">Tarot de Thoth</h1>
+            <div className="text-yellow-400">
+              <Sparkles className="w-12 h-12" />
+            </div>
+          </div>
+          <p className="text-purple-200 text-xl max-w-3xl mx-auto leading-relaxed">
+            O sistema completo do Tarot de Thoth conforme apresentado por Aleister Crowley em 
+            "O Livro de Thoth". Explore os 78 arcanos do novo Aeon de Horus através da perspectiva 
+            de Thelema, Qabalah e magia cerimonial.
+          </p>
+          <div className="flex items-center justify-center space-x-6 mt-6">
+            <div className="text-center">
+              <div className="text-yellow-400 text-2xl font-bold">78</div>
+              <div className="text-purple-300 text-sm">Cartas Totais</div>
+            </div>
+            <div className="text-center">
+              <div className="text-yellow-400 text-2xl font-bold">4</div>
+              <div className="text-purple-300 text-sm">Naipes</div>
+            </div>
+            <div className="text-center">
+              <div className="text-yellow-400 text-2xl font-bold">22</div>
+              <div className="text-purple-300 text-sm">Atus</div>
+            </div>
               </div>
             </div>
           )}
