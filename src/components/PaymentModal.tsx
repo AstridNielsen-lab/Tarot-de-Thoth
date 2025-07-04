@@ -64,41 +64,78 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
     initializeButtonContainer();
   }, []);
 
-  // Function to initialize/reset the button container
+  // Function to initialize/reset the button container with improved reliability
   const initializeButtonContainer = () => {
     try {
-      console.log("Initializing button container");
-      // Find or create the button container
-      const existingContainer = document.getElementById('mp-checkout-container');
-      if (existingContainer) {
-        // Clear existing container
-        existingContainer.innerHTML = '';
-        existingContainer.style.display = 'flex';
-        existingContainer.style.justifyContent = 'center';
-        existingContainer.style.alignItems = 'center';
-        existingContainer.style.minHeight = '60px';
-        existingContainer.style.background = 'rgba(67, 56, 202, 0.1)';
-        existingContainer.style.borderRadius = '8px';
-        existingContainer.style.padding = '10px';
-        existingContainer.style.border = '1px dashed rgba(126, 34, 206, 0.3)';
-      } else {
-        // Create container if it doesn't exist
-        const parent = document.querySelector('.checkout-button-container');
-        if (parent) {
-          const newContainer = document.createElement('div');
-          newContainer.id = 'mp-checkout-container';
-          newContainer.className = 'checkout-button mb-4 flex justify-center';
-          newContainer.style.minHeight = '60px';
-          newContainer.style.background = 'rgba(67, 56, 202, 0.1)';
-          newContainer.style.borderRadius = '8px';
-          newContainer.style.padding = '10px';
-          newContainer.style.border = '1px dashed rgba(126, 34, 206, 0.3)';
-          parent.innerHTML = '';
-          parent.appendChild(newContainer);
+      console.log("Initializing button container with improved reliability");
+      
+      // First, clean up any existing Mercado Pago resources to avoid conflicts
+      if (typeof window !== 'undefined') {
+        console.log("Cleaning up existing Mercado Pago resources before initializing button container");
+        try {
+          // Use our improved cleanup function
+          cleanupMercadoPago();
+        } catch (cleanupError) {
+          console.error("Error cleaning up Mercado Pago checkout:", cleanupError);
         }
       }
+      
+      // Wait for a short moment to ensure cleanup is complete
+      setTimeout(() => {
+        try {
+      
+      // Create a completely new container to avoid any DOM-related issues
+      const parent = document.querySelector('.checkout-button-container');
+      if (!parent) {
+        console.error("Parent container not found");
+        
+        // Try to create the parent container if it doesn't exist
+        const paymentSection = document.querySelector('.space-y-4');
+        if (paymentSection) {
+          const newParent = document.createElement('div');
+          newParent.className = 'checkout-button-container';
+          paymentSection.prepend(newParent);
+          console.log("Created new parent container");
+          
+          // Now try to get it again
+          const createdParent = document.querySelector('.checkout-button-container');
+          if (createdParent) {
+            initializeButtonContainer(); // Try again with the new parent
+            return;
+          }
+        }
+        return;
+      }
+      
+      // Clear the parent container
+      parent.innerHTML = '';
+      
+      // Create a new container
+      const newContainer = document.createElement('div');
+      newContainer.id = 'mp-checkout-container';
+      newContainer.className = 'checkout-button mb-4 flex justify-center';
+      newContainer.style.minHeight = '60px';
+      newContainer.style.background = 'rgba(67, 56, 202, 0.1)';
+      newContainer.style.borderRadius = '8px';
+      newContainer.style.padding = '10px';
+      newContainer.style.border = '1px dashed rgba(126, 34, 206, 0.3)';
+      newContainer.style.display = 'flex';
+      newContainer.style.justifyContent = 'center';
+      newContainer.style.alignItems = 'center';
+      
+      // Add a loading indicator
+      newContainer.innerHTML = '<div class="flex items-center justify-center py-2"><div class="animate-spin rounded-full h-6 w-6 border-b-2 border-yellow-500"></div><span class="ml-2 text-sm text-yellow-500">Preparando botão de pagamento...</span></div>';
+      
+      // Append the new container to the parent
+      parent.appendChild(newContainer);
+      
+      console.log("Button container initialized with ID:", newContainer.id);
       setContainerInitialized(true);
       setIsButtonContainerVisible(true);
+        } catch (innerError) {
+          console.error("Error in delayed button container initialization:", innerError);
+        }
+      }, 100);
     } catch (error) {
       console.error("Error initializing button container:", error);
     }
@@ -158,17 +195,80 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
       setLoadingState('idle');
       setContainerInitialized(false);
       
+      // First make sure any previous SDK instance is completely cleared
+      cleanupMercadoPago(); // Use the improved cleanup function from mercadoPago.ts
+      
+      // Add special check for browser readiness
+      const documentState = document.readyState;
+      console.log(`Current document state: ${documentState}`);
+      
+      // Wait for document to be ready before initializing
+      if (documentState !== 'complete') {
+        console.log("Document not fully loaded yet, adding load event listener");
+        
+        // Add event listener for document load completion
+        const handleDocumentLoad = () => {
+          console.log("Document load complete, initializing payment flow");
+          window.removeEventListener('load', handleDocumentLoad);
+          initializeButtonContainer();
+          
+          setTimeout(() => {
+            initializeSdk().then(success => {
+              if (success) {
+                initializePayment();
+              }
+            });
+          }, 500);
+        };
+        
+        window.addEventListener('load', handleDocumentLoad);
+        return;
+      }
+      
       // Initialize the button container
       initializeButtonContainer();
       
-      // Wait for DOM to be ready before initializing SDK
-      setTimeout(() => {
-        initializeSdk().then(success => {
-          if (success) {
-            initializePayment();
-          }
-        });
-      }, 100);
+      // Use a more reliable approach to ensure DOM readiness
+      const waitAndInitialize = () => {
+        // Check if document is ready
+        if (document.readyState === 'complete') {
+          console.log("Document is fully loaded, proceeding with SDK initialization");
+          
+          // Force a browser reflow to ensure DOM is stable
+          document.body.getBoundingClientRect();
+          
+          // Wait for DOM to be ready before initializing SDK
+          setTimeout(() => {
+            // Try to initialize the SDK with better error handling
+            initializeSdk()
+              .then(success => {
+                if (success) {
+                  initializePayment();
+                }
+              })
+              .catch(err => {
+                console.error("SDK initialization failed in modal:", err);
+                setError('Falha ao inicializar o sistema de pagamento. Por favor, tente novamente ou use o método alternativo.');
+                
+                // Show alternative payment method as fallback
+                if (preferenceId && paymentUrl) {
+                  setIsButtonContainerVisible(false);
+                  const alternativeButton = document.querySelector('.alternative-payment-button');
+                  if (alternativeButton) {
+                    (alternativeButton as HTMLElement).style.display = 'flex';
+                  }
+                }
+              });
+          }, 500); // Increased delay for better reliability
+        } else {
+          console.log("Document not fully loaded yet, waiting...");
+          // Wait for document to be ready
+          setTimeout(waitAndInitialize, 200);
+        }
+      };
+      
+      // Start the initialization process
+      waitAndInitialize();
     }
     
     // Listen for payment success events (for demo/development mode)
@@ -276,9 +376,36 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
       // Reinitialize the button container to ensure a clean state
       initializeButtonContainer();
       
-      setTimeout(() => {
-        renderMercadoPagoButton(preference.id);
-      }, 1000); // 1000ms delay to ensure DOM is fully ready
+      // More reliable approach for button rendering
+      const renderWithDelay = () => {
+        // First check if SDK is still ready
+        if (!(window as any).mp) {
+          console.log("MP SDK not available before rendering, reinitializing...");
+          initMercadoPago().then(() => {
+            setTimeout(() => {
+              renderMercadoPagoButton(preference.id);
+            }, 1000);
+          }).catch(err => {
+            console.error("Failed to reinitialize SDK before rendering:", err);
+            // Show alternative payment option
+            setIsButtonContainerVisible(false);
+            const alternativeButton = document.querySelector('.alternative-payment-button');
+            if (alternativeButton) {
+              (alternativeButton as HTMLElement).style.display = 'flex';
+            }
+          });
+        } else {
+          // SDK is ready, proceed with rendering
+          setTimeout(() => {
+            renderMercadoPagoButton(preference.id);
+          }, 1500); // 1500ms delay to ensure DOM is fully ready
+        }
+      };
+      
+      // Use requestAnimationFrame to align with browser's rendering cycle
+      requestAnimationFrame(() => {
+        renderWithDelay();
+      });
       } catch (prefError) {
         console.error('Error creating payment preference:', prefError);
         setError('Erro ao criar preferência de pagamento. Por favor, tente novamente.');
@@ -343,14 +470,43 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
     }
     
     // Ensure the container is properly prepared
-    const container = document.getElementById('mp-checkout-container');
+    let container = document.getElementById('mp-checkout-container');
     if (!container) {
-      console.error("Checkout button container not found");
-      setError('Não foi possível encontrar o container para os botões de pagamento.');
-      setLoadingState('idle');
+      console.log("Container not found, reinitializing...");
+      initializeButtonContainer();
+      
+      // Wait for container initialization to complete
+      setTimeout(() => {
+        container = document.getElementById('mp-checkout-container');
+        
+        if (!container) {
+          console.error("Checkout button container not found even after reinitialization");
+          setError('Não foi possível encontrar o container para os botões de pagamento.');
+          setLoadingState('idle');
+          
+          // Show alternative payment method as last resort
+          if (paymentUrl) {
+            const alternativeButton = document.querySelector('.alternative-payment-button');
+            if (alternativeButton) {
+              (alternativeButton as HTMLElement).style.display = 'flex';
+            }
+          }
+          return;
+        }
+        
+        // Container found, continue with render attempt
+        continueWithRender(container);
+      }, 300);
+      
       return;
     }
     
+    // Container exists, proceed with rendering
+    continueWithRender(container);
+  };
+  
+  // Helper function to continue with rendering once container is confirmed
+  const continueWithRender = (container: HTMLElement) => {
     const mp = (window as any).mp;
     
     if (!mp) {
@@ -366,22 +522,50 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           try {
             console.log(`Retry ${buttonRenderAttempts + 1}: Initializing Mercado Pago SDK...`);
             
-            // Use a fixed DOM container for SDK initialization
-            const mpContainer = document.createElement('div');
-            mpContainer.id = 'mp-container';
-            document.body.appendChild(mpContainer);
+            // Use the dedicated cleanup function for better reliability
+            cleanupMercadoPago();
             
-            await initMercadoPago();
-            setIsSdkReady(true);
-            console.log(`Retry ${buttonRenderAttempts + 1}: SDK initialized, attempting to render button`);
+            // Add a diagnostic marker to the document for debugging
+            const debugMarker = document.createElement('div');
+            debugMarker.id = `mp-debug-attempt-${buttonRenderAttempts}`;
+            debugMarker.style.display = 'none';
+            debugMarker.dataset.timestamp = Date.now().toString();
+            document.body.appendChild(debugMarker);
             
-            // Clean up the temporary container
-            document.body.removeChild(mpContainer);
-            
-            // Give a short delay before attempting to render
+            // Reinitialize button container with a delay to ensure DOM stability
             setTimeout(() => {
-              renderMercadoPagoButton(preferenceId);
-            }, 500);
+              initializeButtonContainer();
+              
+              // Force a browser reflow before continuing
+              document.body.getBoundingClientRect();
+              
+              // Initialize with a delay for better browser readiness
+              setTimeout(async () => {
+                try {
+                  await initMercadoPago();
+                  setIsSdkReady(true);
+                  console.log(`Retry ${buttonRenderAttempts + 1}: SDK initialized, attempting to render button`);
+            
+                  // Give a longer delay before attempting to render
+                  setTimeout(() => {
+                    renderMercadoPagoButton(preferenceId);
+                  }, 800);
+                } catch (innerError) {
+                  console.error(`Inner SDK initialization error on attempt ${buttonRenderAttempts}:`, innerError);
+                  setError('Problema persistente com a inicialização do SDK. Use o link alternativo abaixo.');
+                  setLoadingState('idle');
+                  
+                  // Show alternative payment method right away
+                  if (paymentUrl) {
+                    setIsButtonContainerVisible(false);
+                    const alternativeButton = document.querySelector('.alternative-payment-button');
+                    if (alternativeButton) {
+                      (alternativeButton as HTMLElement).style.display = 'flex';
+                    }
+                  }
+                }
+              }, 500);
+            }, 200);
           } catch (err) {
             console.error('Retry failed to initialize Mercado Pago SDK:', err);
             setError('Problema ao carregar os botões de pagamento. Tente recarregar a página.');
@@ -442,13 +626,30 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
         console.error("Error clearing or preparing button container:", innerError);
       }
       
+      // Get a direct reference to the container
+      const mpContainer = document.getElementById('mp-checkout-container');
+      if (!mpContainer) {
+        throw new Error('MP container not found even after initialization');
+      }
+      
+      // Add diagnostic information to container for debugging
+      mpContainer.dataset.sdkReady = String(!!mp);
+      mpContainer.dataset.renderAttempt = String(buttonRenderAttempts);
+      mpContainer.dataset.timestamp = Date.now().toString();
+      
+      // Make sure the container is visible and ready
+      mpContainer.style.display = 'flex';
+      mpContainer.style.justifyContent = 'center';
+      mpContainer.style.alignItems = 'center';
+      mpContainer.style.minHeight = '60px';
+      
       // Configure and render the checkout button
       mp.checkout({
         preference: {
           id: preferenceId
         },
         render: {
-          container: '.checkout-button',
+          container: '#' + container.id, // Use the confirmed container ID for more reliable targeting
           label: 'Pagar com Mercado Pago',
           type: 'wallet', // Using wallet button type for better recognition
         },
@@ -467,6 +668,13 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             const buttonContainer = document.getElementById('mp-checkout-container');
             if (buttonContainer) {
               buttonContainer.style.display = 'flex';
+              buttonContainer.style.opacity = '1';
+              buttonContainer.style.visibility = 'visible';
+              buttonContainer.dataset.status = 'ready';
+              
+              // Add success class for better visual feedback
+              buttonContainer.classList.add('mp-button-loaded');
+              buttonContainer.style.borderColor = 'rgba(126, 34, 206, 0.8)';
             }
             
             // Clear any error related to button rendering
@@ -476,6 +684,18 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           },
           onError: (error: any) => {
             console.error("Mercado Pago button error:", error);
+            
+            // Try to capture more diagnostic information
+            const diagnosticInfo = {
+              error: error,
+              timestamp: new Date().toISOString(),
+              containerExists: !!document.getElementById('mp-checkout-container'),
+              sdkLoaded: !!(window as any).MercadoPago,
+              mpInitialized: !!(window as any).mp,
+              preferenceId: preferenceId
+            };
+            console.log("Mercado Pago diagnostic info:", diagnosticInfo);
+            
             setError('Erro ao carregar o botão de pagamento. Por favor, use o link alternativo abaixo.');
             setLoadingState('idle');
             
@@ -491,32 +711,44 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
         }
       });
       console.log("Mercado Pago checkout button rendered successfully");
-    } catch (renderError) {
-      console.error("Error rendering checkout button:", renderError);
-      
-      // Try again if we haven't exceeded maximum attempts
-      if (buttonRenderAttempts < 3) {
-        console.log(`Render attempt ${buttonRenderAttempts + 1} failed, retrying...`);
-        setButtonRenderAttempts(prev => prev + 1);
+        } catch (renderError) {
+          console.error("Error rendering checkout button:", renderError);
+          
+          // Add debugging info
+          const diagnosticInfo = {
+            error: renderError,
+            container: mpContainer ? {
+              id: mpContainer.id,
+              isVisible: mpContainer.style.display !== 'none',
+              hasMpButton: !!mpContainer.querySelector('button'),
+              datasets: mpContainer.dataset
+            } : 'Container not found',
+            sdkInfo: {
+              mpDefined: !!(window as any).mp,
+              mercadoPagoDefined: !!(window as any).MercadoPago,
+              preferenceId: preferenceId
+            }
+          };
+          console.log("Render error diagnostic info:", diagnosticInfo);
+          
+          // Try again if we haven't exceeded maximum attempts
+          if (buttonRenderAttempts < 2) { // Reduced maximum attempts to get to alternative payment faster
+            console.log(`Render attempt ${buttonRenderAttempts + 1} failed, retrying...`);
+            setButtonRenderAttempts(prev => prev + 1);
         
         // Try rendering again after a delay
         setTimeout(() => {
-          // Try to clean up the container before retrying
-          const container = document.querySelector('.checkout-button');
-          if (container) {
-            try {
-              // Create a completely new container element
-              const newContainer = document.createElement('div');
-              newContainer.className = 'checkout-button mb-4 flex justify-center';
-              newContainer.id = 'mp-checkout-container';
-              newContainer.style.minHeight = '60px';
-              newContainer.style.background = 'rgba(67, 56, 202, 0.1)';
-              newContainer.style.borderRadius = '8px';
-              newContainer.style.padding = '10px';
-              
-              // Replace the old container
-              container.parentNode?.replaceChild(newContainer, container);
-              console.log("Replaced container before retry attempt");
+          // Reinitialize button container completely
+          initializeButtonContainer();
+          
+          // Wait for next animation frame to ensure DOM is ready
+          requestAnimationFrame(() => {
+            // Add a delay to ensure browser has time to process DOM changes
+            setTimeout(() => {
+              console.log("Attempting to render button after container reinitialization");
+              renderMercadoPagoButton(preferenceId);
+            }, 800);
+          });
             } catch (cleanupError) {
               console.error("Error replacing container:", cleanupError);
             }
@@ -724,9 +956,20 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                                     background: 'rgba(67, 56, 202, 0.1)',
                                     borderRadius: '8px',
                                     padding: '10px',
-                                    border: '1px dashed rgba(126, 34, 206, 0.3)'
+                                    border: '1px dashed rgba(126, 34, 206, 0.3)',
+                                    transition: 'all 0.3s ease',
+                                    position: 'relative', // For absolute positioning of children
+                                    overflow: 'visible'  // Allow button to overflow if needed
                                   }}
-                                ></div>
+                                  data-testid="mp-button-container"
+                                >
+                                  {/* Fallback loading indicator */}
+                                  <div className="absolute inset-0 flex items-center justify-center">
+                                    <div className="animate-pulse text-yellow-500 text-xs">
+                                      Carregando botões de pagamento...
+                                    </div>
+                                  </div>
+                                </div>
                               )}
                             </div>
                             
@@ -737,6 +980,15 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                                 <p className="text-yellow-300 text-xs text-center">
                                   Carregando botões de pagamento... {buttonRenderAttempts > 0 ? `Tentativa ${buttonRenderAttempts}/3` : ''}
                                 </p>
+                              </div>
+                            )}
+                            
+                            {/* Debug info in development mode */}
+                            {import.meta.env.DEV && (
+                              <div className="text-xs text-purple-400 mb-2 text-center">
+                                SDK: {isSdkReady ? '✓' : '✗'} | 
+                                Container: {containerInitialized ? '✓' : '✗'} | 
+                                Attempts: {buttonRenderAttempts}/3
                               </div>
                             )}
                             
@@ -757,7 +1009,9 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                                 <button 
                                   onClick={() => window.open(paymentUrl, '_blank', 'noopener,noreferrer')}
                                   className="alternative-payment-button bg-yellow-500 hover:bg-yellow-400 text-indigo-900 font-bold py-3 px-6 rounded-lg w-full flex items-center justify-center mt-2"
-                                  style={{ display: (buttonRenderAttempts >= 2 || !isButtonContainerVisible) ? 'flex' : 'none' }}
+                                  style={{ 
+                                    display: (buttonRenderAttempts >= 2 || !isButtonContainerVisible || !(window as any).mp) ? 'flex' : 'none' 
+                                  }}
                                 >
                                   Pagar pelo Mercado Pago
                                   <ExternalLink className="w-4 h-4 ml-2" />
@@ -769,19 +1023,46 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                                   className="bg-purple-700 hover:bg-purple-600 text-white py-3 px-6 rounded-lg w-full flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed mt-2"
                                 >
                                   {isLoading ? 'Verificando...' : 'Já realizei o pagamento'}
-                                </button>
-                              </>
-                            )}
-                          </>
-                        )}
+                        </button>
+                      </>
+                    )}
+                    
+                    {/* For development/demo purposes only */}
+                    {import.meta.env.DEV && (
+                      <>
+                        <button
+                          onClick={handleSimulatePayment}
+                          className="bg-green-700 hover:bg-green-600 text-white py-2 px-6 rounded-lg w-full text-sm mt-2"
+                        >
+                          Simular Pagamento (Apenas Demo)
+                        </button>
                         
-                        {/* For development/demo purposes only */}
-                        {import.meta.env.DEV && (
-                          <button
-                            onClick={handleSimulatePayment}
-                            className="bg-green-700 hover:bg-green-600 text-white py-2 px-6 rounded-lg w-full text-sm mt-2"
-                          >
-                            Simular Pagamento (Apenas Demo)
+                        {/* Developer debug buttons */}
+                        <div className="mt-2 p-2 border border-gray-700 rounded-lg">
+                          <p className="text-xs text-gray-400 mb-2">Developer Tools:</p>
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => cleanupMercadoPago()}
+                              className="bg-red-900 text-white text-xs px-2 py-1 rounded"
+                            >
+                              Clean SDK
+                            </button>
+                            <button
+                              onClick={() => initMercadoPago().then(() => console.log("SDK reinitialized"))}
+                              className="bg-blue-900 text-white text-xs px-2 py-1 rounded"
+                            >
+                              Reinit SDK
+                            </button>
+                            <button
+                              onClick={() => initializeButtonContainer()}
+                              className="bg-purple-900 text-white text-xs px-2 py-1 rounded"
+                            >
+                              Reset Container
+                            </button>
+                          </div>
+                        </div>
+                      </>
+                    )}
                           </button>
                         )}
                       </>

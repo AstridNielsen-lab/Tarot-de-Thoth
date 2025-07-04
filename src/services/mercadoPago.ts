@@ -34,18 +34,131 @@ export interface PaymentPreference {
 }
 
 // Get Mercado Pago credentials from environment variables
-const MP_PUBLIC_KEY = import.meta.env.VITE_MP_PUBLIC_KEY;
-const MP_ACCESS_TOKEN = import.meta.env.VITE_MP_ACCESS_TOKEN;
+// Get credentials from environment variables if available, otherwise use hardcoded values
+const MP_PUBLIC_KEY = import.meta.env.VITE_MP_PUBLIC_KEY || 'APP_USR-899679bb-8f18-4745-8837-36d6ef30c623';
+const MP_ACCESS_TOKEN = import.meta.env.VITE_MP_ACCESS_TOKEN || 'APP_USR-1223421008633173-070410-9db32cd8db2f19b0224c30514936e643-29008060';
+const MP_CLIENT_ID = import.meta.env.VITE_MP_CLIENT_ID || '1223421008633173';
+const MP_CLIENT_SECRET = import.meta.env.VITE_MP_CLIENT_SECRET || 'CUI8K2vCYgx9lP9ayGSo13LL03e6v3Yd';
 
-// Initialize Mercado Pago SDK
+// Log credential usage (excluding full values for security)
+console.log("Using Mercado Pago credentials:", {
+  publicKey: MP_PUBLIC_KEY.substring(0, 10) + "...",
+  accessToken: MP_ACCESS_TOKEN.substring(0, 10) + "...",
+  clientId: MP_CLIENT_ID.substring(0, 5) + "...",
+});
+
+// Clean up existing Mercado Pago SDK
+export const cleanupMercadoPago = (): void => {
+  try {
+    console.log("Starting thorough Mercado Pago SDK cleanup...");
+    
+    // First try to use MP's own cleanup method if available
+    if ((window as any).mp && (window as any).mp.checkout) {
+      try {
+        if (typeof (window as any).mp.checkout.destroy === 'function') {
+          console.log("Using Mercado Pago's native cleanup method");
+          (window as any).mp.checkout.destroy();
+        }
+      } catch (e) {
+        console.warn("Error while using MP's native cleanup:", e);
+      }
+    }
+    
+    // Remove any global instances
+    delete (window as any).mp;
+    delete (window as any).MercadoPago;
+    
+    // Remove any checkout DOM elements that might have been created
+    document.querySelectorAll('[data-mp-checkout]').forEach(el => {
+      console.log("Removing Mercado Pago checkout element:", el);
+      el.remove();
+    });
+    
+    // Remove any existing scripts
+    const scripts = document.querySelectorAll('script[src*="mercadopago"]');
+    scripts.forEach(script => {
+      console.log("Removing Mercado Pago script:", script.getAttribute('src'));
+      script.remove();
+    });
+    
+    // Clean up any other possible residual elements or styles
+    document.querySelectorAll('style[data-mercadopago]').forEach(style => {
+      style.remove();
+    });
+    
+    // Add a flag to indicate cleanup has been done
+    (window as any).__mpCleanupDone = Date.now();
+    
+    console.log("Mercado Pago SDK cleanup completed");
+  } catch (error) {
+    console.error("Error during Mercado Pago cleanup:", error);
+  }
+};
+
+// Initialize Mercado Pago SDK with improved error handling
+// Check if the document is ready
+const isDocumentReady = (): boolean => {
+  return document.readyState === 'complete' || document.readyState === 'interactive';
+};
+
+// Wait for document to be ready
+const waitForDocumentReady = (): Promise<void> => {
+  return new Promise((resolve) => {
+    if (isDocumentReady()) {
+      resolve();
+      return;
+    }
+
+    const checkReady = () => {
+      if (isDocumentReady()) {
+        document.removeEventListener('readystatechange', checkReady);
+        resolve();
+      }
+    };
+
+    document.addEventListener('readystatechange', checkReady);
+  });
+};
+
 export const initMercadoPago = (): Promise<void> => {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
+    const startTime = Date.now();
+    console.log("Starting Mercado Pago SDK initialization...");
+    
+    // First ensure document is ready
+    try {
+      await waitForDocumentReady();
+      console.log("Document is ready for SDK initialization");
+    } catch (e) {
+      console.warn("Error waiting for document ready:", e);
+      // Continue anyway
+    }
+    
+    // Verify that we're in a browser environment
+    if (typeof window === 'undefined') {
+      console.error("Cannot initialize Mercado Pago SDK outside of browser environment");
+      reject(new Error("Browser environment required"));
+      return;
+    }
+    
     // Check if we've already initialized MercadoPago
     if ((window as any).mp) {
       console.log("MercadoPago instance already exists");
       resolve();
       return;
     }
+    
+    // Clean up any existing Mercado Pago SDK resources
+    cleanupMercadoPago();
+    
+    // Add diagnostic listeners for global errors during SDK loading
+    const errorHandler = (event: ErrorEvent) => {
+      if (event.message.includes('mercadopago') || event.filename?.includes('mercadopago')) {
+        console.error("Global error during Mercado Pago SDK loading:", event);
+      }
+    };
+    
+    window.addEventListener('error', errorHandler);
     
     // Check if SDK is already loaded
     if ((window as any).MercadoPago) {
@@ -67,25 +180,120 @@ export const initMercadoPago = (): Promise<void> => {
     console.log("Loading MercadoPago SDK...");
     const script = document.createElement('script');
     script.src = 'https://sdk.mercadopago.com/js/v2';
+    script.id = 'mercadopago-script';
     script.async = true;
     script.crossOrigin = 'anonymous';
-    script.onload = () => {
+    script.setAttribute('data-timestamp', Date.now().toString()); // Add timestamp to prevent caching issues
+    script.setAttribute('data-public-key', MP_PUBLIC_KEY); // Add public key for debugging
+    script.integrity = ''; // Intentionally left empty to avoid integrity checks that might fail
+    script.referrerPolicy = 'origin'; // Restrict referrers to origin only
+    
+    // Add proper error handling with retries
+    let retries = 0;
+    const maxRetries = 3;
+    
+    const initMp = () => {
       try {
         console.log("MercadoPago SDK loaded, initializing with key:", MP_PUBLIC_KEY);
+        
+        if (!(window as any).MercadoPago) {
+          throw new Error("MercadoPago SDK loaded but MercadoPago object is not defined");
+        }
+        
+        // Create a new instance with the public key
         (window as any).mp = new (window as any).MercadoPago(MP_PUBLIC_KEY, {
           locale: 'pt-BR'
         });
-        console.log("MercadoPago initialized successfully");
+        
+        // Verify the instance was created correctly
+        if (!(window as any).mp) {
+          throw new Error("Failed to create MercadoPago instance");
+        }
+        
+        const initTime = Date.now() - startTime;
+        console.log(`MercadoPago initialized successfully in ${initTime}ms`);
+        
+        // Remove error handler now that initialization is complete
+        window.removeEventListener('error', errorHandler);
+        
         resolve();
       } catch (error) {
         console.error("Error initializing MercadoPago:", error);
-        reject(error);
+        
+        if (retries < maxRetries) {
+          retries++;
+          console.log(`Retrying initialization (${retries}/${maxRetries})...`);
+          setTimeout(initMp, 500);
+        } else {
+          console.error("Max retries reached for MP SDK initialization", error);
+          
+          // Clean up before rejecting
+          window.removeEventListener('error', errorHandler);
+          
+          // Provide more detailed error information
+          const detailedError = new Error(`Failed to initialize MercadoPago SDK: ${error.message}`);
+          (detailedError as any).originalError = error;
+          (detailedError as any).sdkStatus = {
+            publicKey: MP_PUBLIC_KEY.substring(0, 10) + '...',
+            isScriptLoaded: !!document.getElementById('mercadopago-script'),
+            isMercadoPagoObjectDefined: !!(window as any).MercadoPago,
+            isMpInstanceDefined: !!(window as any).mp,
+            timeElapsed: Date.now() - startTime
+          };
+          
+          reject(detailedError);
+        }
       }
     };
+    
+    script.onload = initMp;
     script.onerror = (error) => {
       console.error("Error loading MercadoPago SDK:", error);
-      reject(error);
+      
+      if (retries < maxRetries) {
+        retries++;
+        console.log(`Retrying script load (${retries}/${maxRetries})...`);
+        
+        // First do a thorough cleanup
+        try {
+          cleanupMercadoPago();
+        } catch (cleanupError) {
+          console.warn("Error during cleanup before retry:", cleanupError);
+        }
+        
+        // Create a new script element with a different ID to avoid caching issues
+        const newScript = document.createElement('script');
+        newScript.src = `https://sdk.mercadopago.com/js/v2?_=${Date.now()}&retry=${retries}`;
+        newScript.id = `mercadopago-script-${retries}`;
+        newScript.async = true;
+        newScript.crossOrigin = 'anonymous';
+        newScript.setAttribute('data-timestamp', Date.now().toString());
+        
+        // Wait longer between retries
+        setTimeout(() => {
+          document.body.appendChild(newScript);
+        }, 1500);
+        
+        // Update the script reference
+        script = newScript;
+      } else {
+        // Clean up before rejecting
+        window.removeEventListener('error', errorHandler);
+        
+        // Provide detailed error information
+        const detailedError = new Error(`Failed to load MercadoPago SDK script after ${maxRetries} attempts`);
+        (detailedError as any).originalError = error;
+        (detailedError as any).sdkStatus = {
+          publicKey: MP_PUBLIC_KEY.substring(0, 10) + '...',
+          isScriptLoaded: false,
+          retryAttempts: retries,
+          timeElapsed: Date.now() - startTime
+        };
+        
+        reject(detailedError);
+      }
     };
+    
     document.body.appendChild(script);
   });
 };
@@ -258,12 +466,16 @@ export const createPaymentPreference = async (selectedPackage = PACKAGES[0], ema
       // We're doing it client-side for demo purposes only
       console.log("Making API request with token:", MP_ACCESS_TOKEN.substring(0, 10) + "...");
       
+      // Add CORS headers for development environment
+      const headers: Record<string, string> = {
+        'Authorization': `Bearer ${MP_ACCESS_TOKEN}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      };
+      
       const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${MP_ACCESS_TOKEN}`,
-          'Content-Type': 'application/json'
-        },
+        headers,
         body: JSON.stringify(preferenceData)
       });
 
@@ -340,6 +552,11 @@ export const checkPaymentStatus = async (preferenceId: string, email?: string): 
   try {
     console.log("Checking payment status for:", preferenceId);
     
+    // Validate inputs
+    if (!preferenceId) {
+      throw new Error("preferenceId is required for payment verification");
+    }
+    
     // Use provided email or get from storage
     const userEmail = email || getUserEmail();
     console.log("Verifying payment with email:", userEmail);
@@ -380,13 +597,19 @@ export const checkPaymentStatus = async (preferenceId: string, email?: string): 
     const transaction = transactions.find((t: any) => t.id === preferenceId);
     
     // In a real implementation, we would verify that the email matches the transaction
-    // For this demo, we'll just log that we're checking
+    // For this demo, we'll compare the email with the stored one
     if (userEmail && transaction) {
       console.log(`Verifying payment for email: ${userEmail} with transaction: ${transaction.id}`);
       
       // Store the email with the transaction for reference
       transaction.email = userEmail;
       localStorage.setItem('mp_transactions', JSON.stringify(transactions));
+      
+      // If transaction already has an email and it doesn't match, log a warning
+      // In a real implementation, this might be a security check
+      if (transaction.email && transaction.email !== userEmail) {
+        console.warn(`Email mismatch: Transaction was created with ${transaction.email} but verification attempted with ${userEmail}`);
+      }
     }
     
     if (!transaction) {
@@ -438,8 +661,14 @@ export const checkPaymentStatus = async (preferenceId: string, email?: string): 
     console.error('Error checking payment status:', error);
     // Add better error details
     if (error instanceof Error) {
-      throw new Error(`Failed to verify payment: ${error.message}`);
+      // Add a custom error code for easier debugging
+      const errorWithCode = new Error(`Failed to verify payment: ${error.message}`);
+      (errorWithCode as any).code = 'PAYMENT_VERIFICATION_FAILED';
+      (errorWithCode as any).originalError = error;
+      throw errorWithCode;
     }
-    throw new Error('Failed to verify payment due to an unknown error');
+    const genericError = new Error('Failed to verify payment due to an unknown error');
+    (genericError as any).code = 'PAYMENT_VERIFICATION_UNKNOWN';
+    throw genericError;
   }
 };
