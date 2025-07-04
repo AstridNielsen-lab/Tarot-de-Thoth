@@ -144,11 +144,11 @@ export const SpreadLayout: React.FC<SpreadLayoutProps> = ({
   const getCardSize = () => {
     // Return sizing classes based on the spread type and number of cards
     if (spread.id === 'three-card') {
-      return 'w-28 sm:w-32 md:w-36 lg:w-40 xl:w-44 2xl:w-48';
+      return 'w-32 sm:w-36 md:w-40 lg:w-44 xl:w-48 2xl:w-52'; // Increase card size for better visibility
     } else if (spread.id === 'celtic-cross') {
-      return 'w-20 sm:w-24 md:w-28 lg:w-32 xl:w-36 2xl:w-40';
+      return 'w-24 sm:w-28 md:w-32 lg:w-36 xl:w-40 2xl:w-44'; // Increase card size for better spacing
     } else if (spread.id === 'tree-of-life') {
-      return 'w-16 sm:w-20 md:w-24 lg:w-28 xl:w-32 2xl:w-36';
+      return 'w-20 sm:w-24 md:w-28 lg:w-32 xl:w-36 2xl:w-40'; // Increase card size for better spacing
     }
     
     // Default size
@@ -164,33 +164,33 @@ export const SpreadLayout: React.FC<SpreadLayoutProps> = ({
     if (spread.id === 'tree-of-life') {
       // Adjusted positions for Tree of Life to match the connection lines
       if (position.id === 'kether') y = 5;
-      if (position.id === 'chokmah') { x = 20; y = 15; }
-      if (position.id === 'binah') { x = 80; y = 15; }
-      if (position.id === 'chesed') { x = 20; y = 35; }
-      if (position.id === 'geburah') { x = 80; y = 35; }
-      if (position.id === 'tiphareth') { x = 50; y = 45; }
-      if (position.id === 'netzach') { x = 20; y = 65; }
-      if (position.id === 'hod') { x = 80; y = 65; }
+      if (position.id === 'chokmah') { x = 25; y = 10; } // Adjust position for improved spacing
+      if (position.id === 'binah') { x = 75; y = 10; } // Adjust position for improved spacing
+      if (position.id === 'chesed') { x = 25; y = 30; } // Adjust position for improved spacing
+      if (position.id === 'geburah') { x = 75; y = 30; } // Adjust position for improved spacing
+      if (position.id === 'tiphareth') { x = 50; y = 40; } // Adjust position for improved spacing
+      if (position.id === 'netzach') { x = 25; y = 60; } // Adjust position for improved spacing
+      if (position.id === 'hod') { x = 75; y = 60; } // Adjust position for improved spacing
       if (position.id === 'yesod') { x = 50; y = 75; }
       if (position.id === 'malkuth') { x = 50; y = 95; }
     } else if (spread.id === 'celtic-cross') {
-      // Adjusted positions for Celtic Cross to match the connection lines
+      // Significantly adjusted positions for Celtic Cross to prevent overlapping
       if (position.id === 'present') { x = 45; y = 40; }
-      if (position.id === 'crossing') { x = 55; y = 40; }
-      if (position.id === 'above') { x = 45; y = 10; }
-      if (position.id === 'below') { x = 45; y = 70; }
-      if (position.id === 'past') { x = 25; y = 40; }
-      if (position.id === 'future') { x = 65; y = 40; }
-      if (position.id === 'attitudes') { x = 80; y = 20; }
-      if (position.id === 'environment') { x = 80; y = 40; }
-      if (position.id === 'hopes') { x = 80; y = 60; }
-      if (position.id === 'outcome') { x = 80; y = 80; }
+      if (position.id === 'crossing') { x = 45; y = 40; }
+      if (position.id === 'above') { x = 45; y = 15; }
+      if (position.id === 'below') { x = 45; y = 65; }
+      if (position.id === 'past') { x = 20; y = 40; }
+      if (position.id === 'future') { x = 70; y = 40; }
+      if (position.id === 'attitudes') { x = 90; y = 15; }
+      if (position.id === 'environment') { x = 90; y = 35; }
+      if (position.id === 'hopes') { x = 90; y = 55; }
+      if (position.id === 'outcome') { x = 90; y = 75; }
     } else if (spread.id === 'three-card') {
       // Improve spacing for three-card spread
       if (position.id === 'past') x = 20;
-      if (position.id === 'present') x = 50;
-      if (position.id === 'future') x = 80;
-      y = 50; // Center all cards vertically
+      if (position.id === 'present') x = 50; // Center card
+      if (position.id === 'future') x = 75; // Space out future card
+      y = 50; // Maintain vertical centering
     }
     
     return { x, y };
