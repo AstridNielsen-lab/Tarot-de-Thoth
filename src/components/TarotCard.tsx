@@ -208,16 +208,16 @@ export const TarotCardComponent: React.FC<TarotCardProps> = ({ card, onClick, is
         </div>
         
         <div className="text-center flex-grow flex flex-col justify-between">
-          <div>
-            <h3 className="text-xl font-bold text-white mb-1">{card.name}</h3>
-            <p className="text-purple-200 text-sm mb-2">{card.englishName}</p>
+          <div className="mx-auto max-w-full px-2">
+            <h3 className="text-xl font-bold text-white mb-1 text-center">{card.name}</h3>
+            <p className="text-purple-200 text-sm mb-2 text-center">{card.englishName}</p>
             {card.element && (
-              <p className="text-yellow-400 text-xs mb-2 font-semibold">{card.element}</p>
+              <p className="text-yellow-400 text-xs mb-2 font-semibold text-center">{card.element}</p>
             )}
           </div>
           
-          <div>
-            <p className="text-purple-100 text-xs leading-relaxed mb-3 line-clamp-3">
+          <div className="mx-auto max-w-full px-2">
+            <p className="text-purple-100 text-xs leading-relaxed mb-3 line-clamp-3 text-center">
               {card.description}
             </p>
             <div className="flex flex-wrap gap-1 justify-center">
@@ -234,14 +234,6 @@ export const TarotCardComponent: React.FC<TarotCardProps> = ({ card, onClick, is
         </div>
       </div>
       
-      {/* Card Label (only shown when not hovered) */}
-      <div 
-        className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-purple-900/90 to-transparent p-3 transition-opacity duration-300 ${
-          isHovered ? 'opacity-0' : 'opacity-100'
-        }`}
-      >
-        <h3 className="text-white font-bold text-center truncate">{card.name}</h3>
-      </div>
     </div>
   );
 };
