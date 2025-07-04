@@ -12,15 +12,6 @@ import { BookOpen, Save, Eye, HelpCircle, Shuffle, ImageIcon } from 'lucide-reac
 import { TarotCardComponent } from '../TarotCard';
 import { useSound } from '../../hooks/useSound';
 import { CrowleyInterpreter } from './CrowleyInterpreter';
-import { PaymentModal } from '../PaymentModal';
-import { 
-  FREE_READING_LIMIT,
-  getReadingCount, 
-  incrementReadingCount,
-  needsPayment,
-  getPaymentStatus,
-  useReadingCredit
-} from '../../services/mercadoPago';
 
 // Guidance text for each spread type
 const spreadGuidance = {
@@ -45,10 +36,6 @@ export const ReadingPage: React.FC = () => {
   const [showUserInfoModal, setShowUserInfoModal] = useState<boolean>(false);
   const [userName, setUserName] = useState<string>('');
   const [birthDate, setBirthDate] = useState<string>('');
-  const [showPaymentModal, setShowPaymentModal] = useState<boolean>(false);
-  const [readingCount, setReadingCount] = useState<number>(getReadingCount());
-  const [isPaymentRequired, setIsPaymentRequired] = useState<boolean>(needsPayment());
-  const [paymentStatus, setPaymentStatus] = useState(getPaymentStatus());
   
   // Refs for animations
   const deckRef = useRef<HTMLDivElement>(null);
@@ -61,21 +48,6 @@ export const ReadingPage: React.FC = () => {
     if (!question.trim()) {
       alert("Por favor, insira uma questão antes de começar a leitura.");
       return;
-    }
-
-    // Check if payment is required
-    if (needsPayment()) {
-      setShowPaymentModal(true);
-      return;
-    }
-
-    // Increment reading count and use credit if this is a paid reading
-    const newCount = incrementReadingCount();
-    setReadingCount(newCount);
-
-    if (paymentStatus.isPaid && paymentStatus.readingsAvailable > 0) {
-      useReadingCredit();
-      setPaymentStatus(getPaymentStatus());
     }
 
     // Show user info modal
@@ -329,16 +301,6 @@ export const ReadingPage: React.FC = () => {
       {renderShuffleAnimation()}
       {renderInstructions()}
       {renderUserInfoModal()}
-      <PaymentModal 
-        isOpen={showPaymentModal}
-        onClose={() => setShowPaymentModal(false)}
-        onPaymentComplete={() => {
-          setShowPaymentModal(false);
-          setPaymentStatus(getPaymentStatus());
-          setIsPaymentRequired(false);
-          setShowUserInfoModal(true);
-        }}
-      />
       
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-white">Realizar Leitura de Tarot</h1>
@@ -388,33 +350,6 @@ export const ReadingPage: React.FC = () => {
             </div>
           </div>
           
-          {/* Reading Count Display */}
-          <div className="mb-6 p-4 bg-indigo-900/50 rounded-lg">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-yellow-400 font-medium mb-1">Leituras Disponíveis</h3>
-                {paymentStatus.isPaid ? (
-                  <p className="text-purple-300">
-                    {paymentStatus.readingsAvailable} leituras pagas restantes
-                  </p>
-                ) : (
-                  <p className="text-purple-300">
-                    {Math.max(0, FREE_READING_LIMIT - readingCount)} leituras gratuitas restantes
-                  </p>
-                )}
-              </div>
-              {paymentStatus.isPaid && paymentStatus.expirationDate && (
-                <div className="text-right">
-                  <p className="text-sm text-purple-400">
-                    Pacote válido até:
-                    <br />
-                    {new Date(paymentStatus.expirationDate).toLocaleDateString()}
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-          
           <div className="mb-6">
             <label className="block text-purple-300 mb-2">Sua Questão:</label>
             <textarea
@@ -429,16 +364,11 @@ export const ReadingPage: React.FC = () => {
           </div>
           
           <button 
-            className={`w-full px-4 py-3 text-white rounded-md transition flex items-center justify-center ${
-              isPaymentRequired && !paymentStatus.readingsAvailable ? 'bg-yellow-600 hover:bg-yellow-500' : 'bg-purple-800 hover:bg-purple-700'
-            }`}
+            className="w-full px-4 py-3 text-white rounded-md transition flex items-center justify-center bg-purple-800 hover:bg-purple-700"
             onClick={initiateReading}
           >
             <Eye className="w-5 h-5 mr-2" />
-            {isPaymentRequired && !paymentStatus.readingsAvailable 
-              ? 'Adquirir Leituras'
-              : 'Começar Leitura'
-            }
+            Começar Leitura
           </button>
         </div>
       )}
@@ -556,6 +486,30 @@ export const ReadingPage: React.FC = () => {
           {/* Crowley's Esoteric Interpretation */}
           <CrowleyInterpreter reading={reading} readingState={readingState} />
 
+        </div>
+      )}
+      
+      {/* Contribution Section */}
+      {readingState === 'complete' && (
+        <div className="mt-8 p-6 bg-indigo-900/40 rounded-lg border border-purple-800/30">
+          <div className="text-center">
+            <h3 className="text-xl text-yellow-400 font-medium mb-2">Contribua com o Projeto</h3>
+            <p className="text-purple-300 mb-4">
+              Se esta leitura foi útil e trouxe insights valiosos para você, considere fazer uma contribuição para ajudar a manter e melhorar este projeto.
+            </p>
+            <a 
+              href="https://mpago.li/2JBdyqJ"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center px-6 py-3 bg-yellow-600 hover:bg-yellow-500 text-white rounded-lg transition-colors shadow-lg"
+            >
+              <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 3a7 7 0 100 14 7 7 0 000-14zm0 12a5 5 0 100-10 5 5 0 000 10z" clipRule="evenodd" />
+                <path fillRule="evenodd" d="M10 6a1 1 0 011 1v2h2a1 1 0 110 2h-2v2a1 1 0 11-2 0v-2H7a1 1 0 110-2h2V7a1 1 0 011-1z" clipRule="evenodd" />
+              </svg>
+              Contribuir via Mercado Pago
+            </a>
+          </div>
         </div>
       )}
       
