@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CreditCard, Lock, AlertCircle, CheckCircle, ExternalLink } from 'lucide-react';
+import { CreditCard, Lock, AlertCircle, CheckCircle, ExternalLink, Loader2 } from 'lucide-react';
 import { 
   FREE_READING_LIMIT, 
   READING_PACKAGE_SIZE,
@@ -31,41 +31,55 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   const [readingCount, setReadingCount] = useState(getReadingCount());
   const [paymentStatus, setPaymentStatus] = useState(getPaymentStatus());
 
-  // Initialize Mercado Pago when modal opens
+  // Initialize payment when modal opens
   useEffect(() => {
     if (isOpen) {
-      initMercadoPago().catch(err => {
-        console.error('Failed to initialize Mercado Pago:', err);
-        setError('Não foi possível inicializar o Mercado Pago. Por favor, tente novamente mais tarde.');
-      });
+      (async () => {
+        await initializePayment();
+      })();
     }
-  }, [isOpen]);
-
-  // Reset state when modal opens
-  useEffect(() => {
-    if (isOpen) {
-      setIsLoading(false);
-      setError(null);
-      setPaymentUrl(null);
-      setPreferenceId(null);
-      setIsPaymentCompleted(false);
-      setReadingCount(getReadingCount());
-      setPaymentStatus(getPaymentStatus());
-    }
-  }, [isOpen]);
-
-  // Function to create payment preference
-  const handleCreatePayment = async () => {
+    
+    // Listen for payment success events (for demo/development mode)
+    const handlePaymentSuccess = () => {
+      setIsPaymentCompleted(true);
+      onPaymentComplete();
+    };
+    
+    window.addEventListener('paymentSuccess', handlePaymentSuccess);
+    
+    return () => {
+      window.removeEventListener('paymentSuccess', handlePaymentSuccess);
+    };
+  }, [isOpen, onPaymentComplete]);
+  
+  // Initialize payment process
+  const initializePayment = async () => {
     setIsLoading(true);
     setError(null);
+    setPaymentUrl(null);
+    setPreferenceId(null);
+    setIsPaymentCompleted(false);
+    setReadingCount(getReadingCount());
+    setPaymentStatus(getPaymentStatus());
     
     try {
+      // First initialize Mercado Pago SDK
+      await initMercadoPago();
+      
+      // Then create a payment preference
+      console.log("Creating payment preference...");
       const preference = await createPaymentPreference();
       setPaymentUrl(preference.initPoint);
       setPreferenceId(preference.id);
+      
+      // Render the checkout button after the component has updated with the preference ID
+      // This is better than using setTimeout as it relies on the React lifecycle
+      requestAnimationFrame(() => {
+        renderMercadoPagoButton(preference.id);
+      });
     } catch (err) {
-      console.error('Payment creation error:', err);
-      setError('Não foi possível criar o pagamento. Por favor, tente novamente mais tarde.');
+      console.error('Payment initialization error:', err);
+      setError('Não foi possível inicializar o pagamento. Por favor, tente novamente mais tarde.');
     } finally {
       setIsLoading(false);
     }
@@ -96,6 +110,42 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
     }
   };
 
+  // Function to render the Mercado Pago checkout button
+  const renderMercadoPagoButton = (preferenceId: string) => {
+    const mp = (window as any).mp;
+    if (!mp) {
+      console.warn("MercadoPago not defined, cannot render checkout.");
+      return;
+    }
+    
+    try {
+      // Clear previous button if it exists
+      const container = document.querySelector('.checkout-button');
+      if (container) {
+        container.innerHTML = '';
+      }
+      
+      // Configure and render the checkout button
+      mp.checkout({
+        preference: {
+          id: preferenceId
+        },
+        render: {
+          container: '.checkout-button',
+          label: 'Pagar com Mercado Pago',
+          type: 'wallet', // Using wallet button type for better recognition
+        },
+        theme: {
+          headerColor: '#4338ca', // Match the indigo-700 color
+          elementsColor: '#7e22ce' // Match the purple-700 color
+        }
+      });
+      console.log("Mercado Pago checkout button rendered successfully");
+    } catch (renderError) {
+      console.error("Error rendering checkout button:", renderError);
+    }
+  };
+
   // For development/demo purposes only
   const handleSimulatePayment = () => {
     simulateSuccessfulPayment();
@@ -117,127 +167,109 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
         
         {/* Content */}
         <div className="p-6">
-          {isPaymentCompleted ? (
-            <div className="text-center py-6">
-              <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-              <h3 className="text-xl font-bold text-white mb-2">Pagamento Confirmado!</h3>
-              <p className="text-purple-300 mb-4">
-                Você agora tem acesso a {paymentStatus.readingsAvailable} leituras adicionais.
-              </p>
-              <button
-                onClick={onClose}
-                className="bg-purple-700 hover:bg-purple-600 text-white py-2 px-6 rounded-lg transition"
-              >
-                Continuar para Leitura
-              </button>
-            </div>
-          ) : (
-            <>
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-lg font-semibold text-yellow-400">Leituras Realizadas</h3>
-                  <span className="text-white font-bold bg-purple-800 px-3 py-1 rounded-full">
-                    {readingCount}/{FREE_READING_LIMIT}
-                  </span>
-                </div>
-                <p className="text-purple-300 text-sm">
-                  Você atingiu o limite de leituras gratuitas. Para continuar, adquira um pacote de leituras adicionais.
-                </p>
-              </div>
-              
-              <div className="bg-indigo-900/50 p-4 rounded-lg mb-6">
-                <h3 className="text-lg font-semibold text-white mb-2">Pacote de Leituras</h3>
-                <ul className="space-y-2 text-purple-300 mb-4">
-                  <li className="flex items-start">
-                    <CheckCircle className="w-5 h-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                    <span>{READING_PACKAGE_SIZE} leituras adicionais</span>
-                  </li>
-                  <li className="flex items-start">
-                    <CheckCircle className="w-5 h-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                    <span>Válido por 30 dias</span>
-                  </li>
-                  <li className="flex items-start">
-                    <CheckCircle className="w-5 h-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                    <span>Acesso a todas as funcionalidades</span>
-                  </li>
-                </ul>
-                
-                <div className="bg-purple-900/80 p-3 rounded-lg flex items-center justify-between">
-                  <span className="text-purple-300">Preço</span>
-                  <span className="text-white font-bold text-xl">R$ {READING_PACKAGE_PRICE.toFixed(2)}</span>
-                </div>
-              </div>
-              
-              {error && (
-                <div className="bg-red-900/20 border border-red-700 rounded-lg p-3 mb-6 flex items-start">
-                  <AlertCircle className="w-5 h-5 text-red-500 mr-2 flex-shrink-0 mt-0.5" />
-                  <p className="text-red-300 text-sm">{error}</p>
-                </div>
-              )}
-              
-              {paymentUrl ? (
-                <div className="space-y-4">
-                  <a 
-                    href={paymentUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="bg-yellow-500 hover:bg-yellow-400 text-indigo-900 font-bold py-3 px-6 rounded-lg w-full flex items-center justify-center"
-                  >
-                    Pagar com Mercado Pago
-                    <ExternalLink className="w-4 h-4 ml-2" />
-                  </a>
-                  
+              {isPaymentCompleted ? (
+                <div className="text-center py-6">
+                  <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+                  <h3 className="text-xl font-bold text-white mb-2">Pagamento Confirmado!</h3>
+                  <p className="text-purple-300 mb-4">
+                    Você agora tem acesso a {paymentStatus.readingsAvailable} leituras adicionais.
+                  </p>
                   <button
-                    onClick={handleCheckStatus}
-                    disabled={isLoading}
-                    className="bg-purple-700 hover:bg-purple-600 text-white py-3 px-6 rounded-lg w-full flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={onClose}
+                    className="bg-purple-700 hover:bg-purple-600 text-white py-2 px-6 rounded-lg transition"
                   >
-                    {isLoading ? 'Verificando...' : 'Já realizei o pagamento'}
+                    Continuar para Leitura
                   </button>
                 </div>
               ) : (
-                <div className="space-y-4">
-                  <button
-                    onClick={handleCreatePayment}
-                    disabled={isLoading}
-                    className="bg-yellow-500 hover:bg-yellow-400 text-indigo-900 font-bold py-3 px-6 rounded-lg w-full flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isLoading ? 'Carregando...' : 'Adquirir Pacote de Leituras'}
-                    <Lock className="w-4 h-4 ml-2" />
-                  </button>
+                <>
+                  <div className="mb-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-lg font-semibold text-yellow-400">Leituras Realizadas</h3>
+                      <span className="text-white font-bold bg-purple-800 px-3 py-1 rounded-full">
+                        {readingCount}/{FREE_READING_LIMIT}
+                      </span>
+                    </div>
+                    <p className="text-purple-300 text-sm">
+                      Você atingiu o limite de leituras gratuitas. Para continuar, adquira um pacote de leituras adicionais.
+                    </p>
+                  </div>
                   
-                  {/* For development/demo purposes only */}
-                  {import.meta.env.DEV && (
-                    <button
-                      onClick={handleSimulatePayment}
-                      className="bg-green-700 hover:bg-green-600 text-white py-2 px-6 rounded-lg w-full text-sm"
-                    >
-                      Simular Pagamento (Apenas Demo)
-                    </button>
+                  <div className="bg-indigo-900/50 p-4 rounded-lg mb-6">
+                    <h3 className="text-lg font-semibold text-white mb-2">Pacote de Leituras</h3>
+                    <ul className="space-y-2 text-purple-300 mb-4">
+                      <li className="flex items-start">
+                        <CheckCircle className="w-5 h-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
+                        <span>{READING_PACKAGE_SIZE} leituras adicionais</span>
+                      </li>
+                      <li className="flex items-start">
+                        <CheckCircle className="w-5 h-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
+                        <span>Válido por 30 dias</span>
+                      </li>
+                      <li className="flex items-start">
+                        <CheckCircle className="w-5 h-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
+                        <span>Acesso a todas as funcionalidades</span>
+                      </li>
+                    </ul>
+                    
+                    <div className="bg-purple-900/80 p-3 rounded-lg flex items-center justify-between">
+                      <span className="text-purple-300">Preço</span>
+                      <span className="text-white font-bold text-xl">R$ {READING_PACKAGE_PRICE.toFixed(2)}</span>
+                    </div>
+                  </div>
+                  
+                  {error && (
+                    <div className="bg-red-900/20 border border-red-700 rounded-lg p-3 mb-6 flex items-start">
+                      <AlertCircle className="w-5 h-5 text-red-500 mr-2 flex-shrink-0 mt-0.5" />
+                      <p className="text-red-300 text-sm">{error}</p>
+                    </div>
                   )}
-                </div>
+                  
+                  <div className="space-y-4">
+                    {isLoading ? (
+                      <div className="w-full py-3 bg-yellow-500 text-indigo-900 rounded-lg flex items-center justify-center">
+                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                        Carregando...
+                      </div>
+                    ) : (
+                      <>
+                        <div className="checkout-button mb-4 flex justify-center"></div>
+                        
+                        {paymentUrl && (
+                          <>
+                            {/* Fallback button in case the SDK button fails */}
+                            <button 
+                              onClick={() => window.open(paymentUrl, '_blank', 'noopener,noreferrer')}
+                              className="bg-yellow-500 hover:bg-yellow-400 text-indigo-900 font-bold py-3 px-6 rounded-lg w-full flex items-center justify-center mt-2"
+                            >
+                              Abrir Checkout no Navegador
+                              <ExternalLink className="w-4 h-4 ml-2" />
+                            </button>
+                            
+                            <button
+                              onClick={handleCheckStatus}
+                              disabled={isLoading}
+                              className="bg-purple-700 hover:bg-purple-600 text-white py-3 px-6 rounded-lg w-full flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              {isLoading ? 'Verificando...' : 'Já realizei o pagamento'}
+                            </button>
+                          </>
+                        )}
+                        
+                        {/* For development/demo purposes only */}
+                        {import.meta.env.DEV && (
+                          <button
+                            onClick={handleSimulatePayment}
+                            className="bg-green-700 hover:bg-green-600 text-white py-2 px-6 rounded-lg w-full text-sm"
+                          >
+                            Simular Pagamento (Apenas Demo)
+                          </button>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </>
               )}
-            </>
-          )}
-        </div>
-        
-        {/* Footer */}
-        <div className="bg-indigo-900/50 p-4 flex items-center justify-between border-t border-purple-800/50">
-          <div className="flex items-center">
-            <Lock className="text-purple-400 w-4 h-4 mr-2" />
-            <span className="text-purple-400 text-sm">Pagamento Seguro</span>
-          </div>
-          
-          {!isPaymentCompleted && (
-            <button
-              onClick={onClose}
-              className="text-purple-400 hover:text-white text-sm transition"
-            >
-              Voltar
-            </button>
-          )}
-        </div>
-      </div>
     </div>
   );
 };
