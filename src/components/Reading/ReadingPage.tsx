@@ -494,21 +494,69 @@ export const ReadingPage: React.FC = () => {
         <div className="mt-8 p-6 bg-indigo-900/40 rounded-lg border border-purple-800/30">
           <div className="text-center">
             <h3 className="text-xl text-yellow-400 font-medium mb-2">Contribua com o Projeto</h3>
-            <p className="text-purple-300 mb-4">
+            <p className="text-purple-300 mb-6">
               Se esta leitura foi útil e trouxe insights valiosos para você, considere fazer uma contribuição para ajudar a manter e melhorar este projeto.
             </p>
-            <a 
-              href="https://mpago.li/2JBdyqJ"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center px-6 py-3 bg-yellow-600 hover:bg-yellow-500 text-white rounded-lg transition-colors shadow-lg"
-            >
-              <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 3a7 7 0 100 14 7 7 0 000-14zm0 12a5 5 0 100-10 5 5 0 000 10z" clipRule="evenodd" />
-                <path fillRule="evenodd" d="M10 6a1 1 0 011 1v2h2a1 1 0 110 2h-2v2a1 1 0 11-2 0v-2H7a1 1 0 110-2h2V7a1 1 0 011-1z" clipRule="evenodd" />
-              </svg>
-              Contribuir via Mercado Pago
-            </a>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+              {/* Mercado Pago Option */}
+              <div className="bg-indigo-950/50 p-4 rounded-lg border border-purple-800/20">
+                <h4 className="text-yellow-400 text-lg mb-2">Mercado Pago</h4>
+                <p className="text-purple-300 text-sm mb-4">Contribua de forma rápida e segura via Mercado Pago</p>
+                <a 
+                  href="https://mpago.li/2JBdyqJ"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center px-6 py-3 bg-yellow-600 hover:bg-yellow-500 text-white rounded-lg transition-colors shadow-lg"
+                >
+                  <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 3a7 7 0 100 14 7 7 0 000-14zm0 12a5 5 0 100-10 5 5 0 000 10z" clipRule="evenodd" />
+                    <path fillRule="evenodd" d="M10 6a1 1 0 011 1v2h2a1 1 0 110 2h-2v2a1 1 0 11-2 0v-2H7a1 1 0 110-2h2V7a1 1 0 011-1z" clipRule="evenodd" />
+                  </svg>
+                  Contribuir via Mercado Pago
+                </a>
+              </div>
+
+              {/* PIX Option */}
+              <div className="bg-indigo-950/50 p-4 rounded-lg border border-purple-800/20">
+                <h4 className="text-yellow-400 text-lg mb-2">PIX</h4>
+                <p className="text-purple-300 text-sm mb-4">Contribua usando a chave PIX abaixo</p>
+                <div className="bg-indigo-900/60 p-3 rounded-lg mb-3 relative group">
+                  <p className="text-purple-200 font-mono text-sm break-all">infinitpaycash@gmail.com</p>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText('infinitpaycash@gmail.com');
+                      const el = document.createElement('div');
+                      el.className = 'absolute -top-8 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-indigo-900 px-2 py-1 rounded text-sm';
+                      el.textContent = 'Copiado!';
+                      document.body.appendChild(el);
+                      setTimeout(() => el.remove(), 2000);
+                    }}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-purple-400 hover:text-yellow-400 transition-colors"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                  </button>
+                </div>
+                <button 
+                  onClick={() => {
+                    navigator.clipboard.writeText('infinitpaycash@gmail.com');
+                    const el = document.createElement('div');
+                    el.className = 'fixed top-4 right-4 bg-yellow-400 text-indigo-900 px-4 py-2 rounded shadow-lg';
+                    el.textContent = 'Chave PIX copiada!';
+                    document.body.appendChild(el);
+                    setTimeout(() => el.remove(), 2000);
+                  }}
+                  className="inline-flex items-center px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition-colors shadow-lg"
+                >
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                  Copiar Chave PIX
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
