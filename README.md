@@ -37,7 +37,7 @@ npm run dev
 Contribuições são bem-vindas! Para sugestões, abra uma issue ou envie um pull request.
 
 ## 📱 Contato
-Desenvolvido por Julio Campos Machado 📲 WhatsApp: Clique aqui para entrar em contato
+Desenvolvido por Julio Campos Machado 📲 WhatsApp: +5511970603441
 
 ## 🪄 Inspiração
 “Do que se fala não se pode dizer. Do que se pode dizer não se fala.”
