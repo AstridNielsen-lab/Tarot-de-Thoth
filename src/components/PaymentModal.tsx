@@ -4,6 +4,9 @@ import {
   FREE_READING_LIMIT, 
   READING_PACKAGE_SIZE,
   READING_PACKAGE_PRICE,
+  SMALL_PACKAGE_SIZE,
+  SMALL_PACKAGE_PRICE,
+  PACKAGES,
   getReadingCount,
   getPaymentStatus,
   createPaymentPreference,
@@ -30,6 +33,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   const [isPaymentCompleted, setIsPaymentCompleted] = useState(false);
   const [readingCount, setReadingCount] = useState(getReadingCount());
   const [paymentStatus, setPaymentStatus] = useState(getPaymentStatus());
+  const [selectedPackage, setSelectedPackage] = useState(PACKAGES[0]); // Default to 10 readings package
 
   // Initialize payment when modal opens
   useEffect(() => {
@@ -66,9 +70,9 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
       // First initialize Mercado Pago SDK
       await initMercadoPago();
       
-      // Then create a payment preference
-      console.log("Creating payment preference...");
-      const preference = await createPaymentPreference();
+      // Then create a payment preference with the selected package
+      console.log("Creating payment preference for package:", selectedPackage);
+      const preference = await createPaymentPreference(selectedPackage);
       setPaymentUrl(preference.initPoint);
       setPreferenceId(preference.id);
       
@@ -196,11 +200,35 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   </div>
                   
                   <div className="bg-indigo-900/50 p-4 rounded-lg mb-6">
-                    <h3 className="text-lg font-semibold text-white mb-2">Pacote de Leituras</h3>
+                    <h3 className="text-lg font-semibold text-white mb-2">Escolha seu Pacote</h3>
+                    
+                    <div className="flex gap-4 mb-4">
+                      {PACKAGES.map((pkg, index) => (
+                        <div 
+                          key={index}
+                          onClick={() => setSelectedPackage(pkg)}
+                          className={`flex-1 p-3 rounded-lg cursor-pointer transition-all ${
+                            selectedPackage === pkg 
+                              ? 'bg-yellow-500 text-indigo-900 border-2 border-yellow-300' 
+                              : 'bg-indigo-800/50 text-purple-200 border-2 border-indigo-800 hover:bg-indigo-800'
+                          }`}
+                        >
+                          <div className="text-center">
+                            <div className={`font-bold text-lg ${selectedPackage === pkg ? 'text-indigo-900' : 'text-white'}`}>
+                              {pkg.size} Leituras
+                            </div>
+                            <div className={`font-bold text-xl mt-1 ${selectedPackage === pkg ? 'text-indigo-900' : 'text-yellow-400'}`}>
+                              R$ {pkg.price.toFixed(2)}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    
                     <ul className="space-y-2 text-purple-300 mb-4">
                       <li className="flex items-start">
                         <CheckCircle className="w-5 h-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                        <span>{READING_PACKAGE_SIZE} leituras adicionais</span>
+                        <span>{selectedPackage.size} leituras adicionais</span>
                       </li>
                       <li className="flex items-start">
                         <CheckCircle className="w-5 h-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
@@ -214,7 +242,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                     
                     <div className="bg-purple-900/80 p-3 rounded-lg flex items-center justify-between">
                       <span className="text-purple-300">Preço</span>
-                      <span className="text-white font-bold text-xl">R$ {READING_PACKAGE_PRICE.toFixed(2)}</span>
+                      <span className="text-white font-bold text-xl">R$ {selectedPackage.price.toFixed(2)}</span>
                     </div>
                   </div>
                   
@@ -270,6 +298,8 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   </div>
                 </>
               )}
+        </div>
+      </div>
     </div>
   );
 };

@@ -6,6 +6,14 @@ export const FREE_READING_LIMIT = 3;
 export const READING_PACKAGE_SIZE = 10;
 export const READING_PACKAGE_PRICE = 29.90;
 
+export const SMALL_PACKAGE_SIZE = 3;
+export const SMALL_PACKAGE_PRICE = 9.90;
+
+export const PACKAGES = [
+  { size: READING_PACKAGE_SIZE, price: READING_PACKAGE_PRICE, title: 'Pacote de 10 Leituras de Tarot' },
+  { size: SMALL_PACKAGE_SIZE, price: SMALL_PACKAGE_PRICE, title: 'Pacote de 3 Leituras de Tarot' }
+];
+
 // Local storage keys
 const READING_COUNT_KEY = 'tarot_reading_count';
 const PAYMENT_STATUS_KEY = 'tarot_payment_status';
@@ -174,6 +182,17 @@ export const simulateSuccessfulPayment = (): void => {
   console.log("Simulating successful payment, new status:", status);
   updatePaymentStatus(status);
   
+  // Update readingsAvailable based on the most recently selected package
+  const transactions = JSON.parse(localStorage.getItem('mp_transactions') || '[]');
+  if (transactions.length > 0) {
+    const latestTransaction = transactions[transactions.length - 1];
+    const purchasedPackage = PACKAGES.find(pkg => pkg.price === latestTransaction.amount);
+    if (purchasedPackage) {
+      status.readingsAvailable = purchasedPackage.size;
+      updatePaymentStatus(status);
+    }
+  }
+  
   // Notify any listeners that a payment has been processed
   const event = new CustomEvent('paymentSuccess', { detail: status });
   window.dispatchEvent(event);
@@ -183,7 +202,7 @@ export const simulateSuccessfulPayment = (): void => {
 // that securely communicates with Mercado Pago using your access token
 
 // Create payment preference using Mercado Pago Checkout Pro
-export const createPaymentPreference = async (): Promise<PaymentPreference> => {
+export const createPaymentPreference = async (selectedPackage = PACKAGES[0]): Promise<PaymentPreference> => {
   try {
     console.log("Creating payment preference with Checkout Pro...");
     
@@ -193,8 +212,8 @@ export const createPaymentPreference = async (): Promise<PaymentPreference> => {
     // Create preference data
     const preferenceData = {
       items: [{
-        title: `Pacote de ${READING_PACKAGE_SIZE} Leituras de Tarot`,
-        unit_price: READING_PACKAGE_PRICE,
+        title: selectedPackage.title,
+        unit_price: selectedPackage.price,
         quantity: 1,
         currency_id: 'BRL'
       }],
@@ -242,7 +261,7 @@ export const createPaymentPreference = async (): Promise<PaymentPreference> => {
       const transaction = {
         id: preference.id,
         date: new Date().toISOString(),
-        amount: READING_PACKAGE_PRICE,
+        amount: selectedPackage.price,
         status: 'pending'
       };
       
@@ -359,6 +378,21 @@ export const checkPaymentStatus = async (preferenceId: string): Promise<PaymentS
     
     // Save payment status to local storage
     updatePaymentStatus(status);
+    
+    // Update the readingsAvailable based on the transaction amount
+    // This is needed for when we have different package sizes
+    const transactions = JSON.parse(localStorage.getItem('mp_transactions') || '[]');
+    const transaction = transactions.find((t: any) => t.id === preferenceId);
+    
+    if (transaction) {
+      // Find which package was purchased based on the amount
+      const purchasedPackage = PACKAGES.find(pkg => pkg.price === transaction.amount);
+      
+      if (purchasedPackage) {
+        status.readingsAvailable = purchasedPackage.size;
+        updatePaymentStatus(status);
+      }
+    }
     
     return status;
   } catch (error) {
