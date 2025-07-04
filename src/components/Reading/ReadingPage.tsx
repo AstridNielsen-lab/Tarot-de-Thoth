@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { SpreadLayout } from './SpreadLayout';
 import { CardInterpretation } from './CardInterpretation';
 import { spreads as allSpreads, getSpreadById } from '../../data/spreads';
@@ -12,6 +12,15 @@ import { BookOpen, Save, Eye, HelpCircle, Shuffle, ImageIcon } from 'lucide-reac
 import { TarotCardComponent } from '../TarotCard';
 import { useSound } from '../../hooks/useSound';
 import { CrowleyInterpreter } from './CrowleyInterpreter';
+import { PaymentModal } from '../PaymentModal';
+import { 
+  FREE_READING_LIMIT,
+  getReadingCount, 
+  incrementReadingCount,
+  needsPayment,
+  getPaymentStatus,
+  useReadingCredit
+} from '../../services/mercadoPago';
 
 // Guidance text for each spread type
 const spreadGuidance = {
@@ -36,6 +45,10 @@ export const ReadingPage: React.FC = () => {
   const [showUserInfoModal, setShowUserInfoModal] = useState<boolean>(false);
   const [userName, setUserName] = useState<string>('');
   const [birthDate, setBirthDate] = useState<string>('');
+  const [showPaymentModal, setShowPaymentModal] = useState<boolean>(false);
+  const [readingCount, setReadingCount] = useState<number>(getReadingCount());
+  const [isPaymentRequired, setIsPaymentRequired] = useState<boolean>(needsPayment());
+  const [paymentStatus, setPaymentStatus] = useState(getPaymentStatus());
   
   // Refs for animations
   const deckRef = useRef<HTMLDivElement>(null);
@@ -49,7 +62,22 @@ export const ReadingPage: React.FC = () => {
       alert("Por favor, insira uma questão antes de começar a leitura.");
       return;
     }
-    
+
+    // Check if payment is required
+    if (needsPayment()) {
+      setShowPaymentModal(true);
+      return;
+    }
+
+    // Increment reading count and use credit if this is a paid reading
+    const newCount = incrementReadingCount();
+    setReadingCount(newCount);
+
+    if (paymentStatus.isPaid && paymentStatus.readingsAvailable > 0) {
+      useReadingCredit();
+      setPaymentStatus(getPaymentStatus());
+    }
+
     // Show user info modal
     setShowUserInfoModal(true);
   };
@@ -301,6 +329,16 @@ export const ReadingPage: React.FC = () => {
       {renderShuffleAnimation()}
       {renderInstructions()}
       {renderUserInfoModal()}
+      <PaymentModal 
+        isOpen={showPaymentModal}
+        onClose={() => setShowPaymentModal(false)}
+        onPaymentComplete={() => {
+          setShowPaymentModal(false);
+          setPaymentStatus(getPaymentStatus());
+          setIsPaymentRequired(false);
+          setShowUserInfoModal(true);
+        }}
+      />
       
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-white">Realizar Leitura de Tarot</h1>
@@ -350,6 +388,33 @@ export const ReadingPage: React.FC = () => {
             </div>
           </div>
           
+          {/* Reading Count Display */}
+          <div className="mb-6 p-4 bg-indigo-900/50 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-yellow-400 font-medium mb-1">Leituras Disponíveis</h3>
+                {paymentStatus.isPaid ? (
+                  <p className="text-purple-300">
+                    {paymentStatus.readingsAvailable} leituras pagas restantes
+                  </p>
+                ) : (
+                  <p className="text-purple-300">
+                    {Math.max(0, FREE_READING_LIMIT - readingCount)} leituras gratuitas restantes
+                  </p>
+                )}
+              </div>
+              {paymentStatus.isPaid && paymentStatus.expirationDate && (
+                <div className="text-right">
+                  <p className="text-sm text-purple-400">
+                    Pacote válido até:
+                    <br />
+                    {new Date(paymentStatus.expirationDate).toLocaleDateString()}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+          
           <div className="mb-6">
             <label className="block text-purple-300 mb-2">Sua Questão:</label>
             <textarea
@@ -364,11 +429,16 @@ export const ReadingPage: React.FC = () => {
           </div>
           
           <button 
-            className="w-full px-4 py-3 bg-purple-800 text-white rounded-md hover:bg-purple-700 transition flex items-center justify-center"
+            className={`w-full px-4 py-3 text-white rounded-md transition flex items-center justify-center ${
+              isPaymentRequired && !paymentStatus.readingsAvailable ? 'bg-yellow-600 hover:bg-yellow-500' : 'bg-purple-800 hover:bg-purple-700'
+            }`}
             onClick={initiateReading}
           >
             <Eye className="w-5 h-5 mr-2" />
-            Começar Leitura
+            {isPaymentRequired && !paymentStatus.readingsAvailable 
+              ? 'Adquirir Leituras'
+              : 'Começar Leitura'
+            }
           </button>
         </div>
       )}
@@ -448,7 +518,7 @@ export const ReadingPage: React.FC = () => {
                     </div>
                     <div className="mt-2 text-center w-full">
                       <div className="text-yellow-300 text-sm font-medium truncate px-1">{card.position.name}</div>
-                      <div className="text-purple-300 text-xs mt-1 truncate px-1">{card.card.name}</div>
+                      <div className="text-purple-300 text-xs mt-1 truncate px-1 text-center w-full">{card.card.name}{card.isReversed ? " (Invertida)" : ""}</div>
                     </div>
                     {/* Position number indicator */}
                     <div className="absolute top-1 right-1 w-5 h-5 rounded-full bg-indigo-700 text-yellow-300 flex items-center justify-center text-xs font-bold">
