@@ -34,17 +34,40 @@ export interface PaymentPreference {
 }
 
 // Get Mercado Pago credentials from environment variables
-// Get credentials from environment variables if available, otherwise use hardcoded values
-const MP_PUBLIC_KEY = import.meta.env.VITE_MP_PUBLIC_KEY || 'APP_USR-899679bb-8f18-4745-8837-36d6ef30c623';
-const MP_ACCESS_TOKEN = import.meta.env.VITE_MP_ACCESS_TOKEN || 'APP_USR-1223421008633173-070410-9db32cd8db2f19b0224c30514936e643-29008060';
-const MP_CLIENT_ID = import.meta.env.VITE_MP_CLIENT_ID || '1223421008633173';
-const MP_CLIENT_SECRET = import.meta.env.VITE_MP_CLIENT_SECRET || 'CUI8K2vCYgx9lP9ayGSo13LL03e6v3Yd';
+// Default fallback values for development - these should be overridden in production
+const DEFAULT_PUBLIC_KEY = 'APP_USR-899679bb-8f18-4745-8837-36d6ef30c623';
+const DEFAULT_ACCESS_TOKEN = 'APP_USR-1223421008633173-070410-9db32cd8db2f19b0224c30514936e643-29008060';
+const DEFAULT_CLIENT_ID = '1223421008633173';
+const DEFAULT_CLIENT_SECRET = 'CUI8K2vCYgx9lP9ayGSo13LL03e6v3Yd';
+
+// Get credentials from environment variables if available, otherwise use fallback values
+const MP_PUBLIC_KEY = import.meta.env.VITE_MP_PUBLIC_KEY || DEFAULT_PUBLIC_KEY;
+const MP_ACCESS_TOKEN = import.meta.env.VITE_MP_ACCESS_TOKEN || DEFAULT_ACCESS_TOKEN;
+const MP_CLIENT_ID = import.meta.env.VITE_MP_CLIENT_ID || DEFAULT_CLIENT_ID;
+const MP_CLIENT_SECRET = import.meta.env.VITE_MP_CLIENT_SECRET || DEFAULT_CLIENT_SECRET;
+
+// Check if in development or production mode
+const IS_DEV = import.meta.env.DEV || import.meta.env.VITE_APP_MODE === 'development';
+const USE_MOCKS = IS_DEV || import.meta.env.VITE_ENABLE_MOCKS === 'true';
+
+// Warn if using default credentials in production
+if (!IS_DEV && (
+    MP_PUBLIC_KEY === DEFAULT_PUBLIC_KEY || 
+    MP_ACCESS_TOKEN === DEFAULT_ACCESS_TOKEN
+)) {
+    console.warn(
+        'WARNING: Using default Mercado Pago credentials in production environment. ' +
+        'Please set the proper environment variables in your Vercel project settings.'
+    );
+}
 
 // Log credential usage (excluding full values for security)
 console.log("Using Mercado Pago credentials:", {
-  publicKey: MP_PUBLIC_KEY.substring(0, 10) + "...",
-  accessToken: MP_ACCESS_TOKEN.substring(0, 10) + "...",
-  clientId: MP_CLIENT_ID.substring(0, 5) + "...",
+    publicKey: MP_PUBLIC_KEY.substring(0, 10) + "...",
+    accessToken: MP_ACCESS_TOKEN.substring(0, 10) + "...",
+    clientId: MP_CLIENT_ID.substring(0, 5) + "...",
+    environment: IS_DEV ? 'development' : 'production',
+    useMocks: USE_MOCKS
 });
 
 // Clean up existing Mercado Pago SDK
@@ -430,6 +453,15 @@ export const createPaymentPreference = async (selectedPackage = PACKAGES[0], ema
       setUserEmail(email);
     }
     
+    // Check if credentials are valid before initialization
+    if (!MP_PUBLIC_KEY || MP_PUBLIC_KEY.length < 10) {
+      console.error("Invalid Mercado Pago Public Key. Payment functionality might not work correctly.");
+    }
+    
+    if (!MP_ACCESS_TOKEN || MP_ACCESS_TOKEN.length < 10) {
+      console.error("Invalid Mercado Pago Access Token. Payment functionality might not work correctly.");
+    }
+    
     // Initialize Mercado Pago
     await initMercadoPago();
     
@@ -464,14 +496,46 @@ export const createPaymentPreference = async (selectedPackage = PACKAGES[0], ema
       // Make API request to create preference
       // Note: In a production environment, this call should be made from your backend for security
       // We're doing it client-side for demo purposes only
-      console.log("Making API request with token:", MP_ACCESS_TOKEN.substring(0, 10) + "...");
+    console.log("Making API request with token:", MP_ACCESS_TOKEN.substring(0, 10) + "...");
+    
+    // Use mocks in development mode if enabled
+    if (USE_MOCKS) {
+      console.log("Using mock API for development");
       
-      // Add CORS headers for development environment
-      const headers: Record<string, string> = {
-        'Authorization': `Bearer ${MP_ACCESS_TOKEN}`,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
+      // Simulate transaction ID
+      const transactionId = `dev_${Date.now()}`;
+      
+      // Store in localStorage
+      const transaction = {
+        id: transactionId,
+        date: new Date().toISOString(),
+        amount: selectedPackage.price,
+        status: 'pending',
+        email: email
       };
+      
+      const transactions = JSON.parse(localStorage.getItem('mp_transactions') || '[]');
+      transactions.push(transaction);
+      localStorage.setItem('mp_transactions', JSON.stringify(transactions));
+      
+      // For development, just simulate success
+      setTimeout(() => {
+        simulateSuccessfulPayment();
+      }, 2000);
+      
+      return {
+        id: transactionId,
+        initPoint: `https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=${transactionId}`,
+        email: email || getUserEmail() || undefined
+      };
+    }
+    
+    // Add CORS headers for development environment
+    const headers: Record<string, string> = {
+      'Authorization': `Bearer ${MP_ACCESS_TOKEN}`,
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    };
       
       const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
         method: 'POST',
@@ -479,11 +543,26 @@ export const createPaymentPreference = async (selectedPackage = PACKAGES[0], ema
         body: JSON.stringify(preferenceData)
       });
 
-      if (!response.ok) {
-        const errorData = await response.text();
-        console.error("API error:", response.status, errorData);
-        throw new Error(`API error: ${response.status} - ${errorData}`);
+    // Handle common error statuses specifically
+    if (!response.ok) {
+      const errorData = await response.text();
+      console.error("API error:", response.status, errorData);
+      
+      // Check if it's an authentication error
+      if (response.status === 401) {
+        console.error("Authentication error. Please check your Mercado Pago credentials.");
+        throw new Error("Erro de autenticação com o Mercado Pago. Por favor, verifique as credenciais.");
       }
+      
+      // Handle rate limiting
+      if (response.status === 429) {
+        console.error("Rate limit exceeded with Mercado Pago API.");
+        throw new Error("Limite de requisições excedido. Por favor, tente novamente mais tarde.");
+      }
+      
+      // Generic error
+      throw new Error(`API error: ${response.status} - ${errorData}`);
+    }
 
       const preference = await response.json();
       console.log("Preference created successfully:", preference);
@@ -508,6 +587,11 @@ export const createPaymentPreference = async (selectedPackage = PACKAGES[0], ema
     } catch (apiError) {
       console.error("API error:", apiError);
       
+      // For production, we want to show a proper error
+      if (!IS_DEV && !USE_MOCKS) {
+        throw apiError;
+      }
+      
       // Fallback for development/demo
       console.log("Using fallback development mode for testing");
       
@@ -518,8 +602,9 @@ export const createPaymentPreference = async (selectedPackage = PACKAGES[0], ema
       const transaction = {
         id: transactionId,
         date: new Date().toISOString(),
-        amount: READING_PACKAGE_PRICE,
-        status: 'pending'
+        amount: selectedPackage.price,
+        status: 'pending',
+        email: email
       };
       
       const transactions = JSON.parse(localStorage.getItem('mp_transactions') || '[]');
@@ -555,6 +640,30 @@ export const checkPaymentStatus = async (preferenceId: string, email?: string): 
     // Validate inputs
     if (!preferenceId) {
       throw new Error("preferenceId is required for payment verification");
+    }
+    
+    // Check if we're in development/mock mode
+    if (USE_MOCKS || preferenceId.startsWith('dev_')) {
+      console.log("Using mock payment verification for development");
+      
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Create the expiration date (1 month from now)
+      const expirationDate = new Date();
+      expirationDate.setMonth(expirationDate.getMonth() + 1);
+      
+      // Create and save the payment status
+      const status: PaymentStatus = {
+        isPaid: true,
+        expirationDate,
+        readingsAvailable: READING_PACKAGE_SIZE
+      };
+      
+      // Save payment status to local storage
+      updatePaymentStatus(status);
+      
+      return status;
     }
     
     // Use provided email or get from storage
