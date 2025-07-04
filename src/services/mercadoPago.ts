@@ -18,6 +18,7 @@ export const PACKAGES = [
 const READING_COUNT_KEY = 'tarot_reading_count';
 const PAYMENT_STATUS_KEY = 'tarot_payment_status';
 const USER_ID_KEY = 'tarot_user_id';
+const USER_EMAIL_KEY = 'tarot_user_email';
 
 // Types
 export interface PaymentStatus {
@@ -29,6 +30,7 @@ export interface PaymentStatus {
 export interface PaymentPreference {
   id: string;
   initPoint: string;
+  email?: string;
 }
 
 // Get Mercado Pago credentials from environment variables
@@ -96,6 +98,15 @@ export const getUserId = (): string => {
     localStorage.setItem(USER_ID_KEY, userId);
   }
   return userId;
+};
+
+// User email management
+export const getUserEmail = (): string | null => {
+  return localStorage.getItem(USER_EMAIL_KEY);
+};
+
+export const setUserEmail = (email: string): void => {
+  localStorage.setItem(USER_EMAIL_KEY, email);
 };
 
 // Reading count management
@@ -202,9 +213,14 @@ export const simulateSuccessfulPayment = (): void => {
 // that securely communicates with Mercado Pago using your access token
 
 // Create payment preference using Mercado Pago Checkout Pro
-export const createPaymentPreference = async (selectedPackage = PACKAGES[0]): Promise<PaymentPreference> => {
+export const createPaymentPreference = async (selectedPackage = PACKAGES[0], email?: string): Promise<PaymentPreference> => {
   try {
     console.log("Creating payment preference with Checkout Pro...");
+    
+    // Store email if provided
+    if (email) {
+      setUserEmail(email);
+    }
     
     // Initialize Mercado Pago
     await initMercadoPago();
@@ -228,7 +244,10 @@ export const createPaymentPreference = async (selectedPackage = PACKAGES[0]): Pr
         excluded_payment_types: []
       },
       statement_descriptor: "Tarot de Thoth",
-      external_reference: `tarot_reading_package_${Date.now()}_${getUserId()}`
+      external_reference: `tarot_reading_package_${Date.now()}_${getUserId()}`,
+      payer: {
+        email: email || getUserEmail() || 'guest@example.com'
+      }
     };
 
     console.log("Preference data prepared:", preferenceData);
@@ -271,7 +290,8 @@ export const createPaymentPreference = async (selectedPackage = PACKAGES[0]): Pr
       
       return {
         id: preference.id,
-        initPoint: preference.init_point
+        initPoint: preference.init_point,
+        email: email || getUserEmail() || undefined
       };
     } catch (apiError) {
       console.error("API error:", apiError);
@@ -301,7 +321,8 @@ export const createPaymentPreference = async (selectedPackage = PACKAGES[0]): Pr
       
       return {
         id: transactionId,
-        initPoint: `https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=${transactionId}`
+        initPoint: `https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=${transactionId}`,
+        email: email || getUserEmail() || undefined
       };
     }
   } catch (error) {
@@ -315,9 +336,17 @@ export const createPaymentPreference = async (selectedPackage = PACKAGES[0]): Pr
 };
 
 // Check payment status
-export const checkPaymentStatus = async (preferenceId: string): Promise<PaymentStatus> => {
+export const checkPaymentStatus = async (preferenceId: string, email?: string): Promise<PaymentStatus> => {
   try {
     console.log("Checking payment status for:", preferenceId);
+    
+    // Use provided email or get from storage
+    const userEmail = email || getUserEmail();
+    console.log("Verifying payment with email:", userEmail);
+    
+    if (!userEmail) {
+      console.warn("No email provided for payment verification");
+    }
     
     // In a production environment with a backend, you would use this code:
     /*
@@ -328,7 +357,8 @@ export const checkPaymentStatus = async (preferenceId: string): Promise<PaymentS
       },
       body: JSON.stringify({
         userId: getUserId(),
-        preferenceId
+        preferenceId,
+        email: userEmail
       }),
     });
     
@@ -348,6 +378,16 @@ export const checkPaymentStatus = async (preferenceId: string): Promise<PaymentS
     // Look for the transaction in localStorage
     const transactions = JSON.parse(localStorage.getItem('mp_transactions') || '[]');
     const transaction = transactions.find((t: any) => t.id === preferenceId);
+    
+    // In a real implementation, we would verify that the email matches the transaction
+    // For this demo, we'll just log that we're checking
+    if (userEmail && transaction) {
+      console.log(`Verifying payment for email: ${userEmail} with transaction: ${transaction.id}`);
+      
+      // Store the email with the transaction for reference
+      transaction.email = userEmail;
+      localStorage.setItem('mp_transactions', JSON.stringify(transactions));
+    }
     
     if (!transaction) {
       console.warn(`Transaction ${preferenceId} not found in local storage`);
@@ -381,8 +421,7 @@ export const checkPaymentStatus = async (preferenceId: string): Promise<PaymentS
     
     // Update the readingsAvailable based on the transaction amount
     // This is needed for when we have different package sizes
-    const transactions = JSON.parse(localStorage.getItem('mp_transactions') || '[]');
-    const transaction = transactions.find((t: any) => t.id === preferenceId);
+    // Note: We're using the transactions and transaction variables that were already declared above
     
     if (transaction) {
       // Find which package was purchased based on the amount

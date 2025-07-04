@@ -7,11 +7,12 @@ import { MainNavigation } from './components/MainNavigation';
 import { SplashScreen } from './components/SplashScreen';
 import { ReadingPage } from './components/Reading/ReadingPage';
 import { CatalogPage } from './components/Catalog/CatalogPage';
+import { ComplaintsSection } from './components/ComplaintsSection';
 import FAQSection from './components/FAQSection';
 import { Eye, Star, Sparkles, ExternalLink, Phone, BookOpen } from 'lucide-react';
 
 // Define page types for navigation
-type PageType = 'catalog' | 'reading';
+type PageType = 'catalog' | 'reading' | 'complaints';
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -66,8 +67,10 @@ function App() {
           {/* Page Content based on active page */}
           {activePage === 'catalog' ? (
             <CatalogPage />
-          ) : (
+          ) : activePage === 'reading' ? (
             <ReadingPage />
+          ) : (
+            <ComplaintsSection />
           )}
 
           {/* Footer */}
