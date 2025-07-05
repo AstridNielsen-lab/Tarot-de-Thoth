@@ -8,24 +8,35 @@ interface PromotionalSplashProps {
 
 export const PromotionalSplash: React.FC<PromotionalSplashProps> = ({ 
   onFinished,
-  paymentLink = "https://mpago.la/1ajTuwR"
+  paymentLink = "https://mpago.la/393thoth"
 }) => {
   const [opacity, setOpacity] = useState(0);
   const [showComponent, setShowComponent] = useState(true);
   const [randomCards, setRandomCards] = useState<number[]>([]);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   
-  // Generate 5 random card numbers (0-77) for the animation
+  // Generate cards for animation - Major Arcana (3-24) and the deck back
   useEffect(() => {
-    const cardNumbers = Array.from({ length: 5 }, () => Math.floor(Math.random() * 78));
-    setRandomCards(cardNumbers);
+    // Major Arcana cards (3-24) and the back of the deck (0)
+    const majorArcana = Array.from({ length: 22 }, (_, i) => i + 3);
+    const deckBack = 0;
+    
+    // Select 6 random cards from Major Arcana
+    const selectedCards = [];
+    for (let i = 0; i < 6; i++) {
+      const randomIndex = Math.floor(Math.random() * majorArcana.length);
+      selectedCards.push(majorArcana[randomIndex]);
+    }
+    
+    // Add the deck back as the first card
+    setRandomCards([deckBack, ...selectedCards]);
   }, []);
   
   // Handle card animation cycling
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentCardIndex((prev) => (prev + 1) % randomCards.length);
-    }, 1200);
+    }, 1000);
     
     return () => clearInterval(interval);
   }, [randomCards]);
@@ -63,7 +74,7 @@ export const PromotionalSplash: React.FC<PromotionalSplashProps> = ({
   
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-indigo-950 via-purple-950 to-slate-900"
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-br from-indigo-950 via-purple-950 to-slate-900"
       style={{ 
         opacity, 
         transition: 'opacity 1s ease-in-out'
@@ -77,19 +88,7 @@ export const PromotionalSplash: React.FC<PromotionalSplashProps> = ({
         <X className="w-6 h-6" />
       </button>
       
-      <div className="container max-w-4xl mx-auto px-6 py-8 text-center relative">
-        {/* Animated card background */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-20">
-          <img 
-            src={`/cards/${currentCard}.jpg`} 
-            alt="Carta de Tarot" 
-            className="h-full object-contain animate-pulse"
-            style={{ 
-              animation: 'pulse 2s infinite' 
-            }}
-          />
-        </div>
-        
+      <div className="container max-w-4xl mx-auto px-6 py-6 text-center relative">
         <div className="relative z-10">
           <h2 className="text-yellow-400 text-4xl md:text-5xl font-bold mb-6 animate-pulse">
             Baralho Impresso do Tarot de Thoth
@@ -117,6 +116,32 @@ export const PromotionalSplash: React.FC<PromotionalSplashProps> = ({
           <p className="text-purple-300 text-lg">
             Experimente a energia única das cartas físicas em suas leituras
           </p>
+        </div>
+        
+        {/* Card animation below the promotional content */}
+        <div className="mt-8 flex justify-center">
+          <div className="relative w-[240px] h-[384px]">
+            <style>
+              {`
+                @keyframes float {
+                  0%, 100% {
+                    transform: translateY(0) rotate(${Math.random() * 4 - 2}deg);
+                  }
+                  50% {
+                    transform: translateY(-15px) rotate(${Math.random() * 4 - 2}deg);
+                  }
+                }
+              `}
+            </style>
+            <img 
+              src={`/cards/${currentCard}.jpg`} 
+              alt="Carta de Tarot" 
+              className="absolute inset-0 w-full h-full object-contain rounded-lg shadow-[0_0_25px_rgba(255,223,0,0.8)]"
+              style={{ 
+                transition: 'opacity 0.8s ease-in-out, transform 0.8s ease-in-out',
+                animation: 'float 3s ease-in-out infinite'
+              }}
+          </div>
         </div>
       </div>
     </div>
