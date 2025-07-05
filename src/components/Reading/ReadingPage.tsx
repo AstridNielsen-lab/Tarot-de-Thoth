@@ -317,7 +317,7 @@ export const ReadingPage: React.FC = () => {
             Instruções de Leitura Segundo Crowley
           </button>
           <a 
-            href="https://mpago.la/28rYn1x" 
+            href="https://mpago.la/1ajTuwR" 
             target="_blank" 
             rel="noopener noreferrer"
             className="px-3 py-2 bg-indigo-900/70 text-yellow-400 text-sm flex items-center rounded-md border border-purple-700/50 hover:bg-indigo-800 transition-colors shadow-md"

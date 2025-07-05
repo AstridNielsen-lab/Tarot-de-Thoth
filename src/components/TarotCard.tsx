@@ -37,7 +37,7 @@ const getCategoryIcon = (category: string) => {
 // Maps card ID to correct image file number, accounting for covers and description pages
 const getImageId = (card: TarotCard): number => {
   // Images 1 and 2 are covers, so Major Arcana starts at image 3
-  // Images 25, 36, 47, 58 and 70 are description pages that should be skipped
+  // Images 25, 36, 47, 58 and 69 are description pages that should be skipped
   
   // Major Arcana: images 3-24 (skipping covers 1-2)
   if (card.category === 'major') {
@@ -105,37 +105,116 @@ const getImageId = (card: TarotCard): number => {
     }
   }
   
-  // Court Cards: images 71-86 (after skipping description at 70)
+  // Court Cards: images 70-85 (after skipping description at 69)
   if (card.category === 'court') {
-    // Skip image 70 which is a description page
-    const baseIndex = 70;
+    // Detailed logging for all court cards
+    console.log('Processing court card:', {
+      name: card.name,
+      suit: card.suit,
+      id: card.id,
+      category: card.category
+    });
     
-    const suitOffset = {
-      'Bastões': 0,  // Wands: 0 offset
-      'Copas': 4,    // Cups: +4 offset
-      'Espadas': 8,  // Swords: +8 offset
-      'Discos': 12   // Disks: +12 offset
-    };
+    // Skip image 69 which is a description page
+    const baseIndex = 69;
     
-    const courtRankOffset = {
-      'knight': 0,   // Knight: 0 offset
-      'queen': 1,    // Queen: +1 offset
-      'prince': 2,   // Prince: +2 offset
-      'princess': 3  // Princess: +3 offset
-    };
+    // Direct mapping based on the correct sequence for court cards:
+    // - Wands: King(70), Queen(71), Prince(72), Princess(73)
+    // - Cups: Knight(74), Queen(75), Prince(76), Princess(77)
+    // - Swords: King(78), Queen(79), Prince(80), Princess(81)
+    // - Disks: King(82), Queen(83), Prince(84), Princess(85)
     
-    // Extract court rank from id (e.g., 'knight-wands' -> 'knight')
-    const courtRank = card.id.split('-')[0];
+    // For Wands court cards - positioned at 70-73, before the Cups cards start at 74
+    // For Wands court cards - positioned at 70-73
+    if (card.suit === 'Bastões') {
+      console.log('Processing Wands court card:', {
+        name: card.name,
+        id: card.id,
+        suit: card.suit,
+        category: card.category,
+        fullId: card.id
+      });
+      
+      // Extract rank and suitPart from ID (e.g., 'king' and 'wands' from 'king-wands')
+      const idParts = card.id.split('-');
+      const [rank, suitPart] = idParts;
+      
+      // Log all parts obtained from splitting
+      console.log('Wands card ID parts:', {
+        fullId: card.id,
+        idParts,
+        rank,
+        suitPart
+      });
+      
+      // Verify that both parts exist
+      if (!rank || !suitPart) {
+        console.error('Invalid ID format for Wands card. Expected format: "rank-suit", got:', card.id);
+        return 3; // Return a default value if format is invalid
+      }
+      
+      // Use a mapping object for more robust handling
+      const rankToImageMap = {
+        'king': 70,
+        'queen': 71,
+        'prince': 72,
+        'princess': 73
+      };
+      
+      // Check if the rank is in our mapping
+      if (rank in rankToImageMap) {
+        const imageId = rankToImageMap[rank];
+        console.log(`Mapped Wands ${rank} to image ID: ${imageId}`);
+        return imageId;
+      }
+      
+      // If we get here, something is wrong with the rank
+      console.error('Invalid rank for Wands court card:', {
+        rank,
+        validRanks: Object.keys(rankToImageMap),
+        cardId: card.id,
+        cardName: card.name
+      });
+      return 3; // Default fallback
+    }
     
-    // Get offsets
-    const sOffset = card.suit ? suitOffset[card.suit] : 0;
-    const rOffset = courtRankOffset[courtRank] || 0;
+    // For Cups court cards
+    if (card.suit === 'Copas') {
+      if (card.id.split('-')[0] === 'knight') return 74;
+      if (card.id.split('-')[0] === 'queen') return 75;
+      if (card.id.split('-')[0] === 'prince') return 76;
+      if (card.id.split('-')[0] === 'princess') return 77;
+    }
     
-    // Image number is 70 (base for courts after skipping description) + suit offset + rank offset + 1
-    return baseIndex + sOffset + rOffset + 1;
+    // For Swords court cards
+    if (card.suit === 'Espadas') {
+      if (card.id.split('-')[0] === 'king') return 78; // King of Swords
+      if (card.id.split('-')[0] === 'queen') return 79;
+      if (card.id.split('-')[0] === 'prince') return 80;
+      if (card.id.split('-')[0] === 'princess') return 81;
+    }
+    
+    // For Disks court cards
+    if (card.suit === 'Discos') {
+      if (card.id.split('-')[0] === 'king') return 82; // King of Disks
+      if (card.id.split('-')[0] === 'queen') return 83;
+      if (card.id.split('-')[0] === 'prince') return 84;
+      if (card.id.split('-')[0] === 'princess') return 85;
+    }
+    
+    // We log this for debugging but don't use the fallback calculation
+    // as it might interfere with proper mapping
+    console.warn('No specific court card mapping found for', card.name);
   }
   
-  // Fallback: Return 3 (first actual card) if we can't determine the image ID
+  // Fallback: Log error and return 3 if we can't determine the image ID
+  console.error('Failed to determine image ID for card:', {
+    name: card.name,
+    suit: card.suit,
+    id: card.id,
+    category: card.category
+  });
+  
   return 3;
 };
 
@@ -144,9 +223,25 @@ export const TarotCardComponent: React.FC<TarotCardProps> = ({ card, onClick, is
   const [isHovered, setIsHovered] = useState(false);
   
   const imageId = getImageId(card);
-  const imagePath = `/cards/${imageId}.png`;
+  console.log('Card details:', {
+    name: card.name,
+    suit: card.suit,
+    id: card.id,
+    category: card.category,
+    imageId: imageId
+  });
   
+  // Add error boundary logging
+  const imagePath = `/cards/${imageId}.png`;
+  console.log('Attempting to load image:', imagePath);
+  
+  // Update the error handler to log more details
   const handleImageError = () => {
+    console.error('Failed to load image:', {
+      path: imagePath,
+      cardName: card.name,
+      imageId: imageId
+    });
     setImageError(true);
   };
 

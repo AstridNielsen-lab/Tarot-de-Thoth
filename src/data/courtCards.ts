@@ -3,9 +3,9 @@ import { TarotCard } from '../types/tarot';
 export const courtCards: TarotCard[] = [
   // Bastões (Wands)
   {
-    id: 'knight-wands',
-    name: 'Cavaleiro de Bastões',
-    englishName: 'Knight of Wands',
+    id: 'king-wands',
+    name: 'Rei de Bastões',
+    englishName: 'King of Wands',
     suit: 'Bastões',
     element: 'Fogo do Fogo',
     description: 'Energia pura, ímpeto, ação decisiva, coragem ardente.',
@@ -85,9 +85,9 @@ export const courtCards: TarotCard[] = [
   },
   // Espadas (Swords)
   {
-    id: 'knight-swords',
-    name: 'Cavaleiro de Espadas',
-    englishName: 'Knight of Swords',
+    id: 'king-swords',
+    name: 'Rei de Espadas',
+    englishName: 'King of Swords',
     suit: 'Espadas',
     element: 'Fogo do Ar',
     description: 'Intelecto agressivo, ação rápida, determinação cortante.',
@@ -126,9 +126,9 @@ export const courtCards: TarotCard[] = [
   },
   // Discos (Disks)
   {
-    id: 'knight-disks',
-    name: 'Cavaleiro de Discos',
-    englishName: 'Knight of Disks',
+    id: 'king-disks',
+    name: 'Rei de Discos',
+    englishName: 'King of Disks',
     suit: 'Discos',
     element: 'Fogo da Terra',
     description: 'Trabalho árduo, persistência, conquista material.',
