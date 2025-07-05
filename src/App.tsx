@@ -5,6 +5,7 @@ import { CardModal } from './components/CardModal';
 import { Navigation } from './components/Navigation';
 import { MainNavigation } from './components/MainNavigation';
 import { SplashScreen } from './components/SplashScreen';
+import { PromotionalSplash } from './components/PromotionalSplash';
 import { ReadingPage } from './components/Reading/ReadingPage';
 import { CatalogPage } from './components/Catalog/CatalogPage';
 import { ComplaintsSection } from './components/ComplaintsSection';
@@ -13,14 +14,23 @@ import { Eye, Star, Sparkles, ExternalLink, Phone, BookOpen } from 'lucide-react
 
 // Define page types for navigation
 type PageType = 'catalog' | 'reading' | 'complaints';
+type SplashType = 'promotional' | 'original' | 'none';
 
 function App() {
-  const [showSplash, setShowSplash] = useState(true);
+  const [splashState, setSplashState] = useState<SplashType>('promotional');
   const [activePage, setActivePage] = useState<PageType>('catalog');
 
   return (
     <>
-      {showSplash && <SplashScreen onFinished={() => setShowSplash(false)} />}
+      {splashState === 'promotional' && (
+        <PromotionalSplash 
+          onFinished={() => setSplashState('original')} 
+          paymentLink="https://mpago.la/1ajTuwR"
+        />
+      )}
+      {splashState === 'original' && (
+        <SplashScreen onFinished={() => setSplashState('none')} />
+      )}
       <div className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-950 to-slate-900">
         <div className="container mx-auto px-4 py-8">
           
