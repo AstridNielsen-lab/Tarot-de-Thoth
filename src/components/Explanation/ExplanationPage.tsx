@@ -158,11 +158,26 @@ export const ExplanationPage: React.FC = () => {
       // Show loading state
       const loadingToast = document.createElement('div');
       loadingToast.className = 'fixed top-4 right-4 bg-purple-800 text-white px-4 py-2 rounded-lg shadow-lg z-50';
-      loadingToast.textContent = 'Gerando PDF, por favor aguarde...';
+      loadingToast.textContent = 'Gerando PDF com imagens, por favor aguarde (isso pode demorar alguns minutos)...';
       document.body.appendChild(loadingToast);
       
-      // Generate PDF blob
-      const blob = await pdf(<ThothBookPDF />).toBlob();
+      console.log('Starting PDF generation with images...');
+      
+      // Generate PDF blob with font configuration
+      const blob = await pdf(
+        <ThothBookPDF />, 
+        { 
+          fontMapUrl: '/fonts', 
+          fontMapPath: '/fonts',
+          // Ensure PDF has proper styles and time to load remote images
+          options: {
+            pageStyle: `@page { size: A4; margin: 30pt; }`,
+            timeout: 30000 // Increase timeout for fetching images
+          }
+        }
+      ).toBlob();
+      
+      console.log('PDF generation completed successfully!');
       
       // Create download link
       const url = URL.createObjectURL(blob);
