@@ -4,7 +4,9 @@ import { TarotCardComponent } from '../TarotCard';
 import { majorArcana } from '../../data/majorArcana';
 import { courtCards } from '../../data/courtCards';
 import { minorArcana } from '../../data/minorArcana';
-import { ArrowLeft, ArrowRight, BookOpen, ChevronUp, ChevronDown } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BookOpen, ChevronUp, ChevronDown, Download, FileText } from 'lucide-react';
+import { pdf } from '@react-pdf/renderer';
+import { ThothBookPDF } from './ThothBookPDF';
 
 // Combine all cards
 const allCards: TarotCard[] = [...majorArcana, ...courtCards, ...minorArcana];
@@ -57,7 +59,7 @@ interface DetailedExplanation {
 }
 
 // Mock detailed explanations - these would be replaced with actual content from the Book of Thoth
-const getDetailedExplanation = (card: TarotCard): DetailedExplanation => {
+export const getDetailedExplanation = (card: TarotCard): DetailedExplanation => {
   // This is a placeholder. In a real implementation, these would come from a data file
   return {
     thothExplanation: `Segundo O Livro de Thoth de Aleister Crowley, ${card.name} (${card.englishName}) representa ${card.description} 
@@ -150,6 +152,61 @@ export const ExplanationPage: React.FC = () => {
     }));
   };
   
+  // Function to generate and download PDF
+  const downloadPDF = async () => {
+    try {
+      // Show loading state
+      const loadingToast = document.createElement('div');
+      loadingToast.className = 'fixed top-4 right-4 bg-purple-800 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+      loadingToast.textContent = 'Gerando PDF, por favor aguarde...';
+      document.body.appendChild(loadingToast);
+      
+      // Generate PDF blob
+      const blob = await pdf(<ThothBookPDF />).toBlob();
+      
+      // Create download link
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'Livro-de-Thoth-Tarot.pdf';
+      document.body.appendChild(link);
+      
+      // Trigger download
+      link.click();
+      
+      // Clean up
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      // Remove loading toast and show success
+      document.body.removeChild(loadingToast);
+      
+      const successToast = document.createElement('div');
+      successToast.className = 'fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+      successToast.textContent = 'PDF gerado com sucesso!';
+      document.body.appendChild(successToast);
+      
+      // Remove success toast after 3 seconds
+      setTimeout(() => {
+        document.body.removeChild(successToast);
+      }, 3000);
+      
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      
+      // Show error toast
+      const errorToast = document.createElement('div');
+      errorToast.className = 'fixed top-4 right-4 bg-red-600 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+      errorToast.textContent = 'Erro ao gerar PDF. Por favor, tente novamente.';
+      document.body.appendChild(errorToast);
+      
+      // Remove error toast after 3 seconds
+      setTimeout(() => {
+        document.body.removeChild(errorToast);
+      }, 3000);
+    }
+  };
+  
   return (
     <div>
       {/* Header */}
@@ -166,6 +223,18 @@ export const ExplanationPage: React.FC = () => {
         <p className="text-purple-200 text-xl max-w-3xl mx-auto leading-relaxed text-center">
           Explorando em profundidade as cartas do Tarot de Thoth conforme apresentadas por Aleister Crowley
         </p>
+        
+        {/* Download Button */}
+        <div className="flex justify-center mt-6">
+          <button
+            onClick={downloadPDF}
+            className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-purple-700 to-indigo-700 text-white rounded-lg hover:from-purple-600 hover:to-indigo-600 transition-all shadow-lg hover:shadow-xl transform hover:scale-105"
+          >
+            <FileText className="w-5 h-5" />
+            <span>Baixar Livro Completo (PDF)</span>
+            <Download className="w-5 h-5" />
+          </button>
+        </div>
       </div>
       
       {/* Card Navigation */}
