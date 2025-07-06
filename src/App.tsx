@@ -10,10 +10,11 @@ import { ReadingPage } from './components/Reading/ReadingPage';
 import { CatalogPage } from './components/Catalog/CatalogPage';
 import { ComplaintsSection } from './components/ComplaintsSection';
 import FAQSection from './components/FAQSection';
-import { Eye, Star, Sparkles, ExternalLink, Phone, BookOpen } from 'lucide-react';
+import { Eye, Star, Sparkles, ExternalLink, Phone, BookOpen, Library } from 'lucide-react';
+import { ExplanationPage } from './components/Explanation/ExplanationPage';
 
 // Define page types for navigation
-type PageType = 'catalog' | 'reading' | 'complaints';
+type PageType = 'catalog' | 'reading' | 'complaints' | 'explanation';
 type SplashType = 'promotional' | 'original' | 'none';
 
 function App() {
@@ -99,6 +100,8 @@ function App() {
             <CatalogPage />
           ) : activePage === 'reading' ? (
             <ReadingPage />
+          ) : activePage === 'explanation' ? (
+            <ExplanationPage />
           ) : (
             <ComplaintsSection />
           )}
