@@ -52,6 +52,15 @@ export const PromotionalSplash: React.FC<PromotionalSplashProps> = ({
     
     return () => clearTimeout(fadeInTimeout);
   }, []);
+
+  // Auto-close after 30 seconds
+  useEffect(() => {
+    const autoCloseTimeout = setTimeout(() => {
+      handleFinish();
+    }, 30000); // 30 seconds
+    
+    return () => clearTimeout(autoCloseTimeout);
+  }, []);
   
   // Handle fade out and component unmounting
   const handleFinish = () => {
