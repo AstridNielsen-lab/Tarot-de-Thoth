@@ -5,7 +5,7 @@ import { courtCards } from '../../data/courtCards';
 import { minorArcana } from '../../data/minorArcana';
 import { TarotCardComponent } from '../TarotCard';
 import { CardModal } from '../CardModal';
-import { Search, Eye } from 'lucide-react';
+import { Search } from 'lucide-react';
 
 type CardFilterType = 'all' | 'major' | 'minor' | 'court';
 
@@ -14,54 +14,6 @@ export const CatalogPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedCard, setSelectedCard] = useState<TarotCard | null>(null);
   
-  // Card back component to fill empty space in court cards grid
-  const CardBackComponent = () => {
-    const [isHovered, setIsHovered] = useState(false);
-    
-    return (
-      <div 
-        className="relative bg-gradient-to-br from-purple-900 to-indigo-900 rounded-xl overflow-hidden cursor-pointer transform hover:scale-105 transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/25 border border-purple-700/50"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        style={{ aspectRatio: '3/5', width: '100%', maxWidth: '280px' }}
-      >
-        {/* Card Back Image */}
-        <div className="w-full h-full">
-          <img 
-            src="/assets/verso-baralho.jpg" 
-            alt="Verso do Baralho"
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              console.error('Failed to load card back image');
-              e.currentTarget.src = "/assets/verso-baralho-social.jpg"; // Fallback to social image if main image fails
-            }}
-          />
-        </div>
-        
-        {/* Hover Overlay */}
-        <div 
-          className={`absolute inset-0 bg-gradient-to-b from-purple-900/80 to-indigo-900/90 p-4 flex flex-col transition-opacity duration-300 ${
-            isHovered ? 'opacity-100' : 'opacity-0'
-          }`}
-        >
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center space-x-2">
-              <div className="text-purple-300">
-                <Eye className="w-5 h-5" />
-              </div>
-            </div>
-          </div>
-          
-          <div className="text-center flex-grow flex flex-col justify-center">
-            <div className="mx-auto max-w-full px-2">
-              <h3 className="text-xl font-bold text-white mb-1 text-center">Verso do Baralho</h3>
-              <p className="text-purple-200 text-sm mb-2 text-center">Card Back</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
   
   // Sort cards according to traditional Thoth Tarot order
   const sortedMajorArcana = [...majorArcana].sort((a, b) => {
@@ -390,8 +342,7 @@ export const CatalogPage: React.FC = () => {
                       );
                     });
                     
-                    // Add card back as the 5th card
-                    return [...renderedCards, <CardBackComponent key="wands-card-back" />];
+                    return renderedCards;
                   })()}
                 </div>
               </div>
@@ -446,8 +397,7 @@ export const CatalogPage: React.FC = () => {
                       />
                     ));
                     
-                    // Add card back as the 5th card
-                    return [...renderedCards, <CardBackComponent key="cups-card-back" />];
+                    return renderedCards;
                   })()}
                 </div>
               </div>
@@ -482,8 +432,7 @@ export const CatalogPage: React.FC = () => {
                       />
                     ));
                     
-                    // Add card back as the 5th card
-                    return [...renderedCards, <CardBackComponent key="swords-card-back" />];
+                    return renderedCards;
                   })()}
                 </div>
               </div>
@@ -518,8 +467,7 @@ export const CatalogPage: React.FC = () => {
                       />
                     ));
                     
-                    // Add card back as the 5th card
-                    return [...renderedCards, <CardBackComponent key="disks-card-back" />];
+                    return renderedCards;
                   })()}
                 </div>
               </div>
