@@ -192,7 +192,7 @@ export const CatalogPage: React.FC = () => {
         {filteredCards.some(card => card.category === 'major') && (
           <div>
             <h2 className="text-2xl font-bold text-yellow-500 mb-4">Arcanos Maiores</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 place-items-center justify-items-center px-2 sm:px-0 card-grid">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 sm:gap-5 place-items-center justify-items-center px-2 sm:px-0 card-grid">
               {filteredCards
                 .filter(card => card.category === 'major')
                 .map((card) => (
@@ -215,7 +215,7 @@ export const CatalogPage: React.FC = () => {
             {filteredCards.some(card => card.category === 'minor' && card.suit === 'Bastões') && (
               <div className="mb-8">
                 <h3 className="text-xl font-semibold text-purple-300 mb-3">Bastões</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 place-items-center justify-items-center px-2 sm:px-0 card-grid">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 sm:gap-5 place-items-center justify-items-center px-2 sm:px-0 card-grid">
                   {filteredCards
                     .filter(card => card.category === 'minor' && card.suit === 'Bastões')
                     .map((card) => (
@@ -233,7 +233,7 @@ export const CatalogPage: React.FC = () => {
             {filteredCards.some(card => card.category === 'minor' && card.suit === 'Copas') && (
               <div className="mb-8">
                 <h3 className="text-xl font-semibold text-purple-300 mb-3">Copas</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 place-items-center justify-items-center px-2 sm:px-0 card-grid">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 sm:gap-5 place-items-center justify-items-center px-2 sm:px-0 card-grid">
                   {filteredCards
                     .filter(card => card.category === 'minor' && card.suit === 'Copas')
                     .map((card) => (
@@ -251,7 +251,7 @@ export const CatalogPage: React.FC = () => {
             {filteredCards.some(card => card.category === 'minor' && card.suit === 'Espadas') && (
               <div className="mb-8">
                 <h3 className="text-xl font-semibold text-purple-300 mb-3">Espadas</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 place-items-center justify-items-center px-2 sm:px-0 card-grid">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 sm:gap-5 place-items-center justify-items-center px-2 sm:px-0 card-grid">
                   {filteredCards
                     .filter(card => card.category === 'minor' && card.suit === 'Espadas')
                     .map((card) => (
@@ -269,7 +269,7 @@ export const CatalogPage: React.FC = () => {
             {filteredCards.some(card => card.category === 'minor' && card.suit === 'Discos') && (
               <div className="mb-8">
                 <h3 className="text-xl font-semibold text-purple-300 mb-3">Discos</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 place-items-center justify-items-center px-2 sm:px-0 card-grid">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 sm:gap-5 place-items-center justify-items-center px-2 sm:px-0 card-grid">
                   {filteredCards
                     .filter(card => card.category === 'minor' && card.suit === 'Discos')
                     .map((card) => (
@@ -294,7 +294,7 @@ export const CatalogPage: React.FC = () => {
             {filteredCards.some(card => card.category === 'court' && card.suit === 'Bastões') && (
               <div className="mb-8">
                 <h3 className="text-xl font-semibold text-purple-300 mb-3">Bastões</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 place-items-center justify-items-center px-2 sm:px-0 card-grid">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 sm:gap-5 place-items-center justify-items-center px-2 sm:px-0 card-grid">
                   {(() => {
                     // Get Wands court cards
                     const wandsCourtCards = filteredCards.filter(card => 
@@ -352,7 +352,7 @@ export const CatalogPage: React.FC = () => {
             {filteredCards.some(card => card.category === 'court' && card.suit === 'Copas') && (
               <div className="mb-8">
                 <h3 className="text-xl font-semibold text-purple-300 mb-3">Copas</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 place-items-center justify-items-center px-2 sm:px-0 card-grid">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 sm:gap-5 place-items-center justify-items-center px-2 sm:px-0 card-grid">
                   {(() => {
                     // Get Cups court cards
                     const cupsCourtCards = filteredCards.filter(card => 
@@ -407,7 +407,7 @@ export const CatalogPage: React.FC = () => {
             {filteredCards.some(card => card.category === 'court' && card.suit === 'Espadas') && (
               <div className="mb-8">
                 <h3 className="text-xl font-semibold text-purple-300 mb-3">Espadas</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 place-items-center justify-items-center px-2 sm:px-0 card-grid">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 sm:gap-5 place-items-center justify-items-center px-2 sm:px-0 card-grid">
                   {(() => {
                     // Get Swords court cards
                     const swordsCourtCards = filteredCards.filter(card => 
@@ -442,7 +442,7 @@ export const CatalogPage: React.FC = () => {
             {filteredCards.some(card => card.category === 'court' && card.suit === 'Discos') && (
               <div className="mb-8">
                 <h3 className="text-xl font-semibold text-purple-300 mb-3">Discos</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 place-items-center justify-items-center px-2 sm:px-0 card-grid">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 sm:gap-5 place-items-center justify-items-center px-2 sm:px-0 card-grid">
                   {(() => {
                     // Get Disks court cards
                     const disksCourtCards = filteredCards.filter(card => 

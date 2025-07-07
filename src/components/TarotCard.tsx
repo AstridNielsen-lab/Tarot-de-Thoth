@@ -11,26 +11,26 @@ interface TarotCardProps {
 const getSuitIcon = (suit: string) => {
   switch (suit) {
     case 'Bastões':
-      return <Wand className="w-6 h-6" />;
+      return <Wand className="w-4 h-4" />;
     case 'Copas':
-      return <Heart className="w-6 h-6" />;
+      return <Heart className="w-4 h-4" />;
     case 'Espadas':
-      return <Sword className="w-6 h-6" />;
+      return <Sword className="w-4 h-4" />;
     case 'Discos':
-      return <Coins className="w-6 h-6" />;
+      return <Coins className="w-4 h-4" />;
     default:
-      return <Star className="w-6 h-6" />;
+      return <Star className="w-4 h-4" />;
   }
 };
 
 const getCategoryIcon = (category: string) => {
   switch (category) {
     case 'major':
-      return <Crown className="w-5 h-5" />;
+      return <Crown className="w-3.5 h-3.5" />;
     case 'court':
-      return <Eye className="w-5 h-5" />;
+      return <Eye className="w-3.5 h-3.5" />;
     default:
-      return <Star className="w-5 h-5" />;
+      return <Star className="w-3.5 h-3.5" />;
   }
 };
 
@@ -251,7 +251,7 @@ export const TarotCardComponent: React.FC<TarotCardProps> = ({ card, onClick, is
       onClick={() => onClick(card)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      style={{ aspectRatio: '3/5', width: '100%', maxWidth: '220px' }}
+      style={{ aspectRatio: '3/5', width: '100%', maxWidth: '200px' }}
     >
       {/* Card Image */}
       <div 
@@ -275,15 +275,15 @@ export const TarotCardComponent: React.FC<TarotCardProps> = ({ card, onClick, is
 
       {/* Hover Overlay */}
       <div 
-        className={`absolute inset-0 bg-gradient-to-b from-purple-900/80 to-indigo-900/90 p-4 flex flex-col transition-opacity duration-300 ${
+        className={`absolute inset-0 bg-gradient-to-b from-purple-900/80 to-indigo-900/90 p-2.5 flex flex-col transition-opacity duration-300 ${
           isHovered ? 'opacity-100' : 'opacity-0'
         }`}
       >
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center space-x-2">
+        <div className="flex items-center justify-between mb-1">
+          <div className="flex items-center space-x-1.5">
             {card.category === 'major' && (
               <div className="text-yellow-400">
-                <Crown className="w-5 h-5" />
+                <Crown className="w-3.5 h-3.5" />
               </div>
             )}
             {card.suit && (
@@ -292,7 +292,7 @@ export const TarotCardComponent: React.FC<TarotCardProps> = ({ card, onClick, is
               </div>
             )}
             {card.number && (
-              <span className="text-yellow-400 font-bold text-lg">
+              <span className="text-yellow-400 font-bold text-sm">
                 {card.number}
               </span>
             )}
@@ -303,23 +303,23 @@ export const TarotCardComponent: React.FC<TarotCardProps> = ({ card, onClick, is
         </div>
         
         <div className="text-center flex-grow flex flex-col justify-between">
-          <div className="mx-auto max-w-full px-2">
-            <h3 className="text-xl font-bold text-white mb-1 text-center">{card.name}</h3>
-            <p className="text-purple-200 text-sm mb-2 text-center">{card.englishName}</p>
+          <div className="mx-auto max-w-full px-1">
+            <h3 className="text-base font-bold text-white mb-0.5 text-center truncate">{card.name}</h3>
+            <p className="text-purple-200 text-2xs mb-0.5 text-center truncate">{card.englishName}</p>
             {card.element && (
-              <p className="text-yellow-400 text-xs mb-2 font-semibold text-center">{card.element}</p>
+              <p className="text-yellow-400 text-3xs mb-0.5 font-semibold text-center">{card.element}</p>
             )}
           </div>
           
-          <div className="mx-auto max-w-full px-2">
-            <p className="text-purple-100 text-xs leading-relaxed mb-3 line-clamp-3 text-center">
+          <div className="mx-auto max-w-full px-1">
+            <p className="text-purple-100 text-3xs leading-tight mb-1 line-clamp-3 text-center">
               {card.description}
             </p>
-            <div className="flex flex-wrap gap-1 justify-center">
+            <div className="flex flex-wrap gap-0.5 justify-center">
               {card.keywords.slice(0, 3).map((keyword, index) => (
                 <span 
                   key={index} 
-                  className="bg-purple-700/70 text-purple-200 px-2 py-0.5 rounded-full text-xs"
+                  className="bg-purple-700/70 text-purple-200 px-1 py-0.5 rounded-full text-3xs"
                 >
                   {keyword}
                 </span>
