@@ -297,47 +297,47 @@ export const ReadingPage: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
       {renderShuffleAnimation()}
       {renderInstructions()}
       {renderUserInfoModal()}
       
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-white">Realizar Leitura de Tarot</h1>
-        <p className="text-purple-300 text-sm mt-2">
+      <div className="text-center mb-4 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-white">Realizar Leitura de Tarot</h1>
+        <p className="text-purple-300 text-xs sm:text-sm mt-2 px-1 sm:px-0">
           Selecione um método de leitura e faça sua pergunta. Clique em "Começar Leitura"
           para visualizar as cartas e suas interpretações.
         </p>
-        <div className="flex items-center justify-center space-x-4 mt-4">
+        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 mt-3 sm:mt-4">
           <button 
-            className="px-3 py-2 bg-indigo-900/70 text-yellow-400 text-sm flex items-center rounded-md border border-purple-700/50 hover:bg-indigo-800 transition-colors shadow-md"
+            className="px-2 sm:px-3 py-1.5 sm:py-2 bg-indigo-900/70 text-yellow-400 text-xs sm:text-sm flex items-center rounded-md border border-purple-700/50 hover:bg-indigo-800 transition-colors shadow-md"
             onClick={() => setShowInstructions(true)}
           >
-            <HelpCircle className="w-4 h-4 mr-2" />
-            Instruções de Leitura Segundo Crowley
+            <HelpCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-2 flex-shrink-0" />
+            <span className="line-clamp-1">Instruções</span>
           </button>
           <a 
             href="https://mpago.la/1ajTuwR" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="px-3 py-2 bg-indigo-900/70 text-yellow-400 text-sm flex items-center rounded-md border border-purple-700/50 hover:bg-indigo-800 transition-colors shadow-md"
+            className="px-2 sm:px-3 py-1.5 sm:py-2 bg-indigo-900/70 text-yellow-400 text-xs sm:text-sm flex items-center rounded-md border border-purple-700/50 hover:bg-indigo-800 transition-colors shadow-md"
           >
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
-            Comprar Baralho Impresso
+            <span className="line-clamp-1">Comprar Baralho</span>
           </a>
         </div>
       </div>
       
       {readingState === 'initial' && (
-        <div className="max-w-2xl mx-auto bg-indigo-950/50 p-6 rounded-lg mb-8">
-          <div className="mb-6">
-            <label className="block text-purple-300 mb-2">Método de Leitura:</label>
+        <div className="max-w-2xl mx-auto bg-indigo-950/50 p-3 sm:p-6 rounded-lg mb-4 sm:mb-8">
+          <div className="mb-4 sm:mb-6">
+            <label className="block text-purple-300 text-sm sm:text-base mb-1 sm:mb-2">Método de Leitura:</label>
             <select 
               value={spreadType.id} 
               onChange={(e) => setSpreadType(getSpreadById(e.target.value as 'three-card' | 'celtic-cross' | 'tree-of-life'))}
-              className="w-full p-3 rounded-md bg-indigo-900 border border-purple-800 text-purple-400"
+              className="w-full p-2 sm:p-3 rounded-md bg-indigo-900 border border-purple-800 text-purple-400 text-sm sm:text-base"
             >
               {allSpreads.map(spread => (
                 <option key={spread.id} value={spread.id}>{spread.name}</option>
@@ -345,57 +345,57 @@ export const ReadingPage: React.FC = () => {
             </select>
             
             {/* Guidance text for selected spread */}
-            <div className="mt-3 p-4 bg-indigo-900/50 rounded-lg">
-              <p className="text-purple-300 text-sm italic">
+            <div className="mt-2 sm:mt-3 p-2 sm:p-4 bg-indigo-900/50 rounded-lg">
+              <p className="text-purple-300 text-xs sm:text-sm italic">
                 {spreadGuidance[spreadType.id]}
               </p>
             </div>
           </div>
           
-          <div className="mb-6">
-            <label className="block text-purple-300 mb-2">Sua Questão:</label>
+          <div className="mb-4 sm:mb-6">
+            <label className="block text-purple-300 text-sm sm:text-base mb-1 sm:mb-2">Sua Questão:</label>
             <textarea
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               placeholder="Formule sua questão com clareza e intenção..."
-              className="w-full p-3 rounded-md bg-indigo-900 border border-purple-800 text-purple-300 min-h-[100px]"
+              className="w-full p-2 sm:p-3 rounded-md bg-indigo-900 border border-purple-800 text-purple-300 min-h-[80px] sm:min-h-[100px] text-sm sm:text-base"
             />
-            <p className="text-purple-400 text-xs mt-2">
+            <p className="text-purple-400 text-2xs sm:text-xs mt-1 sm:mt-2">
               "A pergunta clara é a metade da resposta." — Adaptado de Crowley
             </p>
           </div>
           
           <button 
-            className="w-full px-4 py-3 text-white rounded-md transition flex items-center justify-center bg-purple-800 hover:bg-purple-700"
+            className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-white rounded-md transition flex items-center justify-center bg-purple-800 hover:bg-purple-700 text-sm sm:text-base"
             onClick={initiateReading}
           >
-            <Eye className="w-5 h-5 mr-2" />
+            <Eye className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" />
             Começar Leitura
           </button>
         </div>
       )}
       
       {reading && readingState !== 'initial' && (
-        <div className="mb-4 flex justify-between items-center">
+        <div className="mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0">
           <div>
-            <h2 className="text-xl text-white font-medium">{spreadType.name}</h2>
-            {userName && <p className="text-yellow-400 text-sm">Consulente: {userName}</p>}
-            <p className="text-purple-300 text-sm italic">"{question}"</p>
+            <h2 className="text-lg sm:text-xl text-white font-medium">{spreadType.name}</h2>
+            {userName && <p className="text-yellow-400 text-xs sm:text-sm">Consulente: {userName}</p>}
+            <p className="text-purple-300 text-xs sm:text-sm italic line-clamp-2 sm:line-clamp-none">"{question}"</p>
           </div>
           
-          <div className="flex space-x-2">
+          <div className="flex space-x-2 w-full sm:w-auto justify-end">
             {readingState === 'complete' && (
               <button
-                className="px-3 py-1 bg-indigo-800 text-yellow-400 rounded-md hover:bg-indigo-700 transition flex items-center text-sm"
+                className="px-2 sm:px-3 py-1 bg-indigo-800 text-yellow-400 rounded-md hover:bg-indigo-700 transition flex items-center text-xs sm:text-sm"
                 onClick={saveReading}
               >
-                <Save className="w-4 h-4 mr-1" />
-                Salvar Leitura
+                <Save className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1" />
+                Salvar
               </button>
             )}
             
             <button
-              className="px-3 py-1 bg-purple-800 text-white rounded-md hover:bg-purple-700 transition text-sm"
+              className="px-2 sm:px-3 py-1 bg-purple-800 text-white rounded-md hover:bg-purple-700 transition text-xs sm:text-sm"
               onClick={resetReading}
             >
               Nova Leitura
@@ -405,9 +405,9 @@ export const ReadingPage: React.FC = () => {
       )}
 
       {reading && readingState !== 'initial' && (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-3 sm:gap-6">
           {/* Card Interpretation - Now at the top */}
-          <div className="w-full bg-indigo-950/30 p-4 rounded-lg border border-purple-800/30">
+          <div className="w-full bg-indigo-950/30 p-3 sm:p-4 rounded-lg border border-purple-800/30">
             <CardInterpretation readingCard={selectedCard} />
             
             {readingState === 'complete' && !selectedCard && (
@@ -421,8 +421,8 @@ export const ReadingPage: React.FC = () => {
 
           {/* Spread Layout */}
           <div className="w-full relative">
-            <div className="bg-indigo-950/30 p-4 rounded-lg border border-purple-800/30">
-              <h3 className="text-xl font-medium text-indigo-200 mb-4 text-center">
+            <div className="bg-indigo-950/30 p-3 sm:p-4 rounded-lg border border-purple-800/30">
+              <h3 className="text-lg sm:text-xl font-medium text-indigo-200 mb-2 sm:mb-4 text-center">
                 {spreadType.id === 'celtic-cross' ? 'Celtic Cross Spread' : 
                  spreadType.id === 'tree-of-life' ? 'Tree of Life Spread' : 'Three-Card Spread'}
               </h3>
@@ -430,30 +430,30 @@ export const ReadingPage: React.FC = () => {
               {/* Table-based layout for spreads */}
               <div className={`grid ${
                 spreadType.id === 'tree-of-life' 
-                  ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5' 
+                  ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5' 
                   : spreadType.id === 'three-card'
-                  ? 'grid-cols-1 md:grid-cols-3'
-                  : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-              } gap-6 mb-6`}>
+                  ? 'grid-cols-1 sm:grid-cols-3'
+                  : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+              } gap-3 sm:gap-6 mb-3 sm:mb-6`}>
                 {reading.cards.map((card, index) => (
                   <div 
                     key={index} 
-                    className="flex flex-col items-center p-4 bg-indigo-900/30 rounded-lg hover:bg-indigo-900/50 transition-all cursor-pointer overflow-hidden"
+                    className="flex flex-col items-center p-2 sm:p-4 bg-indigo-900/30 rounded-lg hover:bg-indigo-900/50 transition-all cursor-pointer overflow-hidden"
                     onClick={() => setSelectedCard(card)}
                   >
-                    <div className="w-32 sm:w-36 md:w-40 lg:w-44 xl:w-48 mx-auto aspect-[2/3]">
+                    <div className="w-24 sm:w-32 md:w-36 lg:w-40 xl:w-44 mx-auto aspect-[2/3]">
                       <TarotCardComponent 
                         card={card.card} 
                         onClick={() => {}} 
                         isReversed={card.isReversed}
                       />
                     </div>
-                    <div className="mt-2 text-center w-full">
-                      <div className="text-yellow-300 text-sm font-medium truncate px-1">{card.position.name}</div>
-                      <div className="text-purple-300 text-xs mt-1 truncate px-1 text-center w-full">{card.card.name}{card.isReversed ? " (Invertida)" : ""}</div>
+                    <div className="mt-1 sm:mt-2 text-center w-full">
+                      <div className="text-yellow-300 text-xs sm:text-sm font-medium truncate px-1">{card.position.name}</div>
+                      <div className="text-purple-300 text-2xs sm:text-xs mt-0.5 sm:mt-1 truncate px-1 text-center w-full">{card.card.name}{card.isReversed ? " (Invertida)" : ""}</div>
                     </div>
                     {/* Position number indicator */}
-                    <div className="absolute top-1 right-1 w-5 h-5 rounded-full bg-indigo-700 text-yellow-300 flex items-center justify-center text-xs font-bold">
+                    <div className="absolute top-1 right-1 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-indigo-700 text-yellow-300 flex items-center justify-center text-2xs sm:text-xs font-bold">
                       {index + 1}
                     </div>
                   </div>
@@ -461,7 +461,7 @@ export const ReadingPage: React.FC = () => {
               </div>
               
               {/* Info about the spread */}
-              <div className="text-center text-indigo-300 text-xs mt-2 px-4 py-2 bg-indigo-900/20 rounded-lg">
+              <div className="text-center text-indigo-300 text-2xs sm:text-xs mt-2 px-2 sm:px-4 py-1.5 sm:py-2 bg-indigo-900/20 rounded-lg">
                 <p>
                   {spreadType.id === 'tree-of-life' 
                     ? 'Visualização em tabela da Árvore da Vida, com as Sephiroth em ordem numérica.'
@@ -493,21 +493,21 @@ export const ReadingPage: React.FC = () => {
       
       {/* Contribution Section */}
       {readingState === 'complete' && (
-        <div className="mt-8 p-6 bg-indigo-900/40 rounded-lg border border-purple-800/30">
+        <div className="mt-4 sm:mt-8 p-3 sm:p-6 bg-indigo-900/40 rounded-lg border border-purple-800/30">
           <div className="text-center">
-            <h3 className="text-xl text-yellow-400 font-medium mb-2">Contribua com o Projeto</h3>
-            <p className="text-purple-300 mb-6">
+            <h3 className="text-lg sm:text-xl text-yellow-400 font-medium mb-1 sm:mb-2">Contribua com o Projeto</h3>
+            <p className="text-purple-300 text-xs sm:text-sm mb-3 sm:mb-6">
               Se esta leitura foi útil e trouxe insights valiosos para você, considere fazer uma contribuição para ajudar a manter e melhorar este projeto.
             </p>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6 max-w-3xl mx-auto">
 
               {/* PIX Option */}
-              <div className="bg-indigo-950/50 p-5 rounded-lg border border-purple-800/20">
-                <h4 className="text-yellow-400 text-lg mb-2">PIX</h4>
-                <p className="text-purple-300 text-sm mb-4">Contribua usando a chave PIX abaixo</p>
-                <div className="bg-indigo-900/60 p-3 rounded-lg mb-3 relative group">
-                  <p className="text-purple-200 font-mono text-sm break-all">infinitpaycash@gmail.com</p>
+              <div className="bg-indigo-950/50 p-3 sm:p-5 rounded-lg border border-purple-800/20">
+                <h4 className="text-yellow-400 text-base sm:text-lg mb-1 sm:mb-2">PIX</h4>
+                <p className="text-purple-300 text-xs sm:text-sm mb-2 sm:mb-4">Contribua usando a chave PIX abaixo</p>
+                <div className="bg-indigo-900/60 p-2 sm:p-3 rounded-lg mb-2 sm:mb-3 relative group">
+                  <p className="text-purple-200 font-mono text-xs sm:text-sm break-all">infinitpaycash@gmail.com</p>
                   <button
                     onClick={() => {
                       navigator.clipboard.writeText('infinitpaycash@gmail.com');
@@ -517,9 +517,9 @@ export const ReadingPage: React.FC = () => {
                       document.body.appendChild(el);
                       setTimeout(() => el.remove(), 2000);
                     }}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-purple-400 hover:text-yellow-400 transition-colors"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-purple-400 hover:text-yellow-400 transition-colors p-1"
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                     </svg>
                   </button>
@@ -533,9 +533,9 @@ export const ReadingPage: React.FC = () => {
                     document.body.appendChild(el);
                     setTimeout(() => el.remove(), 2000);
                   }}
-                  className="inline-flex items-center px-3.5 py-1.5 bg-indigo-800 hover:bg-indigo-700 text-yellow-300 rounded-md transition-all shadow-md text-sm border border-purple-600/40 hover:border-purple-500/60 hover:shadow-purple-600/20 hover:translate-y-[-1px] group"
+                  className="inline-flex items-center px-3 sm:px-3.5 py-1.5 bg-indigo-800 hover:bg-indigo-700 text-yellow-300 rounded-md transition-all shadow-md text-xs sm:text-sm border border-purple-600/40 hover:border-purple-500/60 hover:shadow-purple-600/20 hover:translate-y-[-1px] group w-full sm:w-auto justify-center"
                 >
-                  <svg className="w-4 h-4 mr-1.5 group-hover:text-yellow-200 transition-colors" viewBox="0 0 512 512" fill="currentColor">
+                  <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-1.5 group-hover:text-yellow-200 transition-colors flex-shrink-0" viewBox="0 0 512 512" fill="currentColor">
                     <path d="M112.57 391.19c20.03-30.73 50.48-56.05 86.78-56.05 20.62 0 32.7 7.45 48.51 20.69 16.55 13.81 33.18 31.4 61.28 31.4 35.17 0 65.36-22.16 86.78-54.35-87.02 19.03-95.89-42.92-95.89-42.92 37.98 7.01 57.14 20.31 67.59 34.75 29.88-25.78 71.8-15.72 71.8-15.72-27.47-45.97-75.73-70.77-122.17-70.77-27.75 0-42.51 10.34-57.43 21.31-14.1 10.36-28.59 21.46-52.36 21.46-36.3 0-66.75-25.32-86.78-56.05 0 0 42.13-46.84 113.29-46.84 30.04 0 49.34 6.01 66.04 14.39 44.42-24.48 90.8-17.36 90.8-17.36-20.86-35.54-63.13-55.73-103.18-55.73-65.64 0-108.7 39.94-127.28 75.39-18.58-35.44-61.64-75.39-127.28-75.39-40.67 0-82.96 20.55-103.24 56.54 0 0 46.73-7.83 91.27 17.05 16.76-8.85 36.12-15.45 66.82-15.45 68.33 0 112.91 45.32 112.91 45.32-20.03 30.73-50.48 56.05-86.78 56.05-23.11 0-37.92-10.47-52.37-20.8-14.9-10.65-29.63-21.97-57.42-21.97-46.44 0-94.7 24.8-122.17 70.77 0 0 41.92-10.06 71.8 15.72 10.45-14.44 29.61-27.74 67.59-34.75 0 0-8.87 61.95-95.89 42.92 21.42 32.19 51.61 54.35 86.78 54.35 28.1 0 44.73-17.59 61.28-31.4 15.82-13.24 27.89-20.69 48.51-20.69 36.3 0 66.75 25.32 86.78 56.05z"/>
                   </svg>
                   <span className="group-hover:text-yellow-200 transition-colors">Copiar Chave PIX</span>
@@ -543,11 +543,11 @@ export const ReadingPage: React.FC = () => {
               </div>
               
               {/* PayPal Option */}
-              <div className="bg-indigo-950/50 p-5 rounded-lg border border-purple-800/20">
-                <h4 className="text-yellow-400 text-lg mb-2">PayPal</h4>
-                <p className="text-purple-300 text-sm mb-4">Contribua via PayPal usando o e-mail abaixo</p>
-                <div className="bg-indigo-900/60 p-3 rounded-lg mb-3 relative group">
-                  <p className="text-purple-200 font-mono text-sm break-all">radiotatuapefm@gmail.com</p>
+              <div className="bg-indigo-950/50 p-3 sm:p-5 rounded-lg border border-purple-800/20">
+                <h4 className="text-yellow-400 text-base sm:text-lg mb-1 sm:mb-2">PayPal</h4>
+                <p className="text-purple-300 text-xs sm:text-sm mb-2 sm:mb-4">Contribua via PayPal usando o e-mail abaixo</p>
+                <div className="bg-indigo-900/60 p-2 sm:p-3 rounded-lg mb-2 sm:mb-3 relative group">
+                  <p className="text-purple-200 font-mono text-xs sm:text-sm break-all">radiotatuapefm@gmail.com</p>
                   <button
                     onClick={() => {
                       navigator.clipboard.writeText('radiotatuapefm@gmail.com');
@@ -557,9 +557,9 @@ export const ReadingPage: React.FC = () => {
                       document.body.appendChild(el);
                       setTimeout(() => el.remove(), 2000);
                     }}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-purple-400 hover:text-yellow-400 transition-colors"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-purple-400 hover:text-yellow-400 transition-colors p-1"
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                     </svg>
                   </button>
@@ -568,9 +568,9 @@ export const ReadingPage: React.FC = () => {
                   href="https://paypal.me/radiotatuapefm" 
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center px-3.5 py-1.5 bg-indigo-800 hover:bg-indigo-700 text-yellow-300 rounded-md transition-all shadow-md text-sm border border-purple-600/40 hover:border-purple-500/60 hover:shadow-purple-600/20 hover:translate-y-[-1px] group"
+                  className="inline-flex items-center px-3 sm:px-3.5 py-1.5 bg-indigo-800 hover:bg-indigo-700 text-yellow-300 rounded-md transition-all shadow-md text-xs sm:text-sm border border-purple-600/40 hover:border-purple-500/60 hover:shadow-purple-600/20 hover:translate-y-[-1px] group w-full sm:w-auto justify-center"
                 >
-                  <svg className="w-4 h-4 mr-1.5 group-hover:text-yellow-200 transition-colors" viewBox="0 0 24 24" fill="currentColor">
+                  <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-1.5 group-hover:text-yellow-200 transition-colors flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 3.384a.77.77 0 0 1 .757-.651h6.737c2.299 0 3.9.62 4.759 1.834.79 1.13.802 2.614.035 4.177-.056.115-.099.23-.148.345.702.232 1.257.567 1.657 1.007.811.902 1.094 2.17.845 3.776-.304 1.97-1.286 3.554-2.685 4.394-1.332.801-2.958 1.071-4.77 1.071h-.505l-.362 2.009a.77.77 0 0 1-.757.651H7.076v-.026Z" />
                     <path d="M12.651 9.028c.107-.632.504-2.745-1.163-2.745H7.683a.642.642 0 0 0-.633.747l1.663 10.423h2.874l.571-3.172h1.236c.594 0 1.042-.234 1.314-.691.272-.456.318-1.057.143-1.811-.176-.747-.422-1.583-.729-2.331-.308-.747-.641-1.162-.984-1.283-.343-.12-.744-.177-1.2-.177-.457 0-.817.04-1.075.12-.257.08-.358.32-.358.32s.053-.32.339-.587c.285-.268.716-.401 1.29-.401.574 0 1.074.16 1.498.48.425.32.762.882.98 1.688.22.806.255 1.474.22 2.003-.034.53-.162.955-.38 1.275-.22.32-.574.48-1.062.48h-1.245l.482-3.1-.196-1.142Z" />
                   </svg>
