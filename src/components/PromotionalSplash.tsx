@@ -54,27 +54,15 @@ export const PromotionalSplash: React.FC<PromotionalSplashProps> = ({
   }, []);
 
   // Auto-close after 10 seconds
-  const [autoCloseTimer, setAutoCloseTimer] = useState(10);
+  // Auto-close functionality is still active but without visual display
   
   useEffect(() => {
     const autoCloseTimeout = setTimeout(() => {
       handleFinish();
     }, 10000); // 10 seconds
     
-    // Add countdown timer
-    const countdownInterval = setInterval(() => {
-      setAutoCloseTimer(prevTime => {
-        if (prevTime <= 1) {
-          clearInterval(countdownInterval);
-          return 0;
-        }
-        return prevTime - 1;
-      });
-    }, 1000);
-    
     return () => {
       clearTimeout(autoCloseTimeout);
-      clearInterval(countdownInterval);
     };
   }, []);
   
@@ -162,20 +150,11 @@ export const PromotionalSplash: React.FC<PromotionalSplashProps> = ({
           </div>
         </div>
         
-        {/* Delivery message at bottom but above timer */}
-        <div className="mb-16">
+        {/* Delivery message at bottom */}
+        <div className="mb-4">
           <p className="text-yellow-300 text-xl">
             ✨ Entregamos em todo planeta ✨
           </p>
-        </div>
-        
-        {/* Auto-close timer at very bottom with increased spacing */}
-        <div className="absolute bottom-4 left-0 right-0 flex justify-center items-center">
-          <div className="bg-yellow-400 text-indigo-900 px-4 py-2 rounded-full font-medium shadow-lg flex items-center">
-            <span>Esta tela fechará em </span>
-            <span className="bg-indigo-900 text-yellow-400 rounded-full w-8 h-8 flex items-center justify-center mx-2 font-bold">{autoCloseTimer}</span>
-            <span>segundos</span>
-          </div>
         </div>
     </div>
   );
