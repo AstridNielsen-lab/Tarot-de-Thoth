@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { X } from 'lucide-react';
 interface PromotionalSplashProps {
   onFinished: () => void;
   paymentLink?: string;
@@ -111,18 +110,7 @@ export const PromotionalSplash: React.FC<PromotionalSplashProps> = ({
         pointerEvents: opacity === 0 ? 'none' : 'auto' // Prevent clicks during fade-out
       }}
     >
-      <button 
-        onClick={() => {
-          if (!closeFinishedRef.current) {
-            handleFinish();
-            closeFinishedRef.current = true; // Mark as closed
-          }
-        }}
-        className="absolute top-4 right-4 text-purple-300 hover:text-yellow-400 transition-colors"
-        aria-label="Pular promoção"
-      >
-        <X className="w-6 h-6" />
-      </button>
+      {/* Close button removed - splash screen will auto-close after 10 seconds */}
       
       <div className="container max-w-4xl mx-auto px-6 py-6 text-center relative">
           <h2 className="text-yellow-400 text-4xl md:text-5xl font-bold mb-6 animate-pulse">
