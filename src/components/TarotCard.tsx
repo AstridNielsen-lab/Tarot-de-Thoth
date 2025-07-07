@@ -247,11 +247,11 @@ export const TarotCardComponent: React.FC<TarotCardProps> = ({ card, onClick, is
 
   return (
     <div 
-      className="relative bg-gradient-to-br from-purple-900 to-indigo-900 rounded-xl overflow-hidden cursor-pointer transform hover:scale-105 transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/25 border border-purple-700/50"
+      className="relative bg-gradient-to-br from-purple-900 to-indigo-900 rounded-xl overflow-hidden cursor-pointer transform hover:scale-105 transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/25 border border-purple-700/50 mx-auto tarot-card-container"
       onClick={() => onClick(card)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      style={{ aspectRatio: '3/5', width: '100%', maxWidth: '280px' }}
+      style={{ aspectRatio: '3/5', width: '100%', maxWidth: '220px' }}
     >
       {/* Card Image */}
       <div 
