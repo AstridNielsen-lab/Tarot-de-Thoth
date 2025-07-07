@@ -118,6 +118,10 @@ export const PromotionalSplash: React.FC<PromotionalSplashProps> = ({
               Adquira agora o baralho físico com todas as 78 cartas em impressão de alta qualidade
             </p>
             
+            <p className="text-purple-300 text-lg mb-4">
+              Experimente a energia única das cartas físicas em suas leituras.
+            </p>
+            
             {/* Countdown Timer */}
             <div className="mb-6">
               <p className="text-purple-200 text-lg mb-3">Oferta especial termina em:</p>
@@ -160,10 +164,6 @@ export const PromotionalSplash: React.FC<PromotionalSplashProps> = ({
           {/* Delivery message - moved higher up */}
           <p className="text-yellow-300 text-xl mb-4">
             ✨ Entregamos em todo planeta ✨
-          </p>
-          
-          <p className="text-purple-300 text-lg">
-            Experimente a energia única das cartas físicas em suas leituras.
           </p>
         </div>
         
