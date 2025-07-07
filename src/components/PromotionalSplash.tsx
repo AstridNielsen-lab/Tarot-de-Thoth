@@ -149,13 +149,6 @@ export const PromotionalSplash: React.FC<PromotionalSplashProps> = ({
             </a>
           </div>
         </div>
-        
-        {/* Delivery message at bottom */}
-        <div className="mb-4">
-          <p className="text-yellow-300 text-xl">
-            ✨ Entregamos em todo planeta ✨
-          </p>
-        </div>
     </div>
   );
 };
