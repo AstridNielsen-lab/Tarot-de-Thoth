@@ -160,14 +160,16 @@ export const PromotionalSplash: React.FC<PromotionalSplashProps> = ({
               Comprar Baralho Impresso
             </a>
           </div>
-          
-          {/* Delivery message - moved higher up */}
-          <p className="text-yellow-300 text-xl mb-4">
+        </div>
+        
+        {/* Delivery message at bottom but above timer */}
+        <div className="mb-16">
+          <p className="text-yellow-300 text-xl">
             ✨ Entregamos em todo planeta ✨
           </p>
         </div>
         
-        {/* Auto-close timer moved to bottom */}
+        {/* Auto-close timer at very bottom with increased spacing */}
         <div className="absolute bottom-4 left-0 right-0 flex justify-center items-center">
           <div className="bg-yellow-400 text-indigo-900 px-4 py-2 rounded-full font-medium shadow-lg flex items-center">
             <span>Esta tela fechará em </span>
