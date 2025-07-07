@@ -500,7 +500,7 @@ export const ReadingPage: React.FC = () => {
               Se esta leitura foi útil e trouxe insights valiosos para você, considere fazer uma contribuição para ajudar a manter e melhorar este projeto.
             </p>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
               {/* Mercado Pago Option */}
               <div className="bg-indigo-950/50 p-4 rounded-lg border border-purple-800/20">
                 <h4 className="text-yellow-400 text-lg mb-2">Mercado Pago</h4>
@@ -557,6 +557,42 @@ export const ReadingPage: React.FC = () => {
                   </svg>
                   Copiar Chave PIX
                 </button>
+              </div>
+              
+              {/* PayPal Option */}
+              <div className="bg-indigo-950/50 p-4 rounded-lg border border-purple-800/20">
+                <h4 className="text-yellow-400 text-lg mb-2">PayPal</h4>
+                <p className="text-purple-300 text-sm mb-4">Contribua via PayPal usando o e-mail abaixo</p>
+                <div className="bg-indigo-900/60 p-3 rounded-lg mb-3 relative group">
+                  <p className="text-purple-200 font-mono text-sm break-all">radiotatuapefm@gmail.com</p>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText('radiotatuapefm@gmail.com');
+                      const el = document.createElement('div');
+                      el.className = 'absolute -top-8 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-indigo-900 px-2 py-1 rounded text-sm';
+                      el.textContent = 'Copiado!';
+                      document.body.appendChild(el);
+                      setTimeout(() => el.remove(), 2000);
+                    }}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-purple-400 hover:text-yellow-400 transition-colors"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                  </button>
+                </div>
+                <a 
+                  href="https://paypal.me/radiotatuapefm" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors shadow-lg"
+                >
+                  <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 3.384a.77.77 0 0 1 .757-.651h6.737c2.299 0 3.9.62 4.759 1.834.79 1.13.802 2.614.035 4.177-.056.115-.099.23-.148.345.702.232 1.257.567 1.657 1.007.811.902 1.094 2.17.845 3.776-.304 1.97-1.286 3.554-2.685 4.394-1.332.801-2.958 1.071-4.77 1.071h-.505l-.362 2.009a.77.77 0 0 1-.757.651H7.076v-.026Z" />
+                    <path d="M12.651 9.028c.107-.632.504-2.745-1.163-2.745H7.683a.642.642 0 0 0-.633.747l1.663 10.423h2.874l.571-3.172h1.236c.594 0 1.042-.234 1.314-.691.272-.456.318-1.057.143-1.811-.176-.747-.422-1.583-.729-2.331-.308-.747-.641-1.162-.984-1.283-.343-.12-.744-.177-1.2-.177-.457 0-.817.04-1.075.12-.257.08-.358.32-.358.32s.053-.32.339-.587c.285-.268.716-.401 1.29-.401.574 0 1.074.16 1.498.48.425.32.762.882.98 1.688.22.806.255 1.474.22 2.003-.034.53-.162.955-.38 1.275-.22.32-.574.48-1.062.48h-1.245l.482-3.1-.196-1.142Z" fill="white" />
+                  </svg>
+                  Contribuir via PayPal
+                </a>
               </div>
             </div>
           </div>
