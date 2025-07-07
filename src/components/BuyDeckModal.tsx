@@ -80,7 +80,7 @@ export const BuyDeckModal: React.FC<BuyDeckModalProps> = ({
           <div className="bg-indigo-950/70 p-4 rounded-lg mb-6">
             <div className="flex justify-between items-center mb-2">
               <span className="text-purple-300 text-sm">Preço:</span>
-              <span className="text-yellow-400 font-bold text-xl">R$ 129,90</span>
+              <span className="text-yellow-400 font-bold text-xl">R$ 393,93</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-purple-300 text-sm">Frete:</span>
