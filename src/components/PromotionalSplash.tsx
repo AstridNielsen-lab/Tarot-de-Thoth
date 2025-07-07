@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { X } from 'lucide-react';
 interface PromotionalSplashProps {
   onFinished: () => void;
@@ -53,27 +53,49 @@ export const PromotionalSplash: React.FC<PromotionalSplashProps> = ({
     return () => clearTimeout(fadeInTimeout);
   }, []);
 
-  // Auto-close after 10 seconds
-  // Auto-close functionality is still active but without visual display
-  
-  useEffect(() => {
-    const autoCloseTimeout = setTimeout(() => {
-      handleFinish();
-    }, 10000); // 10 seconds
-    
-    return () => {
-      clearTimeout(autoCloseTimeout);
-    };
-  }, []);
-  
-  // Handle fade out and component unmounting
-  const handleFinish = () => {
+  // Handle fade out and component unmounting - memoize with useCallback
+  const handleFinish = useCallback(() => {
+    // First set opacity to 0 for fade-out effect
     setOpacity(0);
-    setTimeout(() => {
+    
+    // After transition completes, hide component and call onFinished
+    const timer = setTimeout(() => {
       setShowComponent(false);
       onFinished();
-    }, 1000); // match transition duration
-  };
+    }, 500); // slightly faster transition for better UX
+    
+    // Store the timer in ref for cleanup
+    fadeOutTimerRef.current = timer;
+    
+    // Return timer for immediate use if needed
+    return timer;
+  }, [onFinished]); // dependency on onFinished callback
+
+  // Auto-close after 10 seconds
+  // Auto-close functionality is still active but without visual display
+  const autoCloseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const fadeOutTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const closeFinishedRef = useRef<boolean>(false); // Track if close has been initiated
+  
+  useEffect(() => {
+    // Set up auto-close timeout
+    autoCloseTimeoutRef.current = setTimeout(() => {
+      if (!closeFinishedRef.current) {
+        handleFinish();
+        closeFinishedRef.current = true;
+      }
+    }, 10000); // 10 seconds
+    
+    // Clean up function
+    return () => {
+      if (autoCloseTimeoutRef.current) {
+        clearTimeout(autoCloseTimeoutRef.current);
+      }
+      if (fadeOutTimerRef.current) {
+        clearTimeout(fadeOutTimerRef.current);
+      }
+    };
+  }, [handleFinish]); // Add handleFinish as dependency
   
   if (!showComponent) return null;
   
@@ -85,11 +107,17 @@ export const PromotionalSplash: React.FC<PromotionalSplashProps> = ({
       className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-br from-indigo-950 via-purple-950 to-slate-900"
       style={{ 
         opacity, 
-        transition: 'opacity 1s ease-in-out'
+        transition: 'opacity 0.5s ease-in-out', // faster transition
+        pointerEvents: opacity === 0 ? 'none' : 'auto' // Prevent clicks during fade-out
       }}
     >
       <button 
-        onClick={handleFinish}
+        onClick={() => {
+          if (!closeFinishedRef.current) {
+            handleFinish();
+            closeFinishedRef.current = true; // Mark as closed
+          }
+        }}
         className="absolute top-4 right-4 text-purple-300 hover:text-yellow-400 transition-colors"
         aria-label="Pular promoção"
       >
