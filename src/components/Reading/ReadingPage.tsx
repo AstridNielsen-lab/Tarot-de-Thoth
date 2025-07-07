@@ -296,6 +296,76 @@ export const ReadingPage: React.FC = () => {
     );
   };
 
+  // Function to render the contribution section that will be visible before and after readings
+  const renderContributionButtons = () => {
+    return (
+      <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-indigo-900/40 rounded-lg border border-purple-800/30">
+        <div className="text-center mb-2">
+          <h3 className="text-base sm:text-lg text-yellow-400 font-medium">Contribua com o Projeto</h3>
+          <p className="text-purple-300 text-xs sm:text-sm mb-2">
+            Suas contribuições ajudam a manter e melhorar este oráculo de Tarot.
+          </p>
+        </div>
+        
+        <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
+          {/* PIX Contribution Button */}
+          <div className="flex-1 min-w-[150px] max-w-[200px]">
+            <button 
+              onClick={() => {
+                navigator.clipboard.writeText('infinitpaycash@gmail.com');
+                const el = document.createElement('div');
+                el.className = 'fixed top-4 right-4 bg-yellow-400 text-indigo-900 px-4 py-2 rounded shadow-lg z-50';
+                el.textContent = 'Chave PIX copiada!';
+                document.body.appendChild(el);
+                setTimeout(() => el.remove(), 2000);
+              }}
+              className="w-full inline-flex items-center justify-center px-3 sm:px-3.5 py-1.5 bg-indigo-800 hover:bg-indigo-700 text-yellow-300 rounded-md transition-all shadow-md text-xs sm:text-sm border border-purple-600/40 hover:border-purple-500/60 hover:shadow-purple-600/20 hover:translate-y-[-1px] group"
+            >
+              <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-1.5 group-hover:text-yellow-200 transition-colors flex-shrink-0" viewBox="0 0 512 512" fill="currentColor">
+                <path d="M112.57 391.19c20.03-30.73 50.48-56.05 86.78-56.05 20.62 0 32.7 7.45 48.51 20.69 16.55 13.81 33.18 31.4 61.28 31.4 35.17 0 65.36-22.16 86.78-54.35-87.02 19.03-95.89-42.92-95.89-42.92 37.98 7.01 57.14 20.31 67.59 34.75 29.88-25.78 71.8-15.72 71.8-15.72-27.47-45.97-75.73-70.77-122.17-70.77-27.75 0-42.51 10.34-57.43 21.31-14.1 10.36-28.59 21.46-52.36 21.46-36.3 0-66.75-25.32-86.78-56.05 0 0 42.13-46.84 113.29-46.84 30.04 0 49.34 6.01 66.04 14.39 44.42-24.48 90.8-17.36 90.8-17.36-20.86-35.54-63.13-55.73-103.18-55.73-65.64 0-108.7 39.94-127.28 75.39-18.58-35.44-61.64-75.39-127.28-75.39-40.67 0-82.96 20.55-103.24 56.54 0 0 46.73-7.83 91.27 17.05 16.76-8.85 36.12-15.45 66.82-15.45 68.33 0 112.91 45.32 112.91 45.32-20.03 30.73-50.48 56.05-86.78 56.05-23.11 0-37.92-10.47-52.37-20.8-14.9-10.65-29.63-21.97-57.42-21.97-46.44 0-94.7 24.8-122.17 70.77 0 0 41.92-10.06 71.8 15.72 10.45-14.44 29.61-27.74 67.59-34.75 0 0-8.87 61.95-95.89 42.92 21.42 32.19 51.61 54.35 86.78 54.35 28.1 0 44.73-17.59 61.28-31.4 15.82-13.24 27.89-20.69 48.51-20.69 36.3 0 66.75 25.32 86.78 56.05z"/>
+              </svg>
+              <span className="group-hover:text-yellow-200 transition-colors">Contribuir via PIX</span>
+            </button>
+            <p className="text-purple-300 text-2xs text-center mt-1">infinitpaycash@gmail.com</p>
+          </div>
+          
+          {/* PayPal Contribution Button */}
+          <div className="flex-1 min-w-[150px] max-w-[200px]">
+            <a 
+              href="https://paypal.me/radiotatuapefm" 
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full inline-flex items-center justify-center px-3 sm:px-3.5 py-1.5 bg-indigo-800 hover:bg-indigo-700 text-yellow-300 rounded-md transition-all shadow-md text-xs sm:text-sm border border-purple-600/40 hover:border-purple-500/60 hover:shadow-purple-600/20 hover:translate-y-[-1px] group"
+            >
+              <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-1.5 group-hover:text-yellow-200 transition-colors flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 3.384a.77.77 0 0 1 .757-.651h6.737c2.299 0 3.9.62 4.759 1.834.79 1.13.802 2.614.035 4.177-.056.115-.099.23-.148.345.702.232 1.257.567 1.657 1.007.811.902 1.094 2.17.845 3.776-.304 1.97-1.286 3.554-2.685 4.394-1.332.801-2.958 1.071-4.77 1.071h-.505l-.362 2.009a.77.77 0 0 1-.757.651H7.076v-.026Z" />
+                <path d="M12.651 9.028c.107-.632.504-2.745-1.163-2.745H7.683a.642.642 0 0 0-.633.747l1.663 10.423h2.874l.571-3.172h1.236c.594 0 1.042-.234 1.314-.691.272-.456.318-1.057.143-1.811-.176-.747-.422-1.583-.729-2.331-.308-.747-.641-1.162-.984-1.283-.343-.12-.744-.177-1.2-.177-.457 0-.817.04-1.075.12-.257.08-.358.32-.358.32s.053-.32.339-.587c.285-.268.716-.401 1.29-.401.574 0 1.074.16 1.498.48.425.32.762.882.98 1.688.22.806.255 1.474.22 2.003-.034.53-.162.955-.38 1.275-.22.32-.574.48-1.062.48h-1.245l.482-3.1-.196-1.142Z" />
+              </svg>
+              <span className="group-hover:text-yellow-200 transition-colors">Contribuir via PayPal</span>
+            </a>
+            <p className="text-purple-300 text-2xs text-center mt-1">radiotatuapefm@gmail.com</p>
+          </div>
+          
+          {/* Buy Deck Button */}
+          <div className="flex-1 min-w-[150px] max-w-[200px]">
+            <a 
+              href="https://mpago.la/1ajTuwR" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="w-full inline-flex items-center justify-center px-3 sm:px-3.5 py-1.5 bg-indigo-800 hover:bg-indigo-700 text-yellow-300 rounded-md transition-all shadow-md text-xs sm:text-sm border border-purple-600/40 hover:border-purple-500/60 hover:shadow-purple-600/20 hover:translate-y-[-1px] group"
+            >
+              <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-1.5 group-hover:text-yellow-200 transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              <span className="group-hover:text-yellow-200 transition-colors">Comprar Baralho</span>
+            </a>
+            <p className="text-purple-300 text-2xs text-center mt-1">Tarot de Thoth físico</p>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
       {renderShuffleAnimation()}
@@ -329,6 +399,9 @@ export const ReadingPage: React.FC = () => {
           </a>
         </div>
       </div>
+      
+      {/* Fixed contribution buttons that are always visible */}
+      {renderContributionButtons()}
       
       {readingState === 'initial' && (
         <div className="max-w-2xl mx-auto bg-indigo-950/50 p-3 sm:p-6 rounded-lg mb-4 sm:mb-8">
@@ -491,7 +564,7 @@ export const ReadingPage: React.FC = () => {
         </div>
       )}
       
-      {/* Contribution Section */}
+      {/* Detailed Contribution Section - shown after reading is complete */}
       {readingState === 'complete' && (
         <div className="mt-4 sm:mt-8 p-3 sm:p-6 bg-indigo-900/40 rounded-lg border border-purple-800/30">
           <div className="text-center">
