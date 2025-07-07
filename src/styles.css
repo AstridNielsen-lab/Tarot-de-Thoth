@@ -119,6 +119,26 @@ body {
     padding-bottom: 0.5rem !important;
   }
   
+  /* Smaller text size for contribution buttons */
+  .contribution-section button,
+  .contribution-section a[role="button"],
+  .contribution-section .button,
+  [class*="contribution"] button,
+  [class*="contribution"] a[role="button"] {
+    font-size: 0.75rem !important; /* Smaller font size */
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+    min-height: 36px !important;
+    line-height: 1.2 !important;
+  }
+  
+  /* Additional specificity for email text */
+  .contribution-section .text-2xs,
+  [class*="contribution"] .text-2xs {
+    font-size: 0.65rem !important;
+    line-height: 1rem !important;
+  }
+  
   /* Improve spacing in card layouts */
   .card-grid {
     gap: 0.5rem !important;
