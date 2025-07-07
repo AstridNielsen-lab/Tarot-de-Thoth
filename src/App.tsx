@@ -50,13 +50,13 @@ function App() {
           {/* Header - only show in catalog view */}
           {activePage === 'catalog' && (
             <div className="mb-8">
-              <div className="flex items-center justify-center space-x-4 mb-6">
+              <div className="flex items-center justify-center space-x-2 mb-6">
             <div className="text-yellow-400">
-              <Eye className="w-12 h-12" />
+              <Eye className="w-8 h-8" />
             </div>
-            <h1 className="text-5xl font-bold text-white">Tarot de Thoth</h1>
+            <h1 className="text-3xl font-bold text-white">Tarot de Thoth</h1>
             <div className="text-yellow-400">
-              <Sparkles className="w-12 h-12" />
+              <Sparkles className="w-8 h-8" />
             </div>
           </div>
           <p className="text-purple-200 text-xl max-w-3xl mx-auto leading-relaxed">
