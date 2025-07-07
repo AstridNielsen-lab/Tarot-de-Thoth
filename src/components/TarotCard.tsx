@@ -232,7 +232,7 @@ export const TarotCardComponent: React.FC<TarotCardProps> = ({ card, onClick, is
   });
   
   // Add error boundary logging
-  const imagePath = `/cards/${imageId}.png`;
+  const imagePath = `/cards/${imageId}.png?url`;
   console.log('Attempting to load image:', imagePath);
   
   // Update the error handler to log more details

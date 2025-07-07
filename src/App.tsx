@@ -6,6 +6,7 @@ import { Navigation } from './components/Navigation';
 import { MainNavigation } from './components/MainNavigation';
 import { SplashScreen } from './components/SplashScreen';
 import { PromotionalSplash } from './components/PromotionalSplash';
+import { ContributionTicker } from './components/ContributionTicker';
 import { ReadingPage } from './components/Reading/ReadingPage';
 import { CatalogPage } from './components/Catalog/CatalogPage';
 import { ComplaintsSection } from './components/ComplaintsSection';
@@ -23,6 +24,11 @@ function App() {
 
   return (
     <>
+      {/* Contribution Ticker - Always on top */}
+      <div className="fixed top-0 left-0 w-full z-50">
+        <ContributionTicker />
+      </div>
+
       {splashState === 'promotional' && (
         <PromotionalSplash 
           onFinished={() => setSplashState('original')} 
@@ -33,7 +39,7 @@ function App() {
         <SplashScreen onFinished={() => setSplashState('none')} />
       )}
       <div className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-950 to-slate-900">
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-8 pt-16">
           
           {/* Main Navigation */}
           <MainNavigation 

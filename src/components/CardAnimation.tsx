@@ -36,7 +36,7 @@ const CardAnimation: React.FC = () => {
       {cards.map((card, index) => (
         <img
           key={index}
-          src={`/cards/${card.image}`} 
+                  src={`/cards/${card.image}?url`}
           alt="floating card"
           className={`floating-card ${card.animationClass}`}
           style={{
