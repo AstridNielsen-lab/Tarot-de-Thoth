@@ -5,7 +5,7 @@ import { majorArcana } from '../../data/majorArcana';
 import { courtCards } from '../../data/courtCards';
 import { minorArcana } from '../../data/minorArcana';
 import { ArrowLeft, ArrowRight, BookOpen, ChevronUp, ChevronDown } from 'lucide-react';
-import { PDFDownloader } from './PDFDownloader';
+import { ThothBookPDF } from './ThothBookPDF';
 
 // Combine all cards
 const allCards: TarotCard[] = [...majorArcana, ...courtCards, ...minorArcana];
@@ -291,8 +291,8 @@ export const ExplanationPage: React.FC = () => {
         </div>
       </div>
       
-      {/* PDF Downloader Component */}
-      <PDFDownloader />
+      {/* Thoth Book Amazon Link Component */}
+      <ThothBookPDF />
     </div>
   );
 };

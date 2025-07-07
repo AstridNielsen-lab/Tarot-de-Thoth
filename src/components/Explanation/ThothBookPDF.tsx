@@ -2,15 +2,10 @@ import React from 'react';
 import { BookOpen, ExternalLink } from 'lucide-react';
 
 /**
- * ThothBookPDF component - Simplified version that replaces PDF generation 
- * with Amazon book link promotion
+ * ThothBookPDF component - Provides information about the Thoth Book
+ * and a direct link to purchase it on Amazon instead of PDF generation
  */
-
-/**
- * ThothBookInformation component - Provides information about the Thoth Book
- * and a direct link to purchase it on Amazon
- */
-export const ThothBookInformation: React.FC = () => {
+export const ThothBookPDF: React.FC = () => {
   // Handle redirect to Amazon product page
   const handleRedirectToAmazon = () => {
     window.open('https://www.amazon.com.br/dp/B0FGWCYYHG', '_blank');
@@ -64,7 +59,7 @@ export const ThothBookInformation: React.FC = () => {
           className="w-full py-3 px-6 bg-gradient-to-r from-purple-700 to-indigo-700 text-white rounded-lg hover:from-purple-600 hover:to-indigo-600 transition-all shadow-md hover:shadow-xl transform hover:scale-105 flex items-center justify-center"
         >
           <ExternalLink className="w-5 h-5 mr-2" />
-          <span>Ler na Amazon</span>
+          <span>Ver o livro na Amazon</span>
         </button>
         
         <div className="mt-4 text-xs text-purple-400 text-center">
@@ -79,13 +74,6 @@ export const ThothBookInformation: React.FC = () => {
       </div>
     </div>
   );
-};
-/**
- * Main exported component that redirects to the PDFDownloader component
- * which is now the main entry point to the Amazon book link
- */
-export const ThothBookPDF: React.FC = () => {
-  return <ThothBookInformation />;
 };
 
 export default ThothBookPDF;
