@@ -108,11 +108,6 @@ export const PromotionalSplash: React.FC<PromotionalSplashProps> = ({
         <X className="w-6 h-6" />
       </button>
       
-      {/* Countdown indicator */}
-      <div className="absolute top-4 left-4 bg-yellow-400 text-indigo-900 font-bold rounded-full w-10 h-10 flex items-center justify-center shadow-lg">
-        {autoCloseTimer}
-      </div>
-      
       <div className="container max-w-4xl mx-auto px-6 py-6 text-center relative">
           <h2 className="text-yellow-400 text-4xl md:text-5xl font-bold mb-6 animate-pulse">
             Baralho Impresso do Tarot de Thoth
@@ -162,19 +157,23 @@ export const PromotionalSplash: React.FC<PromotionalSplashProps> = ({
             </a>
           </div>
           
+          {/* Delivery message - moved higher up */}
+          <p className="text-yellow-300 text-xl mb-4">
+            ✨ Entregamos em todo planeta ✨
+          </p>
+          
           <p className="text-purple-300 text-lg">
             Experimente a energia única das cartas físicas em suas leituras.
           </p>
         </div>
         
-        {/* Additional promotional message */}
-        <div className="mt-4">
-          <p className="text-yellow-300 text-xl">
-            ✨ Entrega para todo o Brasil ✨
-          </p>
-          <p className="text-purple-300 text-sm mt-2">
-            Esta tela fechará automaticamente em {autoCloseTimer} segundos
-          </p>
+        {/* Auto-close timer moved to bottom */}
+        <div className="absolute bottom-4 left-0 right-0 flex justify-center items-center">
+          <div className="bg-yellow-400 text-indigo-900 px-4 py-2 rounded-full font-medium shadow-lg flex items-center">
+            <span>Esta tela fechará em </span>
+            <span className="bg-indigo-900 text-yellow-400 rounded-full w-8 h-8 flex items-center justify-center mx-2 font-bold">{autoCloseTimer}</span>
+            <span>segundos</span>
+          </div>
         </div>
     </div>
   );
