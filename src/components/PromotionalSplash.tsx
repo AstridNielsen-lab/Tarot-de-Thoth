@@ -53,13 +53,29 @@ export const PromotionalSplash: React.FC<PromotionalSplashProps> = ({
     return () => clearTimeout(fadeInTimeout);
   }, []);
 
-  // Auto-close after 30 seconds
+  // Auto-close after 10 seconds
+  const [autoCloseTimer, setAutoCloseTimer] = useState(10);
+  
   useEffect(() => {
     const autoCloseTimeout = setTimeout(() => {
       handleFinish();
-    }, 30000); // 30 seconds
+    }, 10000); // 10 seconds
     
-    return () => clearTimeout(autoCloseTimeout);
+    // Add countdown timer
+    const countdownInterval = setInterval(() => {
+      setAutoCloseTimer(prevTime => {
+        if (prevTime <= 1) {
+          clearInterval(countdownInterval);
+          return 0;
+        }
+        return prevTime - 1;
+      });
+    }, 1000);
+    
+    return () => {
+      clearTimeout(autoCloseTimeout);
+      clearInterval(countdownInterval);
+    };
   }, []);
   
   // Handle fade out and component unmounting
@@ -91,6 +107,11 @@ export const PromotionalSplash: React.FC<PromotionalSplashProps> = ({
       >
         <X className="w-6 h-6" />
       </button>
+      
+      {/* Countdown indicator */}
+      <div className="absolute top-4 left-4 bg-yellow-400 text-indigo-900 font-bold rounded-full w-10 h-10 flex items-center justify-center shadow-lg">
+        {autoCloseTimer}
+      </div>
       
       <div className="container max-w-4xl mx-auto px-6 py-6 text-center relative">
           <h2 className="text-yellow-400 text-4xl md:text-5xl font-bold mb-6 animate-pulse">
@@ -150,6 +171,9 @@ export const PromotionalSplash: React.FC<PromotionalSplashProps> = ({
         <div className="mt-4">
           <p className="text-yellow-300 text-xl">
             ✨ Entrega para todo o Brasil ✨
+          </p>
+          <p className="text-purple-300 text-sm mt-2">
+            Esta tela fechará automaticamente em {autoCloseTimer} segundos
           </p>
         </div>
     </div>
