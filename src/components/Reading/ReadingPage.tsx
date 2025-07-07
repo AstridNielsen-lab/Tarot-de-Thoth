@@ -8,10 +8,11 @@ import { minorArcana } from '../../data/minorArcana';
 import { courtCards } from '../../data/courtCards';
 import { generateInterpretation } from '../../data/spreads';
 import { shuffle } from 'lodash';
-import { BookOpen, Save, Eye, HelpCircle, Shuffle, ImageIcon } from 'lucide-react';
+import { BookOpen, Save, Eye, HelpCircle, Shuffle, ImageIcon, ShoppingCart } from 'lucide-react';
 import { TarotCardComponent } from '../TarotCard';
 import { useSound } from '../../hooks/useSound';
 import { CrowleyInterpreter } from './CrowleyInterpreter';
+import { BuyDeckModal } from '../BuyDeckModal';
 
 // Guidance text for each spread type
 const spreadGuidance = {
@@ -34,6 +35,7 @@ export const ReadingPage: React.FC = () => {
   const [currentCardIndex, setCurrentCardIndex] = useState<number>(0);
   const [showInstructions, setShowInstructions] = useState<boolean>(false);
   const [showUserInfoModal, setShowUserInfoModal] = useState<boolean>(false);
+  const [showBuyDeckModal, setShowBuyDeckModal] = useState<boolean>(false);
   const [userName, setUserName] = useState<string>('');
   const [birthDate, setBirthDate] = useState<string>('');
   
@@ -348,17 +350,13 @@ export const ReadingPage: React.FC = () => {
           
           {/* Buy Deck Button */}
           <div className="flex-1 min-w-[150px] max-w-[200px]">
-            <a 
-              href="https://mpago.la/1ajTuwR" 
-              target="_blank" 
-              rel="noopener noreferrer"
+            <button 
+              onClick={() => setShowBuyDeckModal(true)}
               className="w-full inline-flex items-center justify-center px-3 sm:px-3.5 py-1.5 bg-indigo-800 hover:bg-indigo-700 text-yellow-300 rounded-md transition-all shadow-md text-xs sm:text-sm border border-purple-600/40 hover:border-purple-500/60 hover:shadow-purple-600/20 hover:translate-y-[-1px] group"
             >
-              <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-1.5 group-hover:text-yellow-200 transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
+              <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-1.5 group-hover:text-yellow-200 transition-colors flex-shrink-0" />
               <span className="group-hover:text-yellow-200 transition-colors">Comprar Baralho</span>
-            </a>
+            </button>
             <p className="text-purple-300 text-2xs text-center mt-1">Tarot de Thoth físico</p>
           </div>
         </div>
@@ -371,6 +369,7 @@ export const ReadingPage: React.FC = () => {
       {renderShuffleAnimation()}
       {renderInstructions()}
       {renderUserInfoModal()}
+      <BuyDeckModal isOpen={showBuyDeckModal} onClose={() => setShowBuyDeckModal(false)} />
       
       <div className="text-center mb-4 sm:mb-8">
         <h1 className="text-2xl sm:text-3xl font-bold text-white">Realizar Leitura de Tarot</h1>
@@ -386,17 +385,13 @@ export const ReadingPage: React.FC = () => {
             <HelpCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-2 flex-shrink-0" />
             <span className="line-clamp-1">Instruções</span>
           </button>
-          <a 
-            href="https://mpago.la/1ajTuwR" 
-            target="_blank" 
-            rel="noopener noreferrer"
+          <button 
+            onClick={() => setShowBuyDeckModal(true)}
             className="px-2 sm:px-3 py-1.5 sm:py-2 bg-indigo-900/70 text-yellow-400 text-xs sm:text-sm flex items-center rounded-md border border-purple-700/50 hover:bg-indigo-800 transition-colors shadow-md"
           >
-            <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
+            <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-2 flex-shrink-0" />
             <span className="line-clamp-1">Comprar Baralho</span>
-          </a>
+          </button>
         </div>
       </div>
       
