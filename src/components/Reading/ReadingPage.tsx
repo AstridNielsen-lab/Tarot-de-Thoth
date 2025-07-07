@@ -328,7 +328,7 @@ export const ReadingPage: React.FC = () => {
               </svg>
               <span className="group-hover:text-yellow-200 transition-colors">Contribuir via PIX</span>
             </button>
-            <p className="text-purple-300 text-2xs text-center mt-1">infinitpaycash@gmail.com</p>
+            <p className="text-purple-300 text-[0.6rem] sm:text-2xs text-center mt-1 contribution-email">infinitpaycash@gmail.com</p>
           </div>
           
           {/* PayPal Contribution Button */}
@@ -345,7 +345,7 @@ export const ReadingPage: React.FC = () => {
               </svg>
               <span className="group-hover:text-yellow-200 transition-colors">Contribuir via PayPal</span>
             </a>
-            <p className="text-purple-300 text-2xs text-center mt-1">radiotatuapefm@gmail.com</p>
+            <p className="text-purple-300 text-[0.6rem] sm:text-2xs text-center mt-1 contribution-email">radiotatuapefm@gmail.com</p>
           </div>
           
           {/* Buy Deck Button */}
@@ -357,7 +357,7 @@ export const ReadingPage: React.FC = () => {
               <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-1.5 group-hover:text-yellow-200 transition-colors flex-shrink-0" />
               <span className="group-hover:text-yellow-200 transition-colors">Comprar Baralho</span>
             </button>
-            <p className="text-purple-300 text-2xs text-center mt-1">Tarot de Thoth físico</p>
+            <p className="text-purple-300 text-[0.6rem] sm:text-2xs text-center mt-1 contribution-email">Tarot de Thoth físico</p>
           </div>
         </div>
       </div>
@@ -395,8 +395,6 @@ export const ReadingPage: React.FC = () => {
         </div>
       </div>
       
-      {/* Fixed contribution buttons that are always visible */}
-      {renderContributionButtons()}
       
       {readingState === 'initial' && (
         <div className="max-w-2xl mx-auto bg-indigo-950/50 p-3 sm:p-6 rounded-lg mb-4 sm:mb-8">
@@ -556,8 +554,12 @@ export const ReadingPage: React.FC = () => {
           {/* Crowley's Esoteric Interpretation */}
           <CrowleyInterpreter reading={reading} readingState={readingState} />
 
+          {/* Contribution buttons now always appear below reading */}
+          {(readingState === 'initial' || readingState === 'complete') && renderContributionButtons()}
+
         </div>
       )}
+      
       
       {/* Detailed Contribution Section - shown after reading is complete */}
       {readingState === 'complete' && (
@@ -575,7 +577,7 @@ export const ReadingPage: React.FC = () => {
                 <h4 className="text-yellow-400 text-base sm:text-lg mb-1 sm:mb-2">PIX</h4>
                 <p className="text-purple-300 text-xs sm:text-sm mb-2 sm:mb-4">Contribua usando a chave PIX abaixo</p>
                 <div className="bg-indigo-900/60 p-2 sm:p-3 rounded-lg mb-2 sm:mb-3 relative group">
-                  <p className="text-purple-200 font-mono text-2xs sm:text-sm break-all">infinitpaycash@gmail.com</p>
+                  <p className="text-purple-200 font-mono text-[0.6rem] sm:text-sm break-all contribution-email">infinitpaycash@gmail.com</p>
                   <button
                     onClick={() => {
                       navigator.clipboard.writeText('infinitpaycash@gmail.com');
@@ -615,7 +617,7 @@ export const ReadingPage: React.FC = () => {
                 <h4 className="text-yellow-400 text-base sm:text-lg mb-1 sm:mb-2">PayPal</h4>
                 <p className="text-purple-300 text-xs sm:text-sm mb-2 sm:mb-4">Contribua via PayPal usando o e-mail abaixo</p>
                 <div className="bg-indigo-900/60 p-2 sm:p-3 rounded-lg mb-2 sm:mb-3 relative group">
-                  <p className="text-purple-200 font-mono text-2xs sm:text-sm break-all">radiotatuapefm@gmail.com</p>
+                  <p className="text-purple-200 font-mono text-[0.6rem] sm:text-sm break-all contribution-email">radiotatuapefm@gmail.com</p>
                   <button
                     onClick={() => {
                       navigator.clipboard.writeText('radiotatuapefm@gmail.com');

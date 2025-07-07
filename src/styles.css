@@ -164,6 +164,11 @@ body {
   .contribution-option {
     padding: 0.75rem !important;
   }
+  
+.contribution-email {
+  font-size: 0.55rem !important;
+  line-height: 0.9rem !important;
+}
 }
 
 /* Smoother animations on mobile */
