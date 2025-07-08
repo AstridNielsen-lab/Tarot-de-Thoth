@@ -5,7 +5,7 @@ import { courtCards } from '../../data/courtCards';
 import { minorArcana } from '../../data/minorArcana';
 import { TarotCardComponent } from '../TarotCard';
 import { CardModal } from '../CardModal';
-import { Search } from 'lucide-react';
+import { Search, ChevronDown, ChevronUp } from 'lucide-react';
 
 type CardFilterType = 'all' | 'major' | 'minor' | 'court';
 
@@ -13,6 +13,11 @@ export const CatalogPage: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<CardFilterType>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedCard, setSelectedCard] = useState<TarotCard | null>(null);
+  
+  // Collapse state for each section (true = collapsed)
+  const [isMajorCollapsed, setIsMajorCollapsed] = useState<boolean>(true);
+  const [isMinorCollapsed, setIsMinorCollapsed] = useState<boolean>(true);
+  const [isCourtCollapsed, setIsCourtCollapsed] = useState<boolean>(true);
   
   
   // Sort cards according to traditional Thoth Tarot order
@@ -175,15 +180,40 @@ export const CatalogPage: React.FC = () => {
       </div>
       
       {/* Results Summary */}
-      <div className="mb-6 text-purple-300">
-        <p>
-          Exibindo {filteredCards.length} de {allCards.length} cartas
-          {activeFilter !== 'all' && ` (Filtro: ${
-            activeFilter === 'major' ? 'Arcanos Maiores' : 
-            activeFilter === 'minor' ? 'Arcanos Menores' : 'Cartas de Corte'
-          })`}
-          {searchTerm && ` (Busca: "${searchTerm}")`}
-        </p>
+      <div className="mb-6">
+        <div className="flex justify-between items-center mb-2">
+          <p className="text-purple-300">
+            Exibindo {filteredCards.length} de {allCards.length} cartas
+            {activeFilter !== 'all' && ` (Filtro: ${
+              activeFilter === 'major' ? 'Arcanos Maiores' : 
+              activeFilter === 'minor' ? 'Arcanos Menores' : 'Cartas de Corte'
+            })`}
+            {searchTerm && ` (Busca: "${searchTerm}")`}
+          </p>
+          
+          <div className="flex space-x-2">
+            <button
+              onClick={() => {
+                setIsMajorCollapsed(false);
+                setIsMinorCollapsed(false);
+                setIsCourtCollapsed(false);
+              }}
+              className="text-xs py-1 px-2 rounded bg-purple-900/50 text-purple-300 hover:bg-purple-800/50 transition-colors"
+            >
+              Expandir Tudo
+            </button>
+            <button
+              onClick={() => {
+                setIsMajorCollapsed(true);
+                setIsMinorCollapsed(true);
+                setIsCourtCollapsed(true);
+              }}
+              className="text-xs py-1 px-2 rounded bg-purple-900/50 text-purple-300 hover:bg-purple-800/50 transition-colors"
+            >
+              Recolher Tudo
+            </button>
+          </div>
+        </div>
       </div>
       
       {/* Cards Sections */}
@@ -191,8 +221,20 @@ export const CatalogPage: React.FC = () => {
         {/* Major Arcana Section */}
         {filteredCards.some(card => card.category === 'major') && (
           <div>
-            <h2 className="text-2xl font-bold text-yellow-500 mb-4">Arcanos Maiores</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 sm:gap-5 place-items-center justify-items-center px-2 sm:px-0 card-grid">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold text-yellow-500">Arcanos Maiores</h2>
+              <button 
+                onClick={() => setIsMajorCollapsed(!isMajorCollapsed)}
+                className="p-1.5 rounded-full bg-purple-900/50 text-yellow-400 hover:bg-purple-800/50 transition-colors"
+                aria-label={isMajorCollapsed ? "Expandir Arcanos Maiores" : "Recolher Arcanos Maiores"}
+              >
+                {isMajorCollapsed ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
+              </button>
+            </div>
+            <div 
+              className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 sm:gap-5 place-items-center justify-items-center px-2 sm:px-0 card-grid overflow-hidden transition-all duration-500 ease-in-out ${
+                isMajorCollapsed ? 'max-h-0 opacity-0 mt-0 mb-0' : 'max-h-[5000px] opacity-100 mt-4 mb-6'
+              }`}
               {filteredCards
                 .filter(card => card.category === 'major')
                 .map((card) => (
@@ -209,7 +251,20 @@ export const CatalogPage: React.FC = () => {
         {/* Minor Arcana Sections - Grouped by Suit */}
         {filteredCards.some(card => card.category === 'minor') && (
           <div>
-            <h2 className="text-2xl font-bold text-yellow-500 mb-4">Arcanos Menores</h2>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold text-yellow-500">Arcanos Menores</h2>
+              <button 
+                onClick={() => setIsMinorCollapsed(!isMinorCollapsed)}
+                className="p-1.5 rounded-full bg-purple-900/50 text-yellow-400 hover:bg-purple-800/50 transition-colors"
+                aria-label={isMinorCollapsed ? "Expandir Arcanos Menores" : "Recolher Arcanos Menores"}
+              >
+                {isMinorCollapsed ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
+              </button>
+            </div>
+            
+            <div className={`overflow-hidden transition-all duration-500 ease-in-out ${
+              isMinorCollapsed ? 'max-h-0 opacity-0 mt-0 mb-0' : 'max-h-[5000px] opacity-100 mt-4 mb-6'
+            }`}>
             
             {/* Bastões Section */}
             {filteredCards.some(card => card.category === 'minor' && card.suit === 'Bastões') && (
@@ -282,13 +337,27 @@ export const CatalogPage: React.FC = () => {
                 </div>
               </div>
             )}
+            </div>
           </div>
         )}
         
         {/* Court Cards Section */}
         {filteredCards.some(card => card.category === 'court') && (
           <div>
-            <h2 className="text-2xl font-bold text-yellow-500 mb-4">Cartas de Corte</h2>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold text-yellow-500">Cartas de Corte</h2>
+              <button 
+                onClick={() => setIsCourtCollapsed(!isCourtCollapsed)}
+                className="p-1.5 rounded-full bg-purple-900/50 text-yellow-400 hover:bg-purple-800/50 transition-colors"
+                aria-label={isCourtCollapsed ? "Expandir Cartas de Corte" : "Recolher Cartas de Corte"}
+              >
+                {isCourtCollapsed ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
+              </button>
+            </div>
+            
+            <div className={`overflow-hidden transition-all duration-500 ease-in-out ${
+              isCourtCollapsed ? 'max-h-0 opacity-0 mt-0 mb-0' : 'max-h-[5000px] opacity-100 mt-4 mb-6'
+            }`}>
             
             {/* Bastões Court Cards */}
             {filteredCards.some(card => card.category === 'court' && card.suit === 'Bastões') && (
@@ -472,6 +541,7 @@ export const CatalogPage: React.FC = () => {
                 </div>
               </div>
             )}
+            </div>
           </div>
         )}
       </div>
