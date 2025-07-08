@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 
 const FAQSection: React.FC = () => {
-  // Set section to be expanded by default
-  const [sectionExpanded, setSectionExpanded] = useState(true);
+  // Set section to be collapsed by default
+  const [sectionExpanded, setSectionExpanded] = useState(false);
   
   const initialQuestions = [
     { id: 1, question: "O que é o Tarot de Thoth?", answer: "O Tarot de Thoth é um baralho esotérico criado pelo mago e ocultista britânico Aleister Crowley no século XX, com ilustrações de sua discípula Frieda Harris. Também conhecido como Tarot de Crowley, destaca-se por suas 78 cartas repletas de simbolismos complexos, que integram astrologia, cabala, gematria (numerologia) e mitologia, sobretudo egípcia." },
