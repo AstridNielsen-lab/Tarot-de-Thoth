@@ -571,12 +571,12 @@ export const ReadingPage: React.FC = () => {
                 </p>
               </div>
             </div>
-          )} {/* Close the methodsExpanded conditional */}
-        </div> {/* Closing the top-level programmatic content container */}
-      </div> {/* Closing the section for the reading methods */}
-    )} {/* Closing the main conditional wrapping JSX */}
-    </div> {/* Closing the entire component container */}
-  ); {/* Closing component's return */}
+          )} 
+        </div>
+      </div>
+    )}
+    </div>
+  );
   };
 
   return (

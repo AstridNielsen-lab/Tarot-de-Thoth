@@ -120,7 +120,7 @@ export const ExplanationPage: React.FC = () => {
   const [selectedCardIndex, setSelectedCardIndex] = useState(0);
   const [selectedCard, setSelectedCard] = useState<TarotCard>(sortedCards[0]);
   const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({
-    main: true,
+    main: false,
     symbology: false,
     qabalistic: false,
     astrological: false,

@@ -14,10 +14,15 @@ export const CatalogPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedCard, setSelectedCard] = useState<TarotCard | null>(null);
   
-  // Collapse state for each section (true = collapsed)
-  const [isMajorCollapsed, setIsMajorCollapsed] = useState<boolean>(true);
-  const [isMinorCollapsed, setIsMinorCollapsed] = useState<boolean>(true);
-  const [isCourtCollapsed, setIsCourtCollapsed] = useState<boolean>(true);
+  // Collapse state for each section (false = expanded)
+  const [isMajorCollapsed, setIsMajorCollapsed] = useState<boolean>(false);
+  const [isMinorCollapsed, setIsMinorCollapsed] = useState<boolean>(false);
+  const [isCourtCollapsed, setIsCourtCollapsed] = useState<boolean>(false);
+  
+  // Visibility state for card sections
+  const [showMajorCards, setShowMajorCards] = useState<boolean>(false);
+  const [showMinorCards, setShowMinorCards] = useState<boolean>(false);
+  const [showCourtCards, setShowCourtCards] = useState<boolean>(false);
   
   
   // Sort cards according to traditional Thoth Tarot order
@@ -197,20 +202,46 @@ export const CatalogPage: React.FC = () => {
                 setIsMajorCollapsed(false);
                 setIsMinorCollapsed(false);
                 setIsCourtCollapsed(false);
+                setShowMajorCards(true);
+                setShowMinorCards(true);
+                setShowCourtCards(true);
               }}
               className="text-xs py-1 px-2 rounded bg-purple-900/50 text-purple-300 hover:bg-purple-800/50 transition-colors"
             >
-              Expandir Tudo
+              Expandir Explicações
             </button>
             <button
               onClick={() => {
                 setIsMajorCollapsed(true);
                 setIsMinorCollapsed(true);
                 setIsCourtCollapsed(true);
+                setShowMajorCards(false);
+                setShowMinorCards(false);
+                setShowCourtCards(false);
               }}
               className="text-xs py-1 px-2 rounded bg-purple-900/50 text-purple-300 hover:bg-purple-800/50 transition-colors"
             >
-              Recolher Tudo
+              Recolher Explicações
+            </button>
+            <button
+              onClick={() => {
+                setShowMajorCards(true);
+                setShowMinorCards(true);
+                setShowCourtCards(true);
+              }}
+              className="text-xs py-1 px-2 rounded bg-purple-900/50 text-purple-300 hover:bg-purple-800/50 transition-colors"
+            >
+              Mostrar Todas as Cartas
+            </button>
+            <button
+              onClick={() => {
+                setShowMajorCards(false);
+                setShowMinorCards(false);
+                setShowCourtCards(false);
+              }}
+              className="text-xs py-1 px-2 rounded bg-purple-900/50 text-purple-300 hover:bg-purple-800/50 transition-colors"
+            >
+              Ocultar Todas as Cartas
             </button>
           </div>
         </div>
@@ -231,9 +262,60 @@ export const CatalogPage: React.FC = () => {
                 {isMajorCollapsed ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
               </button>
             </div>
+            
+            {/* Major Arcana Explanation */}
+            <div className={`bg-indigo-900/30 p-4 rounded-lg mb-4 transition-all duration-500 ease-in-out ${
+              isMajorCollapsed ? 'max-h-0 opacity-0 mt-0 mb-0 overflow-hidden p-0' : 'max-h-[1000px] opacity-100'
+            }`}>
+              <p className="text-purple-200 mb-3">
+                Os <span className="text-yellow-400 font-medium">Arcanos Maiores</span> representam as forças arquetípicas fundamentais do universo e da consciência humana. No Tarot de Thoth, Aleister Crowley redefiniu estas 22 cartas para alinhá-las com sua visão da Nova Era de Hórus e os princípios da Thelema.
+              </p>
+              <p className="text-purple-300 text-sm">
+                Cada Arcano Maior corresponde a um princípio cósmico, uma letra hebraica e um caminho na Árvore da Vida cabalística. Representam as grandes forças que moldam nosso destino e os estágios fundamentais da evolução espiritual. Estas cartas abordam os temas mais profundos da existência humana: nascimento, morte, renascimento, iluminação e transformação.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
+                <div className="bg-indigo-900/40 p-3 rounded border border-purple-800/30">
+                  <h4 className="text-yellow-400 text-sm font-medium mb-1">Natureza Arquetípica</h4>
+                  <p className="text-purple-300 text-xs">
+                    Representam as forças primordiais e os princípios universais que moldam a consciência e a experiência humana através de todos os planos de existência.
+                  </p>
+                </div>
+                <div className="bg-indigo-900/40 p-3 rounded border border-purple-800/30">
+                  <h4 className="text-yellow-400 text-sm font-medium mb-1">Correspondências Cabalísticas</h4>
+                  <p className="text-purple-300 text-xs">
+                    Cada carta está associada a um caminho específico na Árvore da Vida, conectando as diferentes Sephiroth e revelando aspectos da jornada espiritual.
+                  </p>
+                </div>
+                <div className="bg-indigo-900/40 p-3 rounded border border-purple-800/30">
+                  <h4 className="text-yellow-400 text-sm font-medium mb-1">Evolução da Consciência</h4>
+                  <p className="text-purple-300 text-xs">
+                    Em sequência, narram a jornada da alma desde a inocência (O Louco) até a completude cósmica (O Universo), representando os estágios de desenvolvimento espiritual.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex justify-center mt-4">
+                <button
+                  onClick={() => setShowMajorCards(!showMajorCards)}
+                  className="px-6 py-2.5 bg-indigo-800 hover:bg-indigo-700 text-yellow-400 rounded-lg shadow-md transition-all flex items-center justify-center gap-2 font-medium"
+                >
+                  {showMajorCards ? (
+                    <>
+                      <ChevronUp className="w-5 h-5" />
+                      <span>Ocultar Cartas</span>
+                    </>
+                  ) : (
+                    <>
+                      <ChevronDown className="w-5 h-5" />
+                      <span>Ver Cartas</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
             <div 
               className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 sm:gap-5 place-items-center justify-items-center px-2 sm:px-0 card-grid overflow-hidden transition-all duration-500 ease-in-out ${
-                isMajorCollapsed ? 'max-h-0 opacity-0 mt-0 mb-0' : 'max-h-[5000px] opacity-100 mt-4 mb-6'
+                !showMajorCards ? 'max-h-0 opacity-0 mt-0 mb-0' : 'max-h-[5000px] opacity-100 mt-4 mb-6'
               }`}
             >
               {filteredCards
@@ -263,8 +345,65 @@ export const CatalogPage: React.FC = () => {
               </button>
             </div>
             
+            {/* Minor Arcana Explanation */}
+            <div className={`bg-indigo-900/30 p-4 rounded-lg mb-4 transition-all duration-500 ease-in-out ${
+              isMinorCollapsed ? 'max-h-0 opacity-0 mt-0 mb-0 overflow-hidden p-0' : 'max-h-[1000px] opacity-100'
+            }`}>
+              <p className="text-purple-200 mb-3">
+                Os <span className="text-yellow-400 font-medium">Arcanos Menores</span> do Tarot de Thoth representam a manifestação das energias cósmicas no plano material e na experiência cotidiana. Divididos em quatro naipes, cada um com dez cartas numeradas de Ás a Dez, eles correspondem aos quatro elementos e suas expressões na realidade mundana.
+              </p>
+              <p className="text-purple-300 text-sm mb-3">
+                No sistema de Crowley, cada carta menor é uma combinação específica de energia elemental e numérica, mapeada precisamente na Árvore da Vida. As cartas de Ás a Dez em cada naipe correspondem ao fluxo de energia através das dez Sephiroth.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mt-3">
+                <div className="bg-indigo-900/40 p-3 rounded border border-purple-800/30">
+                  <h4 className="text-yellow-400 text-sm font-medium mb-1">Bastões - Fogo</h4>
+                  <p className="text-purple-300 text-xs">
+                    Energia criativa, vontade, paixão, inspiração, ambição e crescimento espiritual. Representam o impulso inicial da criação e da expressão pessoal.
+                  </p>
+                </div>
+                <div className="bg-indigo-900/40 p-3 rounded border border-purple-800/30">
+                  <h4 className="text-yellow-400 text-sm font-medium mb-1">Copas - Água</h4>
+                  <p className="text-purple-300 text-xs">
+                    Emoções, intuição, relacionamentos, amor, sonhos e o subconsciente. Refletem o mundo interior, os sentimentos e as conexões emocionais.
+                  </p>
+                </div>
+                <div className="bg-indigo-900/40 p-3 rounded border border-purple-800/30">
+                  <h4 className="text-yellow-400 text-sm font-medium mb-1">Espadas - Ar</h4>
+                  <p className="text-purple-300 text-xs">
+                    Intelecto, comunicação, conflito, clareza mental e desafios. Representam o poder do pensamento, tanto em seu potencial construtivo quanto destrutivo.
+                  </p>
+                </div>
+                <div className="bg-indigo-900/40 p-3 rounded border border-purple-800/30">
+                  <h4 className="text-yellow-400 text-sm font-medium mb-1">Discos - Terra</h4>
+                  <p className="text-purple-300 text-xs">
+                    Materialidade, recursos, saúde, trabalho e estabilidade. Manifestam a energia em sua forma mais densa e concreta, relacionada à vida prática.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex justify-center mt-4">
+                <button
+                  onClick={() => setShowMinorCards(!showMinorCards)}
+                  className="px-6 py-2.5 bg-indigo-800 hover:bg-indigo-700 text-yellow-400 rounded-lg shadow-md transition-all flex items-center justify-center gap-2 font-medium"
+                >
+                  {showMinorCards ? (
+                    <>
+                      <ChevronUp className="w-5 h-5" />
+                      <span>Ocultar Cartas</span>
+                    </>
+                  ) : (
+                    <>
+                      <ChevronDown className="w-5 h-5" />
+                      <span>Ver Cartas</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+            
             <div className={`overflow-hidden transition-all duration-500 ease-in-out ${
-              isMinorCollapsed ? 'max-h-0 opacity-0 mt-0 mb-0' : 'max-h-[5000px] opacity-100 mt-4 mb-6'
+              !showMinorCards ? 'max-h-0 opacity-0 mt-0 mb-0' : 'max-h-[5000px] opacity-100 mt-4 mb-6'
             }`}>
             
             {/* Bastões Section */}
@@ -356,8 +495,66 @@ export const CatalogPage: React.FC = () => {
               </button>
             </div>
             
+            {/* Court Cards Explanation */}
+            <div className={`bg-indigo-900/30 p-4 rounded-lg mb-4 transition-all duration-500 ease-in-out ${
+              isCourtCollapsed ? 'max-h-0 opacity-0 mt-0 mb-0 overflow-hidden p-0' : 'max-h-[1000px] opacity-100'
+            }`}>
+              <p className="text-purple-200 mb-3">
+                As <span className="text-yellow-400 font-medium">Cartas de Corte</span> no Tarot de Thoth representam a personificação das forças elementais em suas diversas combinações. Aleister Crowley modificou significativamente o sistema tradicional de corte, substituindo os Cavaleiros por Príncipes e renomeando os Pajens como Princesas.
+              </p>
+              <p className="text-purple-300 text-sm mb-3">
+                Cada figura de corte representa uma combinação específica de elementos, correspondendo a tipos psicológicos e modos de manifestação da energia. No sistema de Crowley, estas cartas estão diretamente relacionadas à fórmula de Tetragrammaton (YHVH) e aos quatro mundos da Cabala.
+              </p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                <div className="bg-indigo-900/40 p-3 rounded border border-purple-800/30">
+                  <h4 className="text-yellow-400 text-sm font-medium mb-1">Reis (Cavaleiro de Copas)</h4>
+                  <p className="text-purple-300 text-xs">
+                    Representam o elemento Fogo, o aspecto Yod no Tetragrammaton, e Atziluth (o Mundo das Emanações). São figuras de autoridade, poder e realização, expressando a energia máxima do seu naipe em sua forma mais dinâmica e expansiva.
+                  </p>
+                </div>
+                <div className="bg-indigo-900/40 p-3 rounded border border-purple-800/30">
+                  <h4 className="text-yellow-400 text-sm font-medium mb-1">Rainhas</h4>
+                  <p className="text-purple-300 text-xs">
+                    Representam o elemento Água, o aspecto Heh no Tetragrammaton, e Briah (o Mundo da Criação). São receptivas e formativas, expressando a internalização e estabilização das energias do seu naipe, operando através da intuição e sabedoria.
+                  </p>
+                </div>
+                <div className="bg-indigo-900/40 p-3 rounded border border-purple-800/30">
+                  <h4 className="text-yellow-400 text-sm font-medium mb-1">Príncipes</h4>
+                  <p className="text-purple-300 text-xs">
+                    Representam o elemento Ar, o aspecto Vau no Tetragrammaton, e Yetzirah (o Mundo da Formação). São intelectuais e transformadores, expressando o aspecto consciente e analítico do seu naipe, atuando como mediadores e agentes de mudança.
+                  </p>
+                </div>
+                <div className="bg-indigo-900/40 p-3 rounded border border-purple-800/30">
+                  <h4 className="text-yellow-400 text-sm font-medium mb-1">Princesas</h4>
+                  <p className="text-purple-300 text-xs">
+                    Representam o elemento Terra, o aspecto Heh final no Tetragrammaton, e Assiah (o Mundo da Ação). São manifestações físicas e práticas, expressando a cristalização completa das energias do seu naipe no mundo material e tangível.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex justify-center mt-4">
+                <button
+                  onClick={() => setShowCourtCards(!showCourtCards)}
+                  className="px-6 py-2.5 bg-indigo-800 hover:bg-indigo-700 text-yellow-400 rounded-lg shadow-md transition-all flex items-center justify-center gap-2 font-medium"
+                >
+                  {showCourtCards ? (
+                    <>
+                      <ChevronUp className="w-5 h-5" />
+                      <span>Ocultar Cartas</span>
+                    </>
+                  ) : (
+                    <>
+                      <ChevronDown className="w-5 h-5" />
+                      <span>Ver Cartas</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+            
             <div className={`overflow-hidden transition-all duration-500 ease-in-out ${
-              isCourtCollapsed ? 'max-h-0 opacity-0 mt-0 mb-0' : 'max-h-[5000px] opacity-100 mt-4 mb-6'
+              !showCourtCards ? 'max-h-0 opacity-0 mt-0 mb-0' : 'max-h-[5000px] opacity-100 mt-4 mb-6'
             }`}>
             
             {/* Bastões Court Cards */}
