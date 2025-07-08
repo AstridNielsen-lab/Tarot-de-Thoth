@@ -327,6 +327,21 @@ export const ReadingPage: React.FC = () => {
         </div>
         
         <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
+          {/* Mercado Pago Contribution Button */}
+          <div className="flex-1 min-w-[150px] max-w-[200px]">
+            <a 
+              href="https://mpago.la/1CiWiTp" 
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full inline-flex items-center justify-center px-3 sm:px-3.5 py-1.5 bg-indigo-800 hover:bg-indigo-700 text-yellow-300 rounded-md transition-all shadow-md text-2xs sm:text-sm border border-purple-600/40 hover:border-purple-500/60 hover:shadow-purple-600/20 hover:translate-y-[-1px] group"
+            >
+              <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-1.5 group-hover:text-yellow-200 transition-colors flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19.5 4h-15A2.5 2.5 0 002 6.5v11A2.5 2.5 0 004.5 20h15a2.5 2.5 0 002.5-2.5v-11A2.5 2.5 0 0019.5 4zM17 17h-2v-2h2v2zm0-4h-2v-2h2v2zm-8 4H7v-6h2v6zm4 0h-2V7h2v10z" />
+              </svg>
+              <span className="group-hover:text-yellow-200 transition-colors">Pagar R$0,93</span>
+            </a>
+            <p className="text-purple-300 text-[0.6rem] sm:text-2xs text-center mt-1 contribution-email">Agradecimento pela leitura</p>
+          </div>
           {/* PIX Contribution Button */}
           <div className="flex-1 min-w-[150px] max-w-[200px]">
             <button 
@@ -584,7 +599,27 @@ export const ReadingPage: React.FC = () => {
               Se esta leitura foi útil e trouxe insights valiosos para você, considere fazer uma contribuição para ajudar a manter e melhorar este projeto.
             </p>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6 max-w-3xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6 max-w-4xl mx-auto">
+              
+              {/* Mercado Pago Option */}
+              <div className="bg-indigo-950/50 p-3 sm:p-5 rounded-lg border border-purple-800/20">
+                <h4 className="text-yellow-400 text-base sm:text-lg mb-1 sm:mb-2">Mercado Pago</h4>
+                <p className="text-purple-300 text-xs sm:text-sm mb-2 sm:mb-4">Agradeça pela leitura com apenas R$0,93</p>
+                <div className="bg-indigo-900/60 p-2 sm:p-3 rounded-lg mb-2 sm:mb-3 flex items-center justify-center">
+                  <p className="text-purple-200 font-mono text-sm sm:text-base">R$ 0,93</p>
+                </div>
+                <a 
+                  href="https://mpago.la/1CiWiTp" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center px-3 sm:px-3.5 py-1.5 bg-indigo-800 hover:bg-indigo-700 text-yellow-300 rounded-md transition-all shadow-md text-2xs sm:text-sm border border-purple-600/40 hover:border-purple-500/60 hover:shadow-purple-600/20 hover:translate-y-[-1px] group w-full"
+                >
+                  <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-1.5 group-hover:text-yellow-200 transition-colors" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19.5 4h-15A2.5 2.5 0 002 6.5v11A2.5 2.5 0 004.5 20h15a2.5 2.5 0 002.5-2.5v-11A2.5 2.5 0 0019.5 4zM17 17h-2v-2h2v2zm0-4h-2v-2h2v2zm-8 4H7v-6h2v6zm4 0h-2V7h2v10z" />
+                  </svg>
+                  <span className="group-hover:text-yellow-200 transition-colors">Pagar com Mercado Pago</span>
+                </a>
+              </div>
 
               {/* PIX Option */}
               <div className="bg-indigo-950/50 p-3 sm:p-5 rounded-lg border border-purple-800/20">
