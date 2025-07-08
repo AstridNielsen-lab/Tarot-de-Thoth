@@ -333,7 +333,7 @@ export const ReadingPage: React.FC = () => {
           <div className="flex-1 min-w-[150px] max-w-[250px]">
             <button 
               onClick={() => {
-                navigator.clipboard.writeText('infinitpaycash@gmail.com');
+                navigator.clipboard.writeText('juliocamposmachado@gmail.com');
                 const el = document.createElement('div');
                 el.className = 'fixed top-4 right-4 bg-yellow-400 text-indigo-900 px-4 py-2 rounded shadow-lg z-50';
                 el.textContent = 'Chave PIX copiada!';
@@ -347,7 +347,7 @@ export const ReadingPage: React.FC = () => {
               </svg>
               <span className="group-hover:text-yellow-200 transition-colors">Contribuir via PIX</span>
             </button>
-            <p className="text-purple-300 text-[0.6rem] sm:text-2xs text-center mt-1 contribution-email">infinitpaycash@gmail.com</p>
+            <p className="text-purple-300 text-[0.6rem] sm:text-2xs text-center mt-1 contribution-email">juliocamposmachado@gmail.com</p>
           </div>
           
           {/* PayPal Contribution Button */}
