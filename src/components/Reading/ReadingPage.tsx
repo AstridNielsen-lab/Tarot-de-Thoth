@@ -399,12 +399,12 @@ export const ReadingPage: React.FC = () => {
         </div>
         
         {methodsExpanded && (
-
-        {/* Three Card Spread */}
-        <div className="border-b border-purple-800/30">
-          <button 
-            className="w-full p-3 sm:p-4 text-left flex justify-between items-center hover:bg-indigo-900/30 transition-colors"
-            onClick={() => setExpandedSpread(expandedSpread === 'three-card' ? null : 'three-card')}
+          <div>
+            {/* Three Card Spread */}
+            <div className="border-b border-purple-800/30">
+              <button 
+                className="w-full p-3 sm:p-4 text-left flex justify-between items-center hover:bg-indigo-900/30 transition-colors"
+                onClick={() => setExpandedSpread(expandedSpread === 'three-card' ? null : 'three-card')}
           >
             <div className="flex items-center">
               <span className="inline-block w-6 h-6 bg-indigo-800 rounded-full text-center text-yellow-400 text-xs font-medium mr-2">3</span>
@@ -572,7 +572,9 @@ export const ReadingPage: React.FC = () => {
               </div>
             </div>
           )}
-        </div>
+            </div>
+          </div>
+        ))}
       </div>
     );
   };
