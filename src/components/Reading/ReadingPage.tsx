@@ -378,7 +378,7 @@ export const ReadingPage: React.FC = () => {
         <div className="p-3 sm:p-4 border-b border-purple-800/30">
           <h3 className="text-base sm:text-lg text-yellow-400 font-medium flex items-center">
             <Layout className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-yellow-400/80" />
-            Métodos de Leitura de Tarot
+            Sobre os métodos de leitura
           </h3>
           <p className="text-purple-300 text-xs sm:text-sm mt-1">
             Cada método utiliza um arranjo específico de cartas para revelar diferentes aspectos da sua questão.
