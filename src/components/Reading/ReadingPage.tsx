@@ -571,9 +571,6 @@ export const ReadingPage: React.FC = () => {
           {/* Crowley's Esoteric Interpretation */}
           <CrowleyInterpreter reading={reading} readingState={readingState} />
 
-          {/* Contribution buttons now always appear below reading */}
-          {(readingState === 'initial' || readingState === 'complete') && renderContributionButtons()}
-
         </div>
       )}
       
@@ -706,6 +703,13 @@ export const ReadingPage: React.FC = () => {
               </div>
             ))}
           </div>
+        </div>
+      )}
+      
+      {/* Simple contribution card always appears at the bottom */}
+      {readingState !== 'shuffling' && readingState !== 'drawing' && readingState !== 'revealing' && (
+        <div className="mt-4 sm:mt-6">
+          {renderContributionButtons()}
         </div>
       )}
     </div>
