@@ -235,6 +235,7 @@ export const CatalogPage: React.FC = () => {
               className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 sm:gap-5 place-items-center justify-items-center px-2 sm:px-0 card-grid overflow-hidden transition-all duration-500 ease-in-out ${
                 isMajorCollapsed ? 'max-h-0 opacity-0 mt-0 mb-0' : 'max-h-[5000px] opacity-100 mt-4 mb-6'
               }`}
+            >
               {filteredCards
                 .filter(card => card.category === 'major')
                 .map((card) => (
