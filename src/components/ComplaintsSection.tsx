@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MessageSquare, AlertCircle, HelpCircle, ExternalLink } from 'lucide-react';
+import { MessageSquare, ExternalLink } from 'lucide-react';
 import { ChatBot } from './ChatBot';
 
 export const ComplaintsSection: React.FC = () => {
@@ -71,55 +71,17 @@ export const ComplaintsSection: React.FC = () => {
         </div>
       </div>
       
-      {/* Reclame Aqui Section */}
-      <div className="bg-indigo-950 border border-purple-800 rounded-lg p-6">
-        <div className="flex items-center mb-4">
-          <AlertCircle className="text-yellow-500 w-6 h-6 mr-3" />
-          <h3 className="text-xl font-semibold text-white">Reclame Aqui</h3>
-        </div>
-        <p className="text-purple-300 mb-6">
-          Se você já tentou resolver seu problema pelos nossos canais de atendimento e não obteve
-          sucesso, você pode registrar uma reclamação formal no Reclame Aqui. No entanto, 
-          gostaríamos de ressaltar que estamos comprometidos em resolver seu problema diretamente.
-        </p>
-        
-        <div className="bg-indigo-900/50 p-4 rounded-lg mb-4">
-          <h4 className="flex items-center text-white font-semibold mb-2">
-            <HelpCircle className="text-yellow-400 w-5 h-5 mr-2" />
-            Crie sua reclamação aqui, vamos ajudar a publicar
-          </h4>
-          <p className="text-purple-200 text-sm mb-4">
-            Antes de recorrer ao Reclame Aqui, tente utilizar nosso assistente virtual acima. 
-            Na maioria dos casos, conseguimos resolver problemas rapidamente por lá.
-          </p>
-          <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
-            <button
-              onClick={() => setShowChat(true)}
-              className="bg-purple-700 hover:bg-purple-600 text-white px-4 py-2 rounded-md transition-colors"
-            >
-              Falar com Assistente Virtual
-            </button>
-            <a
-              href="https://www.reclameaqui.com.br/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-md transition-colors"
-            >
-              Ir para Reclame Aqui
-              <ExternalLink className="ml-2 w-4 h-4" />
-            </a>
-          </div>
-        </div>
-        
-        {hasEscalated && (
+      {/* Escalation Message Section */}
+      {hasEscalated && (
+        <div className="bg-indigo-950 border border-purple-800 rounded-lg p-6 mt-6">
           <div className="bg-green-900/20 border border-green-700 rounded-lg p-4">
             <p className="text-green-400 text-sm">
               Vimos que você já conversou com nosso assistente virtual. Se o problema persistir,
               recomendamos entrar em contato pelo WhatsApp para um atendimento mais personalizado.
             </p>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
