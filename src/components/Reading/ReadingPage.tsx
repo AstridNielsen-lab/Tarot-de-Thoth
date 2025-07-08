@@ -37,6 +37,7 @@ export const ReadingPage: React.FC = () => {
   const [showUserInfoModal, setShowUserInfoModal] = useState<boolean>(false);
   const [showBuyDeckModal, setShowBuyDeckModal] = useState<boolean>(false);
   const [expandedSpread, setExpandedSpread] = useState<string | null>(null);
+  const [methodsExpanded, setMethodsExpanded] = useState<boolean>(false);
   const [userName, setUserName] = useState<string>('');
   const [birthDate, setBirthDate] = useState<string>('');
   
@@ -376,14 +377,28 @@ export const ReadingPage: React.FC = () => {
     return (
       <div className="mb-4 sm:mb-6 bg-indigo-950/50 rounded-lg border border-purple-800/30 overflow-hidden">
         <div className="p-3 sm:p-4 border-b border-purple-800/30">
-          <h3 className="text-base sm:text-lg text-yellow-400 font-medium flex items-center">
-            <Layout className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-yellow-400/80" />
-            Sobre os métodos de leitura
-          </h3>
+          <div className="flex justify-between items-center">
+            <h3 className="text-base sm:text-lg text-yellow-400 font-medium flex items-center">
+              <Layout className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-yellow-400/80" />
+              Sobre os métodos de leitura
+            </h3>
+            <button 
+              onClick={() => setMethodsExpanded(!methodsExpanded)} 
+              className="text-purple-300 hover:text-yellow-400 transition-colors"
+            >
+              {methodsExpanded ? (
+                <ChevronUp className="w-5 h-5" />
+              ) : (
+                <ChevronDown className="w-5 h-5" />
+              )}
+            </button>
+          </div>
           <p className="text-purple-300 text-xs sm:text-sm mt-1">
             Cada método utiliza um arranjo específico de cartas para revelar diferentes aspectos da sua questão.
           </p>
         </div>
+        
+        {methodsExpanded && (
 
         {/* Three Card Spread */}
         <div className="border-b border-purple-800/30">
