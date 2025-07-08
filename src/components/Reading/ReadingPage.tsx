@@ -8,7 +8,7 @@ import { minorArcana } from '../../data/minorArcana';
 import { courtCards } from '../../data/courtCards';
 import { generateInterpretation } from '../../data/spreads';
 import { shuffle } from 'lodash';
-import { BookOpen, Save, Eye, HelpCircle, Shuffle, ImageIcon, ShoppingCart } from 'lucide-react';
+import { BookOpen, Save, Eye, HelpCircle, Shuffle, ImageIcon, ShoppingCart, ChevronDown, ChevronUp, Layout } from 'lucide-react';
 import { TarotCardComponent } from '../TarotCard';
 import { useSound } from '../../hooks/useSound';
 import { CrowleyInterpreter } from './CrowleyInterpreter';
@@ -36,6 +36,7 @@ export const ReadingPage: React.FC = () => {
   const [showInstructions, setShowInstructions] = useState<boolean>(false);
   const [showUserInfoModal, setShowUserInfoModal] = useState<boolean>(false);
   const [showBuyDeckModal, setShowBuyDeckModal] = useState<boolean>(false);
+  const [expandedSpread, setExpandedSpread] = useState<string | null>(null);
   const [userName, setUserName] = useState<string>('');
   const [birthDate, setBirthDate] = useState<string>('');
   
@@ -370,6 +371,197 @@ export const ReadingPage: React.FC = () => {
     );
   };
 
+  // Function to render spread explanations
+  const renderSpreadExplanations = () => {
+    return (
+      <div className="mb-4 sm:mb-6 bg-indigo-950/50 rounded-lg border border-purple-800/30 overflow-hidden">
+        <div className="p-3 sm:p-4 border-b border-purple-800/30">
+          <h3 className="text-base sm:text-lg text-yellow-400 font-medium flex items-center">
+            <Layout className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-yellow-400/80" />
+            Métodos de Leitura de Tarot
+          </h3>
+          <p className="text-purple-300 text-xs sm:text-sm mt-1">
+            Cada método utiliza um arranjo específico de cartas para revelar diferentes aspectos da sua questão.
+          </p>
+        </div>
+
+        {/* Three Card Spread */}
+        <div className="border-b border-purple-800/30">
+          <button 
+            className="w-full p-3 sm:p-4 text-left flex justify-between items-center hover:bg-indigo-900/30 transition-colors"
+            onClick={() => setExpandedSpread(expandedSpread === 'three-card' ? null : 'three-card')}
+          >
+            <div className="flex items-center">
+              <span className="inline-block w-6 h-6 bg-indigo-800 rounded-full text-center text-yellow-400 text-xs font-medium mr-2">3</span>
+              <span className="text-purple-200 font-medium">Tiragem de Três Cartas</span>
+            </div>
+            {expandedSpread === 'three-card' ? (
+              <ChevronUp className="w-5 h-5 text-purple-400" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-purple-400" />
+            )}
+          </button>
+          
+          {expandedSpread === 'three-card' && (
+            <div className="p-3 sm:p-4 bg-indigo-900/20">
+              <div className="space-y-2 sm:space-y-3 text-purple-300 text-sm">
+                <p>
+                  A tiragem de três cartas é um dos métodos mais fundamentais e versáteis do Tarot. Segundo Aleister Crowley, 
+                  representa o fluxo do tempo através das três dimensões temporais.
+                </p>
+                
+                <div className="grid grid-cols-3 gap-2 sm:gap-4 mt-3">
+                  <div className="bg-indigo-900/40 p-2 sm:p-3 rounded border border-purple-800/30 text-center">
+                    <div className="text-yellow-400 text-xs sm:text-sm font-medium mb-1">Passado</div>
+                    <div className="text-purple-300 text-2xs sm:text-xs">Causas e influências formativas</div>
+                  </div>
+                  <div className="bg-indigo-900/40 p-2 sm:p-3 rounded border border-purple-800/30 text-center">
+                    <div className="text-yellow-400 text-xs sm:text-sm font-medium mb-1">Presente</div>
+                    <div className="text-purple-300 text-2xs sm:text-xs">Estado atual e manifestação</div>
+                  </div>
+                  <div className="bg-indigo-900/40 p-2 sm:p-3 rounded border border-purple-800/30 text-center">
+                    <div className="text-yellow-400 text-xs sm:text-sm font-medium mb-1">Futuro</div>
+                    <div className="text-purple-300 text-2xs sm:text-xs">Tendências e potenciais</div>
+                  </div>
+                </div>
+                
+                <p className="mt-2 text-xs text-purple-400/80">
+                  <strong>Ideal para:</strong> Questões diretas, orientação geral, visão rápida de uma situação.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Celtic Cross */}
+        <div className="border-b border-purple-800/30">
+          <button 
+            className="w-full p-3 sm:p-4 text-left flex justify-between items-center hover:bg-indigo-900/30 transition-colors"
+            onClick={() => setExpandedSpread(expandedSpread === 'celtic-cross' ? null : 'celtic-cross')}
+          >
+            <div className="flex items-center">
+              <span className="inline-block w-6 h-6 bg-indigo-800 rounded-full text-center text-yellow-400 text-xs font-medium mr-2">10</span>
+              <span className="text-purple-200 font-medium">Cruz Celta</span>
+            </div>
+            {expandedSpread === 'celtic-cross' ? (
+              <ChevronUp className="w-5 h-5 text-purple-400" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-purple-400" />
+            )}
+          </button>
+          
+          {expandedSpread === 'celtic-cross' && (
+            <div className="p-3 sm:p-4 bg-indigo-900/20">
+              <div className="space-y-2 sm:space-y-3 text-purple-300 text-sm">
+                <p>
+                  A Cruz Celta é uma das tiragens mais detalhadas e populares. Na visão de Crowley, 
+                  representa a interação das forças em múltiplos planos de existência, com influências 
+                  planetárias e qabalísticas.
+                </p>
+                
+                <div className="grid grid-cols-2 gap-2 sm:gap-3 mt-3">
+                  <div className="col-span-2 bg-indigo-900/40 p-2 sm:p-3 rounded border border-purple-800/30">
+                    <div className="text-yellow-400 text-xs sm:text-sm font-medium mb-1">Cruz Central (6 cartas)</div>
+                    <div className="text-purple-300 text-2xs sm:text-xs space-y-1">
+                      <p><strong>1.</strong> Situação presente - O que está acontecendo agora</p>
+                      <p><strong>2.</strong> Influência cruzada - Obstáculos ou apoios</p>
+                      <p><strong>3.</strong> Coroamento - O que está acima (objetivo ou ideal)</p>
+                      <p><strong>4.</strong> Fundação - O que está abaixo (passado ou subconsciente)</p>
+                      <p><strong>5.</strong> Influência passando - O que está atrás (passado recente)</p>
+                      <p><strong>6.</strong> Influência vindoura - O que está à frente (futuro próximo)</p>
+                    </div>
+                  </div>
+                  <div className="col-span-2 bg-indigo-900/40 p-2 sm:p-3 rounded border border-purple-800/30">
+                    <div className="text-yellow-400 text-xs sm:text-sm font-medium mb-1">Pilar (4 cartas)</div>
+                    <div className="text-purple-300 text-2xs sm:text-xs space-y-1">
+                      <p><strong>7.</strong> O consulente - Como você se vê ou aparece</p>
+                      <p><strong>8.</strong> Casa/Ambiente - Influências externas</p>
+                      <p><strong>9.</strong> Esperanças e temores - O que você deseja ou receia</p>
+                      <p><strong>10.</strong> Resultado final - Síntese e resolução</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <p className="mt-2 text-xs text-purple-400/80">
+                  <strong>Ideal para:</strong> Análises completas, situações complexas, múltiplas influências interagindo.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Tree of Life */}
+        <div>
+          <button 
+            className="w-full p-3 sm:p-4 text-left flex justify-between items-center hover:bg-indigo-900/30 transition-colors"
+            onClick={() => setExpandedSpread(expandedSpread === 'tree-of-life' ? null : 'tree-of-life')}
+          >
+            <div className="flex items-center">
+              <span className="inline-block w-6 h-6 bg-indigo-800 rounded-full text-center text-yellow-400 text-xs font-medium mr-2">10</span>
+              <span className="text-purple-200 font-medium">Árvore da Vida</span>
+            </div>
+            {expandedSpread === 'tree-of-life' ? (
+              <ChevronUp className="w-5 h-5 text-purple-400" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-purple-400" />
+            )}
+          </button>
+          
+          {expandedSpread === 'tree-of-life' && (
+            <div className="p-3 sm:p-4 bg-indigo-900/20">
+              <div className="space-y-2 sm:space-y-3 text-purple-300 text-sm">
+                <p>
+                  A Árvore da Vida é o mapa completo da realidade segundo a Qabalah. Para Crowley, 
+                  cada Sephirah (esfera) representa um nível diferente de manifestação, do mais divino ao mais material.
+                </p>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 mt-3">
+                  <div className="bg-indigo-900/40 p-2 sm:p-3 rounded border border-purple-800/30">
+                    <div className="text-yellow-400 text-xs sm:text-sm font-medium mb-1">Tríade Superna</div>
+                    <div className="text-purple-300 text-2xs sm:text-xs space-y-1">
+                      <p><strong>1. Kether</strong> - A Coroa, origem divina, potencial puro</p>
+                      <p><strong>2. Chokmah</strong> - Sabedoria, força dinâmica, princípio masculino</p>
+                      <p><strong>3. Binah</strong> - Entendimento, forma receptiva, princípio feminino</p>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-indigo-900/40 p-2 sm:p-3 rounded border border-purple-800/30">
+                    <div className="text-yellow-400 text-xs sm:text-sm font-medium mb-1">Tríade Ética</div>
+                    <div className="text-purple-300 text-2xs sm:text-xs space-y-1">
+                      <p><strong>4. Chesed</strong> - Misericórdia, organização, construção</p>
+                      <p><strong>5. Geburah</strong> - Força, severidade, dissolução</p>
+                      <p><strong>6. Tiphareth</strong> - Beleza, harmonia, equilíbrio solar</p>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-indigo-900/40 p-2 sm:p-3 rounded border border-purple-800/30">
+                    <div className="text-yellow-400 text-xs sm:text-sm font-medium mb-1">Tríade Astral</div>
+                    <div className="text-purple-300 text-2xs sm:text-xs space-y-1">
+                      <p><strong>7. Netzach</strong> - Vitória, emoções, desejo</p>
+                      <p><strong>8. Hod</strong> - Esplendor, intelecto, comunicação</p>
+                      <p><strong>9. Yesod</strong> - Fundação, imaginação, subconsciente</p>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-indigo-900/40 p-2 sm:p-3 rounded border border-purple-800/30">
+                    <div className="text-yellow-400 text-xs sm:text-sm font-medium mb-1">Reino Material</div>
+                    <div className="text-purple-300 text-2xs sm:text-xs">
+                      <p><strong>10. Malkuth</strong> - O Reino, materialização, mundo físico</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <p className="mt-2 text-xs text-purple-400/80">
+                  <strong>Ideal para:</strong> Questões espirituais profundas, evolução pessoal, análise completa de um tema em todos os planos.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
       {renderShuffleAnimation()}
@@ -404,6 +596,9 @@ export const ReadingPage: React.FC = () => {
       
       {readingState === 'initial' && (
         <div className="max-w-2xl mx-auto bg-indigo-950/50 p-3 sm:p-6 rounded-lg mb-4 sm:mb-8">
+          {/* Spread Explanations Section */}
+          {renderSpreadExplanations()}
+          
           <div className="mb-4 sm:mb-6">
             <label className="block text-purple-300 text-sm sm:text-base mb-1 sm:mb-2">Método de Leitura:</label>
             <select 
