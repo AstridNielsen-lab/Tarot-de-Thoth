@@ -329,7 +329,7 @@ export const ReadingPage: React.FC = () => {
         <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
           {/* PIX Contribution Button */}
           {/* PIX Contribution Button */}
-          <div className="flex-1 min-w-[150px] max-w-[220px]">
+          <div className="flex-1 min-w-[150px] max-w-[250px]">
             <button 
               onClick={() => {
                 navigator.clipboard.writeText('infinitpaycash@gmail.com');
@@ -350,7 +350,7 @@ export const ReadingPage: React.FC = () => {
           </div>
           
           {/* PayPal Contribution Button */}
-          <div className="flex-1 min-w-[150px] max-w-[220px]">
+          <div className="flex-1 min-w-[150px] max-w-[250px]">
             <a 
               href="https://paypal.me/radiotatuapefm" 
               target="_blank"
@@ -364,18 +364,6 @@ export const ReadingPage: React.FC = () => {
               <span className="group-hover:text-yellow-200 transition-colors">Contribuir via PayPal</span>
             </a>
             <p className="text-purple-300 text-[0.6rem] sm:text-2xs text-center mt-1 contribution-email">radiotatuapefm@gmail.com</p>
-          </div>
-          
-          {/* Buy Deck Button */}
-          <div className="flex-1 min-w-[150px] max-w-[220px]">
-            <button 
-              onClick={() => setShowBuyDeckModal(true)}
-              className="w-full inline-flex items-center justify-center px-3 sm:px-3.5 py-1.5 bg-indigo-800 hover:bg-indigo-700 text-yellow-300 rounded-md transition-all shadow-md text-2xs sm:text-sm border border-purple-600/40 hover:border-purple-500/60 hover:shadow-purple-600/20 hover:translate-y-[-1px] group"
-            >
-              <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-1.5 group-hover:text-yellow-200 transition-colors flex-shrink-0" />
-              <span className="group-hover:text-yellow-200 transition-colors">Comprar Baralho</span>
-            </button>
-            <p className="text-purple-300 text-[0.6rem] sm:text-2xs text-center mt-1 contribution-email">Tarot de Thoth físico</p>
           </div>
         </div>
       </div>
