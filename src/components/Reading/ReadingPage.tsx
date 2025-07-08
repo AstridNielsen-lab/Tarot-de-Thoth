@@ -534,9 +534,9 @@ export const ReadingPage: React.FC = () => {
                   <div className="bg-indigo-900/40 p-2 sm:p-3 rounded border border-purple-800/30">
                     <div className="text-yellow-400 text-xs sm:text-sm font-medium mb-1">Tríade Superna</div>
                     <div className="text-purple-300 text-2xs sm:text-xs space-y-1">
-                      <p><strong>1. Kether</strong> - A Coroa, origem divina, potencial puro</p>
-                      <p><strong>2. Chokmah</strong> - Sabedoria, força dinâmica, princípio masculino</p>
-                      <p><strong>3. Binah</strong> - Entendimento, forma receptiva, princípio feminino</p>
+                      <p><strong>1. Kether</strong> - A Coroa, origem divina, potencial puro.</p>
+                      <p><strong>2. Chokmah</strong> - Sabedoria, força dinâmica, princípio masculino.</p>
+                      <p><strong>3. Binah</strong> - Entendimento, forma receptiva, princípio feminino.</p>
                     </div>
                   </div>
                   
@@ -790,8 +790,9 @@ export const ReadingPage: React.FC = () => {
           </div>
           
           <p className="text-purple-300 text-xs sm:text-sm mb-4 max-w-md mx-auto">
-            Contribua com apenas R$0,93 como agradecimento pela sua leitura de Tarot
+            Contribua com apenas R$0,93 como agradecimento pela sua leitura de Tarot.
           </p>
+
           
           <a 
             href="https://mpago.la/1CiWiTp" 
