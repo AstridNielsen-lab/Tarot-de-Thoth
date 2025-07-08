@@ -13,8 +13,7 @@ import { TarotCardComponent } from '../TarotCard';
 import { useSound } from '../../hooks/useSound';
 import { CrowleyInterpreter } from './CrowleyInterpreter';
 import { BuyDeckModal } from '../BuyDeckModal';
-
-// Guidance text for each spread type
+import { getUserData, saveUserData, updateUserData, UserData } from '../../services/userStorage';
 const spreadGuidance = {
   'three-card': "O método de três cartas é uma forma simples mas poderosa de obter clareza. Na visão de Crowley, representa o fluxo da energia através do tempo: passado (causa), presente (manifestação) e futuro (tendência). Concentre-se na questão enquanto as cartas são embaralhadas.",
   'celtic-cross': "A Cruz Celta, na interpretação thelêmica, representa a interação das forças em múltiplos planos. O centro é o cruzamento dos pilares da Árvore da Vida, enquanto as seis cartas ao redor mostram as influências planetárias. Visualize a questão no centro de sua consciência.",
@@ -33,6 +32,7 @@ export const ReadingPage: React.FC = () => {
   const [question, setQuestion] = useState<string>('');
   const [savedReadings, setSavedReadings] = useState<Reading[]>([]);
   const [currentCardIndex, setCurrentCardIndex] = useState<number>(0);
+  const [userData, setUserData] = useState<UserData | null>(null);
   const [showInstructions, setShowInstructions] = useState<boolean>(false);
   const [showUserInfoModal, setShowUserInfoModal] = useState<boolean>(false);
   const [showBuyDeckModal, setShowBuyDeckModal] = useState<boolean>(false);
@@ -155,6 +155,14 @@ export const ReadingPage: React.FC = () => {
     } catch (error) {
       console.error('Error loading saved readings:', error);
     }
+
+    // Load user data from localStorage
+    const storedUserData = getUserData();
+    if (storedUserData) {
+      setUserData(storedUserData);
+      setUserName(storedUserData.name);
+      setBirthDate(storedUserData.birthDate);
+    }
   }, []);
   
   // Reset reading
@@ -214,7 +222,16 @@ export const ReadingPage: React.FC = () => {
             </button>
             <button 
               className="flex-1 px-4 py-2 bg-purple-800 text-white rounded-md hover:bg-purple-700 transition"
-              onClick={startReading}
+              onClick={() => {
+                // Save or update user data
+                const newUserData: UserData = { name: userName, birthDate: birthDate };
+                if (userData) {
+                  updateUserData(newUserData);
+                } else {
+                  saveUserData(newUserData);
+                }
+                startReading();
+              }}
             >
               Continuar
             </button>
